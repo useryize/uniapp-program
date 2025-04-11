@@ -1,21 +1,20 @@
 <template>
-  <view class="title">
+  <view class="titleBox">
     <view class="name">每日推荐</view>
-    <view class="date">
+    <view class="time">
       <uni-icons type="calendar" size="18"></uni-icons>
       <view class="text">
-        <uni-dateformat :date="Date.now()" format="dd日"></uni-dateformat>
+        <uni-dateformat :date="Date.now()" format="dd日" />
       </view>
     </view>
   </view>
-  <scroll-view class="recom" scroll-x>
+  <scroll-view class="scrollBox" scroll-x>
     <view
       class="item"
       v-for="(item, index) in 8"
       :key="item"
-      :style="{ backgroundColor: getRandomHexColor[index] }"
-      >13246</view
-    >
+      :style="{ backgroundColor: getRandomHexColor[8 - index] }"
+    ></view>
   </scroll-view>
 </template>
 
@@ -34,23 +33,34 @@ const getRandomHexColor = [
 ];
 </script>
 <style lang="scss" scoped>
-.title {
+.titleBox {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 30rpx;
+  margin: 20rpx 0;
   .name {
     font-size: 40rpx;
   }
+  .time {
+    display: flex;
+    align-items: center;
+    .text {
+      margin-left: 10rpx;
+      color: #5f24ff;
+    }
+  }
 }
-.recom {
+.scrollBox {
+  box-sizing: border-box;
   padding: 0 30rpx;
   white-space: nowrap;
+  overflow: hidden;
   .item {
     width: 200rpx;
     height: 430rpx;
+    margin-right: 10rpx;
     display: inline-block;
-    margin-right: 15rpx;
     border-radius: 10rpx;
     overflow: hidden;
     image {
