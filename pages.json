@@ -16,6 +16,18 @@
       }
     }
   ],
+  "tabBar": {
+  	"list": [
+  		{
+			"pagePath": "pages/home/index",
+			"text": "首页"
+		},
+		{
+			"pagePath": "pages/person/index",
+			"text": "我的"
+		}
+  	]
+  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",
