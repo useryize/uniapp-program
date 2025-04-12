@@ -8,6 +8,14 @@
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
+	{
+      "path": "pages/person/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "enablePullDownRefresh": true,
+        "navigationBarBackgroundColor": "#ffffff"
+      }
+    },
     {
       "path": "pages/cute/index",
       "style": {
@@ -17,6 +25,9 @@
     }
   ],
   "tabBar": {
+	"backgroundColor": "#ffffff",
+	"borderStyle": "white",
+	"fontSize": "28rpx",
   	"list": [
   		{
 			"pagePath": "pages/home/index",
