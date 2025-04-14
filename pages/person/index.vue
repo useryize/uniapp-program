@@ -9,7 +9,7 @@
         ></image>
       </view>
       <view>
-        <text class="login-text">
+        <text class="login-text" @click="handleLogin">
           {{ isLogin ? userInfo.nickName : "点击登录" }}
         </text>
       </view>
@@ -40,6 +40,21 @@
             mode="aspectFit"
           ></image>
           <text class="title">联系客服</text>
+        </view>
+        <image
+          class="arrow"
+          src="/static/images/arrow-right.svg"
+          mode="aspectFit"
+        ></image>
+      </view>
+
+      <view class="function-item" v-if="isLogin" @click="handleLogout">
+        <view class="left">
+          <view class="icon logout-icon">
+            <view class="logout-circle"></view>
+            <view class="logout-arrow"></view>
+          </view>
+          <text class="title">退出登录</text>
         </view>
         <image
           class="arrow"
@@ -89,9 +104,30 @@ const handleLogin = () => {
   // #endif
 };
 
-// 处理关于我们
-const handleAbout = () => {
+// 处理退出登录
+const handleLogout = () => {
+  uni.showModal({
+    title: '提示',
+    content: '确定要退出登录吗？',
+    success: (res) => {
+      if (res.confirm) {
+        // 清除用户信息
+        uni.removeStorageSync('userInfo');
+        userInfo.avatarUrl = '';
+        userInfo.nickName = '';
+        isLogin.value = false;
+        
+        uni.showToast({
+          title: '已退出登录',
+          icon: 'success'
+        });
+      }
+    }
+  });
 };
+
+// 处理关于我们
+const handleAbout = () => {};
 
 // 处理联系客服
 const handleContact = () => {
@@ -180,6 +216,37 @@ onMounted(() => {
           width: 40rpx;
           height: 40rpx;
           margin-right: 20rpx;
+        }
+
+        .logout-icon {
+          position: relative;
+          width: 40rpx;
+          height: 40rpx;
+          margin-right: 20rpx;
+          
+          .logout-circle {
+            position: absolute;
+            width: 24rpx;
+            height: 24rpx;
+            border: 2rpx solid #ff4d4f;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+          
+          .logout-arrow {
+            position: absolute;
+            width: 16rpx;
+            height: 16rpx;
+            border-right: 2rpx solid #ff4d4f;
+            border-bottom: 2rpx solid #ff4d4f;
+            transform: rotate(45deg);
+            top: 50%;
+            left: 50%;
+            margin-top: -4rpx;
+            margin-left: -8rpx;
+          }
         }
 
         .title {
