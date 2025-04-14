@@ -57,7 +57,7 @@ const getRandomHexColor = [
   white-space: nowrap;
   overflow: hidden;
   .item {
-    width: 200rpx;
+    width: 300rpx;
     height: 430rpx;
     margin-right: 10rpx;
     display: inline-block;
