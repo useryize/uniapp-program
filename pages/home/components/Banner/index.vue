@@ -7,38 +7,44 @@
     :interval="5000"
     indicator-active-color="rgba(255,255,255,.7)"
   >
-    <swiper-item class="item" v-for="(item, index) in 8" :key="item?.index">
-      <view class="pic" :style="{ backgroundColor: getRandomHexColor[index] }"></view>
+    <swiper-item class="item" v-for="(item, index) in bannerList" :key="item?.index">
+      <image :src="HOST + item?.url" mode="aspectFit" />
     </swiper-item>
   </swiper>
 </template>
 <script setup>
-const getRandomHexColor = [
-  "#E0F7FA",
-  "#B2EBF2",
-  "#80DEEA",
-  "#4DD0E1",
-  "#26C6DA",
-  "#F3E5F5",
-  "#E1BEE7",
-  "#CE93D8",
-  "#BA68C8",
-  "#AB47BC",
-];
+import { request, HOST } from "@/utils/request";
+import { onMounted, ref } from "vue";
+
+const bannerList = ref([]);
+const init = async () => {
+  const res = await request({
+    url: "/HPImageArchive.aspx",
+    data: {
+      format: "js",
+      idx: "0",
+      n: "8",
+    },
+  });
+  bannerList.value = res?.images;
+  console.error(bannerList);
+};
+onMounted(() => {
+  init();
+});
 </script>
 <style lang="scss" scoped>
 .banner {
   box-sizing: border-box;
-  height: 300rpx;
+ 
   .item {
+    height: 300rpx;
     box-sizing: border-box;
     padding: 0 30rpx;
-    .pic {
-      box-sizing: border-box;
-      border-radius: 18rpx;
+    overflow: hidden;
+    .img {
       width: 100%;
       height: 100%;
-      position: relative;
     }
   }
 }

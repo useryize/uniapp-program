@@ -77,11 +77,16 @@
         "devServer" : {
             "port" : "8088",
             "proxy" : {
-                "/tools" : {
-                    "target" : "https://tea.qingnian8.com",
+                "/HPImageArchive" : {
+                    "target" : "https://cn.bing.com",
                     "changeOrigin" : true,
                     "secure" : false
                 }
+            }
+        },
+        "optimization" : {
+            "treeShaking" : {
+                "enable" : true
             }
         }
     }
