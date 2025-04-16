@@ -7,61 +7,21 @@
           :src="isLogin ? userInfo.avatarUrl : '/static/images/default-avatar.svg'"
           mode="aspectFill"
         ></image>
-      </view>
-      <view>
-        <text class="login-text" @click="handleLogin">
+        <view class="text" @click="handleLogin">
           {{ isLogin ? userInfo.nickName : "点击登录" }}
-        </text>
+        </view>
       </view>
     </view>
 
     <view class="listBox">
-      <view class="function-item" @click="handleAbout">
-        <view class="left">
-          <image
-            class="icon"
-            src="/static/images/about-icon.svg"
-            mode="aspectFit"
-          ></image>
-          <text class="title">关于我们</text>
+      <view class="item" v-for="item in itemList" :key="item?.icon" @click="item?.click">
+        <view class="text">
+          <uni-icons :type="item?.icon" size="40rpx"></uni-icons>
+          <text class="title">{{ item.name }}</text>
         </view>
-        <image
-          class="arrow"
-          src="/static/images/arrow-right.svg"
-          mode="aspectFit"
-        ></image>
+        <uni-icons type="right" size="40rpx"></uni-icons>
       </view>
-
-      <view class="function-item" @click="handleContact">
-        <view class="left">
-          <image
-            class="icon"
-            src="/static/images/service-icon.svg"
-            mode="aspectFit"
-          ></image>
-          <text class="title">联系客服</text>
-        </view>
-        <image
-          class="arrow"
-          src="/static/images/arrow-right.svg"
-          mode="aspectFit"
-        ></image>
-      </view>
-
-      <view class="function-item" v-if="isLogin" @click="handleLogout">
-        <view class="left">
-          <view class="icon logout-icon">
-            <view class="logout-circle"></view>
-            <view class="logout-arrow"></view>
-          </view>
-          <text class="title">退出登录</text>
-        </view>
-        <image
-          class="arrow"
-          src="/static/images/arrow-right.svg"
-          mode="aspectFit"
-        ></image>
-      </view>
+      <view class="logOut" v-if="isLogin" @click="handleLogout">退出登录</view>
     </view>
   </view>
 </template>
@@ -107,27 +67,24 @@ const handleLogin = () => {
 // 处理退出登录
 const handleLogout = () => {
   uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
+    title: "提示",
+    content: "确定要退出登录吗？",
     success: (res) => {
       if (res.confirm) {
         // 清除用户信息
-        uni.removeStorageSync('userInfo');
-        userInfo.avatarUrl = '';
-        userInfo.nickName = '';
+        uni.removeStorageSync("userInfo");
+        userInfo.avatarUrl = "";
+        userInfo.nickName = "";
         isLogin.value = false;
-        
+
         uni.showToast({
-          title: '已退出登录',
-          icon: 'success'
+          title: "已退出登录",
+          icon: "success",
         });
       }
-    }
+    },
   });
 };
-
-// 处理关于我们
-const handleAbout = () => {};
 
 // 处理联系客服
 const handleContact = () => {
@@ -141,18 +98,25 @@ const handleContact = () => {
 
   // #ifdef H5
   // 打开在线客服系统
-  window.open("您的在线客服系统URL", "_blank");
+  // window.open("您的在线客服系统URL", "_blank");
   // #endif
 
   // #ifdef APP-PLUS
   // 打开APP内置客服
-  uni.showModal({
-    title: "联系客服",
-    content: "客服电话：400-xxx-xxxx\n工作时间：9:00-18:00",
-    showCancel: false,
-  });
+  // uni.showModal({
+  //   title: "联系客服",
+  //   content: "客服电话：400-xxx-xxxx\n工作时间：9:00-18:00",
+  //   showCancel: false,
+  // });
   // #endif
 };
+
+const itemList = ref([
+  { name: "我的下载", icon: "download-filled", click: () => {} },
+  { name: "我的评分", icon: "star-filled", click: () => {} },
+  { name: "关于我们", icon: "person-filled", click: () => {} },
+  { name: "联系客服", icon: "chatboxes-filled", click: handleContact },
+]);
 
 onMounted(() => {
   // 检查是否已登录
@@ -172,10 +136,10 @@ onMounted(() => {
 
   .userBox {
     background: linear-gradient(to right, #a8e6cf, #dcedc1);
-    padding: 40rpx 30rpx;
-    height: 300rpx;
+    height: 360rpx;
     display: flex;
     align-items: center;
+    justify-content: center;
     .avatar {
       width: 120rpx;
       height: 120rpx;
@@ -183,8 +147,8 @@ onMounted(() => {
       border: 4rpx solid #ffffff;
     }
 
-    .login-text {
-      margin-left: 30rpx;
+    .text {
+      margin-top: 24rpx;
       color: #333333;
       font-size: 32rpx;
       font-weight: 500;
@@ -197,68 +161,30 @@ onMounted(() => {
     border-radius: 20rpx;
     margin: 30rpx;
 
-    .function-item {
+    .item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 30rpx;
-      border-bottom: 1rpx solid #f5f5f5;
+      border-bottom: 1rpx solid #f3f3f3;
 
       &:last-child {
         border-bottom: none;
       }
 
-      .left {
+      .text {
         display: flex;
         align-items: center;
-
-        .icon {
-          width: 40rpx;
-          height: 40rpx;
-          margin-right: 20rpx;
-        }
-
-        .logout-icon {
-          position: relative;
-          width: 40rpx;
-          height: 40rpx;
-          margin-right: 20rpx;
-          
-          .logout-circle {
-            position: absolute;
-            width: 24rpx;
-            height: 24rpx;
-            border: 2rpx solid #ff4d4f;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
-          
-          .logout-arrow {
-            position: absolute;
-            width: 16rpx;
-            height: 16rpx;
-            border-right: 2rpx solid #ff4d4f;
-            border-bottom: 2rpx solid #ff4d4f;
-            transform: rotate(45deg);
-            top: 50%;
-            left: 50%;
-            margin-top: -4rpx;
-            margin-left: -8rpx;
-          }
-        }
 
         .title {
           color: #333333;
           font-size: 28rpx;
+          margin-left: 20rpx;
         }
       }
-
-      .arrow {
-        width: 32rpx;
-        height: 32rpx;
-      }
+    }
+    .logOut {
+      color: #ff0000;
     }
   }
 }
