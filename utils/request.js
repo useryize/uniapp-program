@@ -1,7 +1,7 @@
 
+export const HOST = 'https://cn.bing.com';
 const SYSTEM_INFO = uni.getSystemInfoSync()
 const BASE_URL = SYSTEM_INFO.uniPlatform === 'web' ? '' : HOST;
-export const HOST = 'https://cn.bing.com/';
 export function request(config = {}) {
     let {
         url,
@@ -11,7 +11,6 @@ export function request(config = {}) {
     } = config
 
     url = BASE_URL + url
-
 
     return new Promise((resolve, reject) => {
         uni.request({

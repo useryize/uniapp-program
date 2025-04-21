@@ -5,7 +5,8 @@
     :indicator-dots="true"
     :autoplay="false"
     :interval="5000"
-    indicator-active-color="rgba(255,255,255,.7)"
+    indicator-color="rgba(255,255,255,.7)"
+    indicator-active-color="rgba(255,255,255,1)"
   >
     <swiper-item class="item" v-for="(item, index) in bannerList" :key="item?.index">
       <image :src="HOST + item?.url" mode="scaleToFill" />
@@ -27,7 +28,6 @@ const init = async () => {
     },
   });
   bannerList.value = res?.images;
-  console.error(bannerList);
 };
 onMounted(() => {
   init();
