@@ -78,14 +78,15 @@
         "devServer" : {
             "port" : "8088",
             "proxy" : {
-                "/HPImageArchive" : {
-                    "target" : "https://cn.bing.com",
+                "/v1" : {
+                    "target" : "https://api.pexels.com",
                     "changeOrigin" : true,
                     "secure" : false
                 }
-            }
+            },
+            "https" : false
         }
     }
 }
-// "pathRewrite":{"^/tools":""}
+// "pathRewrite":{"^/api":""}
 

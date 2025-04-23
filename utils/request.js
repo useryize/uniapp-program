@@ -1,7 +1,10 @@
 
-export const HOST = 'https://cn.bing.com';
+export const HOST = 'https://api.pexels.com';
 const SYSTEM_INFO = uni.getSystemInfoSync()
 const BASE_URL = SYSTEM_INFO.uniPlatform === 'web' ? '' : HOST;
+const Authorization = "JKDmKuqZkQlCK8SG9RVgp0JSn8LLb12MQULnraxzkJVwGqil7oyQ1Ot4"
+
+
 export function request(config = {}) {
     let {
         url,
@@ -17,7 +20,9 @@ export function request(config = {}) {
             url,
             data,
             method,
-            header,
+            header: {
+                Authorization
+            },
             success: res => {
                 if (res.statusCode === 200) {
                     resolve(res.data)
