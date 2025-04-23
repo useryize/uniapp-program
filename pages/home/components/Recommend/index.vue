@@ -9,28 +9,33 @@
     </view>
   </view>
   <scroll-view class="scrollBox" scroll-x>
-    <view
-      class="item"
-      v-for="(item, index) in 8"
-      :key="item"
-      :style="{ backgroundColor: getRandomHexColor[8 - index] }"
-    ></view>
+    <view class="item" v-for="(item, index) in list" :key="item">
+      <image :src="item?.src?.landscape" mode="heightFix" />
+    </view>
   </scroll-view>
 </template>
 
 <script setup>
-const getRandomHexColor = [
-  "#E0F7FA",
-  "#B2EBF2",
-  "#80DEEA",
-  "#4DD0E1",
-  "#26C6DA",
-  "#F3E5F5",
-  "#E1BEE7",
-  "#CE93D8",
-  "#BA68C8",
-  "#AB47BC",
-];
+import { ref, onMounted } from "vue";
+import { request } from "@/utils/request";
+const list = ref([]);
+const init = async () => {
+  const res = await request({
+    url: "/v1/search",
+    data: {
+      query: "大海",
+      per_page: "15",
+      page: "1",
+      orientation: "landscape",
+      locale: "zh-CN",
+    },
+  });
+  list.value = res?.photos;
+};
+
+onMounted(() => {
+  init();
+});
 </script>
 <style lang="scss" scoped>
 .titleBox {
@@ -47,7 +52,7 @@ const getRandomHexColor = [
     align-items: center;
     .text {
       margin-left: 10rpx;
-      color: #5f24ff;
+      color: #ff6600;
     }
   }
 }

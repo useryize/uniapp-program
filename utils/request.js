@@ -41,3 +41,7 @@ export function request(config = {}) {
         })
     })
 }
+
+export const getSearch = () => {
+
+}
