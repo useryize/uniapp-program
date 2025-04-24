@@ -43,7 +43,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 0 30rpx;
-  margin: 20rpx 0;
+  margin: 30rpx 0 20rpx;
   .name {
     font-size: 40rpx;
   }

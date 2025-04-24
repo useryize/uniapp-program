@@ -8,7 +8,7 @@
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
-	{
+    {
       "path": "pages/person/index",
       "style": {
         "navigationBarTitleText": "我的",
@@ -17,27 +17,31 @@
       }
     },
     {
-      "path": "pages/cute/index",
+      "path": "pages/list/index",
       "style": {
-        "navigationBarTitleText": "列表",
+        "navigationBarTitleText": "精选",
         "enablePullDownRefresh": true
       }
     }
   ],
   "tabBar": {
-	"backgroundColor": "#ffffff",
-	"borderStyle": "white",
-	"fontSize": "28rpx",
-  	"list": [
-  		{
-			"pagePath": "pages/home/index",
-			"text": "首页"
-		},
-		{
-			"pagePath": "pages/person/index",
-			"text": "我的"
-		}
-  	]
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "fontSize": "28rpx",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/list/index",
+        "text": "精选"
+      },
+      {
+        "pagePath": "pages/person/index",
+        "text": "我的"
+      }
+    ]
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",

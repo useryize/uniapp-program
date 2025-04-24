@@ -9,7 +9,7 @@
     indicator-active-color="rgba(255,255,255,1)"
   >
     <swiper-item class="item" v-for="(item, index) in bannerList" :key="item?.index">
-      <image :src="item?.src?.landscape" mode="widthFix" />
+      <image @click="previewImg(index)" :src="item?.src?.landscape" mode="aspectFill" />
     </swiper-item>
   </swiper>
 </template>
@@ -21,7 +21,7 @@ const init = async () => {
   const res = await request({
     url: "/v1/search",
     data: {
-      query: "风景",
+      query: "名胜古迹",
       per_page: "15",
       page: "1",
       orientation: "landscape",
@@ -30,6 +30,15 @@ const init = async () => {
   });
   bannerList.value = res?.photos;
 };
+
+const previewImg = (index) => {
+  uni.previewImage({
+    current: index,
+    urls: bannerList.value.map((item) => item.src.landscape),
+  });
+  console.error(bannerList.value.map((item) => item.src.landscape))
+};
+
 onMounted(() => {
   init();
 });
@@ -37,9 +46,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .banner {
   box-sizing: border-box;
-
+  height: 450rpx;
   .item {
-    // height: 300rpx;
     // aspect-ratio: 16/9;
     // height: (750 * 1080 / 1920)rpx;
     box-sizing: border-box;
