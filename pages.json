@@ -17,12 +17,13 @@
       }
     },
     {
-      "path": "pages/list/index",
+      "path": "pages/find/index",
       "style": {
         "navigationBarTitleText": "精选",
         "enablePullDownRefresh": true
       }
     }
+    
   ],
   "tabBar": {
     "backgroundColor": "#ffffff",
@@ -34,7 +35,7 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/list/index",
+        "pagePath": "pages/find/index",
         "text": "精选"
       },
       {
