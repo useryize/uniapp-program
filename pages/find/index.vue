@@ -15,6 +15,9 @@
             lazy-load
             @load="onImageLoad(index, columnIndex)"
           />
+          <view class="image-placeholder" v-if="!loadedImages.has(`${columnIndex}-${index}`)">
+            <view class="loading-spinner"></view>
+          </view>
         </view>
       </view>
     </view>
@@ -33,6 +36,7 @@ import { onMounted, ref, computed } from "vue";
 const findList = ref([]);
 const loading = ref(false);
 const page = ref(1);
+const loadedImages = ref(new Set());
 
 /**
  * 将图片数据分配到三列
@@ -92,6 +96,7 @@ const previewImage = (item) => {
  * @param {number} columnIndex 列索引
  */
 const onImageLoad = (index, columnIndex) => {
+  loadedImages.value.add(`${columnIndex}-${index}`);
   console.log(`Image loaded in column ${columnIndex} at index ${index}`);
 };
 
@@ -152,6 +157,27 @@ onMounted(() => {
       width: 100%;
       display: block;
       transition: transform 0.3s ease;
+    }
+
+    .image-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+
+      .loading-spinner {
+        width: 40rpx;
+        height: 40rpx;
+        border: 4rpx solid #f3f3f3;
+        border-top: 4rpx solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
     }
   }
 

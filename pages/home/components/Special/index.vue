@@ -5,7 +5,17 @@
   </view>
   <view class="specBox">
     <view class="item" v-for="(item, index) in list" :key="item">
-      <image :src="item?.src?.landscape" mode="heightFix" lazy-load />
+      <view class="image-container">
+        <image 
+          :src="item?.src?.landscape" 
+          mode="heightFix" 
+          lazy-load 
+          @load="onImageLoad(index)"
+        />
+        <view class="image-placeholder" v-if="!loadedImages.has(index)">
+          <view class="loading-spinner"></view>
+        </view>
+      </view>
       <view class="title">{{ item?.alt }}</view>
       <!-- <view class="tis">更新时间</view> -->
     </view>
@@ -17,6 +27,12 @@
 import { ref, onMounted } from "vue";
 import { request } from "@/utils/request";
 const list = ref([]);
+const loadedImages = ref(new Set());
+
+const onImageLoad = (index) => {
+  loadedImages.value.add(index);
+};
+
 const init = async () => {
   const res = await request({
     url: "/v1/search",
@@ -61,6 +77,40 @@ onMounted(() => {
     border-radius: 18rpx;
     position: relative;
     overflow: hidden;
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+
+      image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+
+        .loading-spinner {
+          width: 40rpx;
+          height: 40rpx;
+          border: 4rpx solid #f3f3f3;
+          border-top: 4rpx solid #3498db;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+
     &.more {
       background: linear-gradient(
         135deg,
@@ -100,6 +150,15 @@ onMounted(() => {
       left: 0;
       top: 0;
     }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
