@@ -20,7 +20,7 @@
       "path": "pages/find/index",
       "style": {
         "navigationBarTitleText": "精选",
-        "enablePullDownRefresh": true
+        "enablePullDownRefresh": false
       }
     }
     

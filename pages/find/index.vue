@@ -12,6 +12,7 @@
             :src="item?.src?.medium"
             mode="widthFix"
             class="photo-image"
+            lazy-load
             @load="onImageLoad(index, columnIndex)"
           />
         </view>
@@ -30,7 +31,7 @@ import { onMounted, ref, computed } from "vue";
 
 // 状态管理
 const findList = ref([]);
-const loading = ref(true);
+const loading = ref(false);
 const page = ref(1);
 
 /**

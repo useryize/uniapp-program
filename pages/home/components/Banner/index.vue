@@ -9,7 +9,7 @@
     indicator-active-color="rgba(255,255,255,1)"
   >
     <swiper-item class="item" v-for="(item, index) in bannerList" :key="item?.index">
-      <image @click="previewImg(index)" :src="item?.src?.landscape" mode="aspectFill" />
+      <image @click="previewImg(index)" :src="item?.src?.landscape" mode="aspectFill" lazy-load />
     </swiper-item>
   </swiper>
 </template>

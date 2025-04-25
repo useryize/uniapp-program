@@ -5,7 +5,7 @@
   </view>
   <view class="specBox">
     <view class="item" v-for="(item, index) in list" :key="item">
-      <image :src="item?.src?.landscape" mode="heightFix" />
+      <image :src="item?.src?.landscape" mode="heightFix" lazy-load />
       <view class="title">{{ item?.alt }}</view>
       <!-- <view class="tis">更新时间</view> -->
     </view>
