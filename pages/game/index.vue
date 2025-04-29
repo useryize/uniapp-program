@@ -10,6 +10,8 @@ const canvasWidth = ref(null);
 const canvasHeight = ref(null);
 const gridSize = ref(10);
 
+const food = ref({ x: 10, y: 10 }); // 食物
+
 const drawGame = () => {
   const ctx = uni.createCanvasContext("gameCanvas");
 
@@ -48,6 +50,15 @@ const drawGame = () => {
         ctx.lineTo(canvasWidth.value, i * gridSize.value);
         ctx.stroke();
       }
+
+      // 食物位置
+      ctx.setFillStyle("#000000");
+      ctx.fillRect(
+        food.value.x * gridSize.value,
+        food.value.y * gridSize.value,
+        gridSize.value,
+        gridSize.value
+      );
 
       ctx.draw();
     })
