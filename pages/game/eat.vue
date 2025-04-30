@@ -28,7 +28,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const canvasWidth = ref(300)   // 画布宽度(像素)
 const canvasHeight = ref(300)  // 画布高度(像素)
 const gridSize = ref(15)       // 每个网格的大小(像素)
-const speed = ref(150)         // 游戏速度(毫秒/帧)
+const speed = ref(500)         // 游戏速度(毫秒/帧)
 
 /**
  * 游戏状态变量
