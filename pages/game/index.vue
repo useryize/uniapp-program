@@ -1,17 +1,57 @@
 <template>
   <view class="gram-view">
     <canvas canvas-id="gameCanvas" class="game-canvas" />
+    <Button @click="startGame">开始游戏</Button>
   </view>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { onShow, onHide } from "@dcloudio/uni-app";
 const canvasNode = ref(null);
 const canvasWidth = ref(null);
 const canvasHeight = ref(null);
-const gridSize = ref(10);
+const gridSize = ref(10); // 画布步进单位
+const speed = ref(300); // 移到速度
+const direction = ref("right"); // 移到方向
 
 const food = ref({ x: 10, y: 10 }); // 食物
+const snake = ref([{ x: 5, y: 5 }]); // 本体
 
+const gameLoopKey = ref(null);
+
+// 更新游戏状态
+const updateGame = () => {
+  const head = { ...snake.value[0] };
+  switch (direction.value) {
+    case "up":
+      head.y -= 1;
+      break;
+    case "down":
+      head.y += 1;
+      break;
+    case "left":
+      head.x -= 1;
+      break;
+    case "right":
+      head.x += 1;
+      break;
+  }
+  snake.value = [head, ...snake.value];
+
+  drawGame();
+};
+
+// 主循环
+const gameLoop = () => {
+  updateGame();
+  gameLoopKey.value = setTimeout(gameLoop, speed.value);
+};
+
+const startGame = () => {
+  gameLoop();
+};
+
+// 绘制游戏
 const drawGame = () => {
   const ctx = uni.createCanvasContext("gameCanvas");
 
@@ -52,7 +92,7 @@ const drawGame = () => {
       }
 
       // 食物位置
-      ctx.setFillStyle("#000000");
+      ctx.setFillStyle("#ff0000");
       ctx.fillRect(
         food.value.x * gridSize.value,
         food.value.y * gridSize.value,
@@ -60,12 +100,62 @@ const drawGame = () => {
         gridSize.value
       );
 
+      // 绘制本体
+      snake.value.forEach((item, index) => {
+        ctx.setFillStyle("#000000");
+        ctx.fillRect(
+          item.x * gridSize.value,
+          item.y * gridSize.value,
+          gridSize.value,
+          gridSize.value
+        );
+      });
+
       ctx.draw();
     })
     .exec();
 };
+
+// 按键
+const handleKeyDown = (e) => {
+  const keyMap = {
+    ArrowUp: "up",
+    ArrowDown: "down",
+    ArrowLeft: "left",
+    ArrowRight: "right",
+  };
+  direction.value = keyMap[e?.key];
+};
+
+// 键盘事件
+const addKeyDownListener = () => {
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", handleKeyDown);
+  }
+};
+
+// 销毁键盘事件
+const removeKeyDownListener = () => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("keydown", handleKeyDown);
+  }
+};
+
 onMounted(() => {
   drawGame();
+  addKeyDownListener();
+});
+
+onUnmounted(() => {
+  removeKeyDownListener();
+});
+
+onShow(() => {
+  addKeyDownListener();
+});
+
+onHide(() => {
+  removeKeyDownListener();
 });
 </script>
 <style lang="scss" scoped>
