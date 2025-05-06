@@ -2,40 +2,48 @@
   <view class="gram-view">
     <canvas canvas-id="gameCanvas" class="game-canvas" />
     <Button @click="startGame">开始游戏</Button>
+    <Button @click="startGame">暂停游戏</Button>
   </view>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { onShow, onHide } from "@dcloudio/uni-app";
-const canvasNode = ref(null);
-const canvasWidth = ref(null);
-const canvasHeight = ref(null);
-const gridSize = ref(10); // 画布步进单位
-const speed = ref(300); // 移到速度
-const direction = ref("right"); // 移到方向
-const nextDirection = ref("right"); // 下一帧方向 快速按反向问题
-
-const food = ref({ x: 10, y: 10 }); // 食物
-const snake = ref([{ x: 5, y: 5 }]); // 本体
+import { ref, onMounted, onUnmounted, reactive, watch, computed } from "vue";
+import { onShow, onHide, onResize } from "@dcloudio/uni-app";
 
 const gameLoopKey = ref(null);
 
+const state = reactive({
+  canvasNode: null,
+  canvasWidth: null,
+  canvasHeight: null,
+  gridSize: 10, // 画布步进单位
+  speed: 300, // 移到速度
+  direction: "right", // 移动方向
+  nextDirection: "right", // 下一帧方向 快速按反向问题
+  food: { x: 10, y: 10 }, // 食物
+  snake: [{ x: 5, y: 5 }], // 本体
+});
+
+const x = computed(() => state.food.x)
+watch(x, (res, res2) => {
+  console.error(res, res2);
+});
+
 //生成食物
 const createdFood = () => {
-  const x = Math.floor(Math.random() * (canvasWidth.value / gridSize.value) + 1);
-  const y = Math.floor(Math.random() * (canvasHeight.value / gridSize.value) + 1);
-  if (snake.value.some((item) => item.x === x && item.y === y)) {
+  const x = Math.floor(Math.random() * (state.canvasWidth / state.gridSize) + 1);
+  const y = Math.floor(Math.random() * (state.canvasHeight / state.gridSize) + 1);
+  if (state.snake.some((item) => item.x === x && item.y === y)) {
     return createdFood();
   }
-  food.value = { x, y };
-  console.error(food.value);
+  state.food = { x, y };
 };
 
 // 更新游戏状态
 const updateGame = () => {
-  direction.value = nextDirection?.value;
-  const head = { ...snake.value[0] };
-  switch (direction.value) {
+  state.direction = state.nextDirection;
+  const head = { ...state.snake[0] };
+
+  switch (state.direction) {
     case "up":
       head.y -= 1;
       break;
@@ -49,11 +57,11 @@ const updateGame = () => {
       head.x += 1;
       break;
   }
-  snake.value = [head, ...snake.value];
-  if (head?.x === food.value.x && head.y === food.value.y) {
+  state.snake = [head, ...state.snake];
+  if (head?.x === state.food.x && head.y === state.food.y) {
     createdFood();
   } else {
-    snake.value.pop();
+    state.snake.pop();
   }
   drawGame();
 };
@@ -61,10 +69,12 @@ const updateGame = () => {
 // 主循环
 const gameLoop = () => {
   updateGame();
-  gameLoopKey.value = setTimeout(gameLoop, speed.value);
+  gameLoopKey.value = setTimeout(gameLoop, state.speed);
 };
 
 const startGame = () => {
+  state.asdasd += 1;
+  console.error(state.asdasd);
   gameLoop();
 };
 
@@ -77,53 +87,53 @@ const drawGame = () => {
   query
     .select(".game-canvas")
     .fields({ node: true, size: true }, (res) => {
-      canvasNode.value = res.node;
-      canvasWidth.value = res.width;
-      canvasHeight.value = res.height;
+      state.canvasNode = res.node;
+      state.canvasWidth = res.width;
+      state.canvasHeight = res.height;
 
       // 画布背景
       ctx.setFillStyle("#f4f4f4");
-      ctx.fillRect(0, 0, canvasWidth.value, canvasHeight.value);
+      ctx.fillRect(0, 0, state.canvasWidth, state.canvasHeight);
 
       ctx.setStrokeStyle("rgba(0, 0, 0, 0.06)"); // 修正透明度设置
       ctx.setLineWidth(1);
 
       // 垂直网格线
-      const widthCount = Math.ceil(canvasWidth.value / gridSize.value); // 计算垂直线数量
+      const widthCount = Math.ceil(state.canvasWidth / state.gridSize); // 计算垂直线数量
       for (let i = 0; i <= widthCount; i++) {
         ctx.beginPath();
-        ctx.moveTo(i * gridSize.value, 0);
-        ctx.lineTo(i * gridSize.value, canvasHeight.value);
+        ctx.moveTo(i * state.gridSize, 0);
+        ctx.lineTo(i * state.gridSize, state.canvasHeight);
         ctx.stroke();
       }
 
       // 水平网格线
-      const heightCount = Math.ceil(canvasHeight.value / gridSize.value); // 计算水平线数量
+      const heightCount = Math.ceil(state.canvasHeight / state.gridSize); // 计算水平线数量
       for (let i = 0; i <= heightCount; i++) {
         // 确保最后一根线绘制
         ctx.beginPath();
-        ctx.moveTo(0, i * gridSize.value);
-        ctx.lineTo(canvasWidth.value, i * gridSize.value);
+        ctx.moveTo(0, i * state.gridSize);
+        ctx.lineTo(state.canvasWidth, i * state.gridSize);
         ctx.stroke();
       }
 
       // 食物位置
       ctx.setFillStyle("#ff0000");
       ctx.fillRect(
-        food.value.x * gridSize.value,
-        food.value.y * gridSize.value,
-        gridSize.value,
-        gridSize.value
+        state.food.x * state.gridSize,
+        state.food.y * state.gridSize,
+        state.gridSize,
+        state.gridSize
       );
 
       // 绘制本体
-      snake.value.forEach((item, index) => {
+      state.snake.forEach((item, index) => {
         ctx.setFillStyle("#000000");
         ctx.fillRect(
-          item.x * gridSize.value,
-          item.y * gridSize.value,
-          gridSize.value,
-          gridSize.value
+          item.x * state.gridSize,
+          item.y * state.gridSize,
+          state.gridSize,
+          state.gridSize
         );
       });
 
@@ -134,19 +144,18 @@ const drawGame = () => {
 
 // 按键
 const handleKeyDown = (e) => {
-  console.error;
   switch (e?.key) {
     case "ArrowUp":
-      if (direction.value !== "down") nextDirection.value = "up";
+      if (state.direction !== "down") state.nextDirection = "up";
       break;
     case "ArrowDown":
-      if (direction.value !== "up") nextDirection.value = "down";
+      if (state.direction !== "up") state.nextDirection = "down";
       break;
     case "ArrowLeft":
-      if (direction.value !== "right") nextDirection.value = "left";
+      if (state.direction !== "right") state.nextDirection = "left";
       break;
     case "ArrowRight":
-      if (direction.value !== "left") nextDirection.value = "right";
+      if (state.direction !== "left") state.nextDirection = "right";
       break;
   }
   if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e?.key)) {
@@ -186,6 +195,11 @@ onShow(() => {
 
 onHide(() => {
   removeKeyDownListener();
+});
+
+onResize((res) => {
+  console.error(res);
+  drawGame();
 });
 </script>
 <style lang="scss" scoped>
