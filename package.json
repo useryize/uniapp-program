@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/useryize/uniapp-program#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "dayjs": "^1.11.13"
   }
 }
