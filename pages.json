@@ -1,39 +1,18 @@
 {
   "pages": [
-    {
-      "path": "pages/mall/index",
-      "style": {
-        "navigationBarTitleText": "首页",
-        "enablePullDownRefresh": true,
-        "navigationBarBackgroundColor": "#ffffff"
-      }
-    },
+    // 壁纸
     {
       "path": "pages/wallpaper/home/index",
       "style": {
-        "navigationBarTitleText": "首页",
+        "navigationBarTitleText": "壁纸首页",
         "enablePullDownRefresh": true,
         "navigationBarBackgroundColor": "#ffffff"
-      }
-    },
-    {
-      "path": "pages/wallpaper/game/index",
-      "style": {
-        "navigationBarTitleText": "游戏",
-        "enablePullDownRefresh": false
-      }
-    },
-    {
-      "path": "pages/wallpaper/game/eat",
-      "style": {
-        "navigationBarTitleText": "游戏2",
-        "enablePullDownRefresh": false
       }
     },
     {
       "path": "pages/wallpaper/person/index",
       "style": {
-        "navigationBarTitleText": "我的",
+        "navigationBarTitleText": "壁纸我的",
         "enablePullDownRefresh": true,
         "navigationBarBackgroundColor": "#ffffff"
       }
@@ -41,8 +20,17 @@
     {
       "path": "pages/wallpaper/find/index",
       "style": {
-        "navigationBarTitleText": "精选",
+        "navigationBarTitleText": "壁纸精选",
         "enablePullDownRefresh": false
+      }
+    },
+    // 商城
+    {
+      "path": "pages/mall/index",
+      "style": {
+        "navigationBarTitleText": "商城首页",
+        "enablePullDownRefresh": true,
+        "navigationBarBackgroundColor": "#ffffff"
       }
     }
   ],
@@ -52,8 +40,12 @@
     "fontSize": "28rpx",
     "list": [
       {
-        "pagePath": "pages/mall/index",
-        "text": "商城首页"
+        "pagePath": "pages/wallpaper/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/wallpaper/find/index",
+        "text": "精选"
       },
       {
         "pagePath": "pages/wallpaper/person/index",
