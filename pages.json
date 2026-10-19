@@ -1,5 +1,14 @@
 {
   "pages": [
+     // 商城
+    {
+      "path": "pages/mall/index",
+      "style": {
+        "navigationBarTitleText": "商城首页",
+        "enablePullDownRefresh": true,
+        "navigationBarBackgroundColor": "#ffffff"
+      }
+    },
     // 壁纸
     {
       "path": "pages/wallpaper/home/index",
@@ -23,15 +32,6 @@
         "navigationBarTitleText": "壁纸精选",
         "enablePullDownRefresh": false
       }
-    },
-    // 商城
-    {
-      "path": "pages/mall/index",
-      "style": {
-        "navigationBarTitleText": "商城首页",
-        "enablePullDownRefresh": true,
-        "navigationBarBackgroundColor": "#ffffff"
-      }
     }
   ],
   "tabBar": {
@@ -40,12 +40,8 @@
     "fontSize": "28rpx",
     "list": [
       {
-        "pagePath": "pages/wallpaper/home/index",
+        "pagePath": "pages/mall/index",
         "text": "首页"
-      },
-      {
-        "pagePath": "pages/wallpaper/find/index",
-        "text": "精选"
       },
       {
         "pagePath": "pages/wallpaper/person/index",
