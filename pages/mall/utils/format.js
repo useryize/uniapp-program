@@ -27,3 +27,15 @@ export const ORDER_STATUS_TEXT = {
 export function orderStatusText(status) {
   return ORDER_STATUS_TEXT[status] || status
 }
+
+/**
+ * 时间戳 -> 'YYYY-MM-DD HH:mm'（订单时间轴展示用）
+ * @param {number|null} ts 毫秒时间戳，空值返回 ''
+ * @returns {string}
+ */
+export function formatTime(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+}

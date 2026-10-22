@@ -38,12 +38,20 @@ export default {
 
   /**
    * 商品详情（含 SKU 列表，供详情页规格选择器联动价格与库存）
-   * @param {{id:number}} params 商品 ID
+   * 支持两种定位方式：{ id } 商品 ID，或 { skuId }（结算页直购场景反查商品）
+   * @param {{id?:number, skuId?:number}} params
    * @returns {Object} 商品全量字段 + skuList
    * @throws {{code:number, msg:string}} 40401 商品不存在或已下架
    */
   'goods.detail'(params) {
-    const goods = db.goods.find((g) => g.id === Number(params.id))
+    let goods
+    if (params.skuId) {
+      // 直购场景：由 SKU 反查所属商品
+      const sku = db.skus.find((s) => s.id === Number(params.skuId))
+      goods = sku && db.goods.find((g) => g.id === sku.goodsId)
+    } else {
+      goods = db.goods.find((g) => g.id === Number(params.id))
+    }
     // 下架商品对详情页不可达（PRD §①规则 4：仅历史订单链接可达，mock 阶段直接拒绝）
     if (!goods || goods.status !== 1) {
       throw { code: 40401, msg: '商品不存在或已下架' }

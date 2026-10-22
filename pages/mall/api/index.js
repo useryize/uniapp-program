@@ -86,7 +86,16 @@ export const orderApi = {
    * USE_MOCK=false 后此通道废弃——真实支付走 uni.requestPayment，
    * 支付结果以服务端回调为唯一依据（PRD §7.3）
    */
-  mockPay: (params) => call('order.mockPay', '/order/mock-pay', params, 'POST')
+  mockPay: (params) => call('order.mockPay', '/order/mock-pay', params, 'POST'),
+
+  /**
+   * 【mock 专用】模拟后台发货：{ orderNo }（PAID -> SHIPPED，含模拟物流单号）
+   * 真实环境由管理后台发货接口替代（PRD 板块⑨）
+   */
+  mockShip: (params) => call('order.mockShip', '/order/mock-ship', params, 'POST'),
+
+  /** 确认收货：{ orderNo }（SHIPPED -> FINISHED 终态，PRD §6.2） */
+  confirm: (params) => call('order.confirm', '/order/confirm', params, 'POST')
 }
 
 /** 收货地址域（PRD 板块⑦） */

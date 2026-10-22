@@ -182,5 +182,39 @@ export default {
       if (sku) sku.locked -= i.quantity
     })
     return { orderNo: order.orderNo, paidAt: order.payTime }
+  },
+
+  /**
+   * 【mock 专用】模拟"后台发货"——真实环境由管理后台发货接口替代（PRD 板块⑨）
+   * PAID -> SHIPPED，写入发货时间与模拟物流单号
+   * @param {{orderNo:string}} params
+   * @throws 40403 订单不存在 / 40005 状态异常（仅已支付可发货，PRD §⑤规则 1）
+   */
+  'order.mockShip'(params) {
+    const order = db.orders.find((o) => o.orderNo === params.orderNo)
+    if (!order) throw { code: 40403, msg: '订单不存在' }
+    if (order.status !== ORDER_STATUS.PAID) throw { code: 40005, msg: '仅已支付订单可发货' }
+
+    order.status = ORDER_STATUS.SHIPPED
+    order.shipTime = Date.now()
+    // 模拟物流单号（真实环境：运营录入物流公司+单号，对接物流轨迹 API，PRD §10）
+    order.logistics = { company: '顺丰速运', no: nextId('SF') }
+    return { orderNo: order.orderNo, shipTime: order.shipTime, logistics: order.logistics }
+  },
+
+  /**
+   * 确认收货：SHIPPED -> FINISHED（终态），PRD §6.2
+   * 自动确认收货（发货后 N 天）未来由定时任务调用同一流转（技术审核 T3）
+   * @param {{orderNo:string}} params
+   * @throws 40403 订单不存在 / 40005 状态异常
+   */
+  'order.confirm'(params) {
+    const order = db.orders.find((o) => o.orderNo === params.orderNo)
+    if (!order) throw { code: 40403, msg: '订单不存在' }
+    if (order.status !== ORDER_STATUS.SHIPPED) throw { code: 40005, msg: '当前状态不可确认收货' }
+
+    order.status = ORDER_STATUS.FINISHED
+    order.finishTime = Date.now()
+    return { orderNo: order.orderNo, finishTime: order.finishTime }
   }
 }

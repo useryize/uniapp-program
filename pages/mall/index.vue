@@ -1,14 +1,12 @@
 <!--
   商城首页（pages/mall/index）
-  职责：验证商城数据层全链路（api -> mock/真实接口）
-  数据来源：api/index.js 的 goodsApi / cartApi，页面不感知 mock 与否
-  功能：商品分页列表 + 下拉刷新 + 触底加载 + 快捷加购（SKU 自动选择）
-  后续页面（搜索/详情/购物车/订单）按同一模式接入
+  职责：商品列表展示 + 分页 + 快捷加购（数据层全链路验证入口）
+  商品卡已组件化：components/goods-card.vue（搜索页复用）
 -->
 <template>
   <view class="mall-page">
-    <!-- 搜索栏：搜索页属 M1 后续交付，当前仅占位 -->
-    <view class="search-bar" @click="onSearchTap">
+    <!-- 搜索栏：点击进搜索页 -->
+    <view class="search-bar" @click="goSearch">
       <text class="search-icon">🔍</text>
       <text class="search-placeholder">搜索商品</text>
     </view>
@@ -20,31 +18,14 @@
 
     <!-- 商品双列网格 -->
     <view class="goods-grid">
-      <view
+      <goods-card
         v-for="goods in goodsList"
         :key="goods.id"
-        class="goods-card"
-        @click="goDetail(goods)"
-      >
-        <!-- 封面：mock 阶段 cover 为空，用占位色块；接真实接口后自动走图片 -->
-        <view class="cover" :style="{ backgroundColor: goods.color }">
-          <image v-if="goods.cover" class="cover-img" :src="goods.cover" mode="aspectFill" />
-          <text v-else class="cover-fallback">{{ goods.title.slice(0, 1) }}</text>
-        </view>
-
-        <view class="info">
-          <text class="title">{{ goods.title }}</text>
-          <text class="desc">{{ goods.description }}</text>
-          <view class="price-row">
-            <text class="price">¥{{ fen2yuan(goods.minPrice) }}</text>
-            <text class="origin-price">¥{{ fen2yuan(goods.originPrice) }}</text>
-          </view>
-          <view class="bottom-row">
-            <text class="sales">已售 {{ goods.sales }}</text>
-            <view class="add-cart-btn" @click.stop="onAddCart(goods)">加购</view>
-          </view>
-        </view>
-      </view>
+        class="goods-cell"
+        :goods="goods"
+        @tap="goDetail"
+        @add="onAddCart"
+      />
     </view>
 
     <!-- 加载状态：加载中 / 没有更多 -->
@@ -59,7 +40,7 @@
 import { ref, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { goodsApi, cartApi } from './api/index.js'
-import { fen2yuan } from './utils/format.js'
+import GoodsCard from './components/goods-card.vue'
 
 /** 商品列表数据源 */
 const goodsList = ref([])
@@ -104,7 +85,7 @@ async function loadGoods(reset = false) {
 
 /**
  * 快捷加购（列表页场景）：不传 skuId，服务端自动选择有库存 SKU
- * 库存校验在服务端（mock handler）完成，前端只处理成功/失败反馈
+ * 库存校验在服务端完成，前端只处理成功/失败反馈
  */
 async function onAddCart(goods) {
   try {
@@ -115,14 +96,14 @@ async function onAddCart(goods) {
   }
 }
 
-/** 进入商品详情（详情页 M1 后续交付，当前提示） */
+/** 进入商品详情 */
 function goDetail(goods) {
-  uni.showToast({ title: '详情页待 M1 交付', icon: 'none' })
+  uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 
-/** 搜索入口（搜索页 M1 后续交付，当前提示） */
-function onSearchTap() {
-  uni.showToast({ title: '搜索页待 M1 交付', icon: 'none' })
+/** 进搜索页 */
+function goSearch() {
+  uni.navigateTo({ url: '/pages/mall/search/index' })
 }
 
 // 生命周期：首次进入 / 下拉刷新 / 触底加载
@@ -169,98 +150,23 @@ onReachBottom(() => loadGoods(false))
   color: #ffffff;
 }
 
+/*
+ * 两列网格（小程序兼容写法）：
+ * - <goods-card> 编译后产生宿主节点，宽度 class 必须作用在宿主上（.goods-cell）
+ * - 固定 rpx 摆脱 calc 精度：750 - 左右边距48 - 列间距20 = 682，每卡 341rpx
+ * - space-between 保证两列对齐，不依赖 flex gap（低版本基础库不支持）
+ */
 .goods-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  justify-content: space-between;
   padding: 0 24rpx;
 }
 
-.goods-card {
-  width: calc((100% - 20rpx) / 2);
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  overflow: hidden;
-}
-
-.cover {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 320rpx;
-}
-
-.cover-img {
-  width: 100%;
-  height: 100%;
-}
-
-.cover-fallback {
-  font-size: 72rpx;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.info {
-  padding: 16rpx 20rpx 20rpx;
-}
-
-.title {
+.goods-cell {
   display: block;
-  font-size: 28rpx;
-  color: #222222;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.desc {
-  display: block;
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #999999;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12rpx;
-  margin-top: 12rpx;
-}
-
-.price {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #e24b4a;
-}
-
-.origin-price {
-  font-size: 22rpx;
-  color: #bbbbbb;
-  text-decoration: line-through;
-}
-
-.bottom-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 12rpx;
-}
-
-.sales {
-  font-size: 22rpx;
-  color: #999999;
-}
-
-.add-cart-btn {
-  padding: 8rpx 28rpx;
-  font-size: 24rpx;
-  color: #ffffff;
-  background-color: #e24b4a;
-  border-radius: 28rpx;
+  width: 341rpx;
+  margin-bottom: 20rpx;
 }
 
 .load-tip {
