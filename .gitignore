@@ -28,3 +28,5 @@ project.config.json
 unpackage/dist
 resources
 cache
+# 临时调试产物（不纳入版本管理）
+.workbuddy/tmp/

@@ -1,4 +1,7 @@
-// 补齐 Node ESM 对无扩展名相对导入的解析（uni-app 由 vite 负责，此处仅供 Node 直跑冒烟测试）
+/**
+ * Node ESM resolver 垫片（配合 reg.mjs 使用）
+ * 为无扩展名的相对导入补上 .js 后缀
+ */
 export async function resolve(specifier, context, next) {
   try {
     return await next(specifier, context)

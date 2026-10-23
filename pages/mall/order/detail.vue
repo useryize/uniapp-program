@@ -290,12 +290,11 @@ function onConfirm() {
   color: $rz-white;
 }
 
-/* ---- 卡片 ---- */
+/* ---- 卡片：通栏无边框 ---- */
 .card {
   background-color: $rz-white;
-  border: 4rpx solid $rz-ink;
-  margin: 20rpx 24rpx 0;
-  padding: 24rpx;
+  margin: 20rpx 0 0;
+  padding: 24rpx $rz-page-pad;
 }
 
 .address-card {

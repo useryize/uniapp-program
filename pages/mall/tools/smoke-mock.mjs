@@ -3,12 +3,12 @@
  * 运行：node .workbuddy/tmp/smoke-mock.mjs
  * 说明：mock 引擎依赖 uni 全局（无），此脚本直接调用 handler，绕过延迟层
  */
-import goods from '../../pages/mall/mock/handlers/goods.js'
-import size from '../../pages/mall/mock/handlers/size.js'
-import drop from '../../pages/mall/mock/handlers/drop.js'
-import cart from '../../pages/mall/mock/handlers/cart.js'
-import order from '../../pages/mall/mock/handlers/order.js'
-import { db, CATEGORIES } from '../../pages/mall/mock/db.js'
+import goods from '../mock/handlers/goods.js'
+import size from '../mock/handlers/size.js'
+import drop from '../mock/handlers/drop.js'
+import cart from '../mock/handlers/cart.js'
+import order from '../mock/handlers/order.js'
+import { db, CATEGORIES } from '../mock/db.js'
 
 let pass = 0
 let fail = 0

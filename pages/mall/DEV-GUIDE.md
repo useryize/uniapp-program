@@ -108,29 +108,52 @@ cartApi.updateSku({ id, skuId, quantity })  // 购物车改规格
 
 ## 六、验证方式
 
-项目未安装 uni-app 依赖（`node_modules` 不在仓库内），无法跑官方构建。已用四层校验替代：
+项目未安装 uni-app 依赖（`node_modules` 不在仓库内），无法跑官方构建。已用六层校验替代：
 
 ```bash
-# 1. SFC 编译（template / script setup / SCSS 令牌注入）
-npm i --no-save @vue/compiler-sfc sass
-node .workbuddy/tmp/check-vue.mjs          # 15/15 通过
+npm i                      # 装 devDependencies（@vue/compiler-sfc + sass）
 
-# 2. 数据层冒烟（新增域 + 交易链路 + 错误码边界）
-node --import ./.workbuddy/tmp/register.mjs .workbuddy/tmp/smoke-mock.mjs   # 19/19 通过
-
-# 3. 路由可达性（未注册页面 / tabBar 页误用 navigateTo）
-node .workbuddy/tmp/check-routes.mjs        # 23 处跳转，0 问题
-
-# 4. 设计稿规则覆盖（8 条规则 33 个检查点）
-node .workbuddy/tmp/check-design-rules.mjs  # 33/33 通过
+node pages/mall/tools/check-alignment.mjs     # 高保真对齐断言  66/66
+node pages/mall/tools/audit-style.mjs         # 样式 token 审计  0 偏差
+node pages/mall/tools/check-routes.mjs        # 路由可达性      0 问题
+node pages/mall/tools/check-design-rules.mjs  # 设计稿规则覆盖  33/33
+node pages/mall/tools/check-vue.mjs           # SFC 编译校验    15/15
+node --import ./pages/mall/tools/reg.mjs \
+     pages/mall/tools/smoke-mock.mjs          # 数据层冒烟      19/19
 ```
 
-> 校验脚本在 `.workbuddy/tmp/`（未纳入版本管理），`node_modules` 已清理。
-> **真机/模拟器效果仍需在 HBuilderX 或微信开发者工具中运行确认**，本次只做了静态与逻辑层验证。
+工具位于 `pages/mall/tools/`，可重复执行。`reg.mjs` + `loader.mjs` 是 Node ESM 垫片
+（项目源码用 vite 风格的无扩展名导入，Node 直跑 mock handler 时需要）。
+
+> ⚠️ **真机/模拟器效果仍需在 HBuilderX 或微信开发者工具中运行确认**。
+> 尝试过用 CLI 起 H5 预览做像素级比对，但 uni-app 3.x alpha 与本项目的老结构
+> （HBuilderX 5.33 时代的 manifest + 根目录布局）不兼容：SSR 编译卡在
+> "Compiling..."，CSR 模式挂不上，`vite build` 也超时。HBuilderX 打开不受影响。
 
 ---
 
-## 七、遗留与待确认
+## 七、样式对齐基线（高保真 ↔ 代码）
+
+对齐断言的基准取自 `pages/mall/design/screens/*.png`，核心规则：
+
+| 规则 | 说明 |
+|---|---|
+| **页面区块通栏无边框** | `.panel` / `.card` / `.goods-block` 等页面级区块**不加** 2px 描边，靠背景色与留白分段 |
+| **交互元素才有硬描边** | 按钮、商品卡、输入框、选项块、订单卡用 `4rpx solid #0A0A0A` |
+| **Hero 图文分离** | 图片与标题文案是两个独立区块，标题在图下方的黑底区，不叠在图上 |
+| **商品卡角标在图下** | 独立成行（黑底黄字），不叠在图片左上角 |
+| **封面 1:1** | 高度由调用方按卡宽传入（`cover-height` prop） |
+| **底部按钮竖排全宽** | 详情页底部 = 规格条 + 加购（全宽白底黑框）+ 立即购买（全宽黄底黑框） |
+| **分类页类目栏白底** | 选中项为黑块黄字，类目之间无分隔线 |
+| **个人中心面板连续** | 「我的订单」与「功能宫格」两块白底相连，功能宫格 4 列 |
+| **发售日历三态配色** | 待售黄 / 在售红 / 已售灰 |
+
+审计脚本 `audit-style.mjs` 会对硬编码色值、非 0 圆角、描边宽度、字号体系、
+左右边距做全量扫描，合法例外（分隔线、图形描边、mock 占位首字）已在脚本内注明。
+
+---
+
+## 八、遗留与待确认
 
 | 项 | 说明 |
 |---|---|

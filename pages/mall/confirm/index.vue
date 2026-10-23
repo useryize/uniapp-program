@@ -206,10 +206,10 @@ async function onSubmit() {
 .confirm {
   min-height: 100vh;
   background-color: $rz-grey-50;
-  padding: 20rpx 24rpx 180rpx;
+  padding: 0 0 180rpx;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 0;
 }
 
 /* ---- 地址卡 ---- */
@@ -390,14 +390,14 @@ async function onSubmit() {
   font-size: 24rpx;
 }
 
-/* ---- 金额明细 ---- */
+/* ---- 金额明细：通栏无边框 ---- */
 .amount-block {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
-  padding: 26rpx 24rpx;
+  padding: 26rpx $rz-page-pad;
   background-color: $rz-white;
-  border: 4rpx solid $rz-ink;
+  margin-top: 20rpx;
 }
 
 .amount-row {
