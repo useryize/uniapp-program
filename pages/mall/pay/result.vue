@@ -9,35 +9,78 @@
   支付结果以服务端回调为唯一依据，此处仅 mock 阶段模拟回调行为）
 -->
 <template>
-  <view class="result-page" v-if="order">
+  <view class="result" v-if="order">
     <!-- 待支付态 -->
     <template v-if="viewState === 'pending'">
-      <view class="state-icon pending-icon">💰</view>
+      <view class="state-icon pending-icon">
+        <image class="state-icon-img" src="/static/mall/icons/clock.png" mode="aspectFit" />
+      </view>
       <text class="state-title">订单已提交</text>
       <text class="state-amount">应付 ¥{{ fen2yuan(order.payAmount) }}</text>
       <text class="state-tip">请在 {{ expireText }} 前完成支付，超时订单将自动关闭</text>
-      <view class="btn-primary" @click="onMockPay">
-        <text>{{ paying ? '支付中...' : '模拟支付' }}</text>
+      <view class="info-card">
+        <view class="info-row">
+          <text class="info-label">订单号</text>
+          <text class="info-value">{{ order.orderNo }}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">支付方式</text>
+          <text class="info-value">微信支付</text>
+        </view>
       </view>
-      <view class="btn-plain" @click="goOrderList"><text>取消，稍后支付</text></view>
+      <view class="btn btn-primary" @click="onMockPay">
+        <text class="btn-text">{{ paying ? '支付中...' : '模拟支付' }}</text>
+      </view>
+      <view class="btn btn-ghost" @click="goOrderList">
+        <text class="btn-text">取消，稍后支付</text>
+      </view>
     </template>
 
     <!-- 支付成功态 -->
     <template v-else-if="viewState === 'success'">
-      <view class="state-icon success-icon">✅</view>
+      <view class="state-icon success-icon">
+        <image class="state-icon-img" src="/static/mall/icons/check.png" mode="aspectFit" />
+      </view>
       <text class="state-title">支付成功</text>
       <text class="state-amount">¥{{ fen2yuan(order.payAmount) }}</text>
       <text class="state-tip">商家将尽快为您发货</text>
-      <view class="btn-primary" @click="goOrderDetail"><text>查看订单</text></view>
-      <view class="btn-plain" @click="goOrderList"><text>返回订单列表</text></view>
+      <view class="info-card">
+        <view class="info-row">
+          <text class="info-label">订单号</text>
+          <text class="info-value">{{ order.orderNo }}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">支付时间</text>
+          <text class="info-value">{{ payTimeText }}</text>
+        </view>
+      </view>
+      <view class="btn btn-primary" @click="goOrderDetail">
+        <text class="btn-text">查看订单</text>
+      </view>
+      <view class="btn btn-ghost" @click="goOrderList">
+        <text class="btn-text">继续逛逛</text>
+      </view>
     </template>
 
     <!-- 支付异常态（含超时竞态固定文案，PRD §7.3 规则 3） -->
     <template v-else>
-      <view class="state-icon error-icon">⚠️</view>
-      <text class="state-title">无法完成支付</text>
+      <view class="state-icon error-icon">
+        <view class="error-mark"><text class="error-mark-text">!</text></view>
+      </view>
+      <text class="state-title">订单已超时关闭</text>
       <text class="state-tip error-tip">{{ errorTip }}</text>
-      <view class="btn-primary" @click="goOrderList"><text>返回订单列表</text></view>
+      <view class="info-card">
+        <view class="info-row">
+          <text class="info-label">订单号</text>
+          <text class="info-value">{{ order.orderNo || '—' }}</text>
+        </view>
+      </view>
+      <view class="btn btn-primary" @click="goOrderList">
+        <text class="btn-text">返回订单列表</text>
+      </view>
+      <view class="btn btn-ghost" @click="goHome">
+        <text class="btn-text">重新下单</text>
+      </view>
     </template>
   </view>
 </template>
@@ -63,6 +106,9 @@ let orderNo = ''
 const expireText = computed(() =>
   order.value && order.value.payExpireAt ? formatTime(order.value.payExpireAt) : '15 分钟内'
 )
+
+/** 支付时间文案 */
+const payTimeText = computed(() => (order.value && order.value.payTime ? formatTime(order.value.payTime) : '—'))
 
 /**
  * 页面加载：以服务端订单状态初始化页面形态
@@ -103,7 +149,7 @@ async function onMockPay() {
   } catch (e) {
     if (e.code === 40006) {
       viewState.value = 'error'
-      errorTip.value = '订单已超时关闭，支付金额将自动原路退回'
+      errorTip.value = '支付金额将自动原路退回\n如已完成扣款，1-3 个工作日到账'
     } else {
       uni.showToast({ title: e.msg || '支付失败', icon: 'none' })
       await loadOrder()
@@ -120,71 +166,139 @@ function goOrderDetail() {
 function goOrderList() {
   uni.redirectTo({ url: '/pages/mall/order/list' })
 }
+
+function goHome() {
+  uni.switchTab({ url: '/pages/mall/index' })
+}
 </script>
 
 <style scoped>
-.result-page {
+.result {
   min-height: 100vh;
-  background-color: #f5f6f8;
+  background-color: $rz-white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120rpx 48rpx 0;
+  padding: 140rpx 48rpx 60rpx;
 }
 
 .state-icon {
-  font-size: 120rpx;
-  margin-bottom: 32rpx;
+  width: 176rpx;
+  height: 176rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+
+.success-icon {
+  background-color: $rz-acid;
+}
+
+.pending-icon {
+  background-color: $rz-grey-100;
+}
+
+.error-icon {
+  background-color: $rz-danger-bg;
+}
+
+.state-icon-img {
+  width: 88rpx;
+  height: 88rpx;
+}
+
+.error-mark {
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 8rpx solid $rz-price;
+  border-radius: 44rpx;
+}
+
+.error-mark-text {
+  font-size: 56rpx;
+  font-weight: 900;
+  color: $rz-price;
+  line-height: 1;
 }
 
 .state-title {
-  font-size: 40rpx;
-  font-weight: 500;
-  color: #222222;
-  margin-bottom: 20rpx;
+  font-size: 48rpx;
+  font-weight: 900;
+  color: $rz-ink;
+  text-align: center;
 }
 
 .state-amount {
-  font-size: 52rpx;
-  color: #e24b4a;
-  font-weight: 500;
-  margin-bottom: 16rpx;
+  margin-top: 20rpx;
+  font-size: 76rpx;
+  font-weight: 900;
+  color: $rz-price;
 }
 
 .state-tip {
+  margin-top: 16rpx;
   font-size: 26rpx;
-  color: #999999;
-  margin-bottom: 64rpx;
+  color: $rz-grey-500;
   text-align: center;
   line-height: 1.6;
 }
 
 .error-tip {
-  color: #e24b4a;
+  color: $rz-danger;
+}
+
+/* ---- 订单信息卡 ---- */
+.info-card {
+  width: 100%;
+  margin: 48rpx 0 40rpx;
+  padding: 8rpx 28rpx;
+  background-color: $rz-grey-50;
+  border: 2rpx solid $rz-line;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76rpx;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: $rz-grey-500;
+}
+
+.info-value {
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+/* ---- 按钮 ---- */
+.btn {
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  border: 4rpx solid $rz-ink;
 }
 
 .btn-primary {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 26rpx 0;
-  background-color: #e24b4a;
-  border-radius: 48rpx;
-  color: #ffffff;
-  font-size: 30rpx;
-  margin-bottom: 24rpx;
+  background-color: $rz-acid;
 }
 
-.btn-plain {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 26rpx 0;
-  border: 1rpx solid #dddddd;
-  border-radius: 48rpx;
-  color: #666666;
+.btn-ghost {
+  background-color: $rz-white;
+}
+
+.btn-text {
   font-size: 30rpx;
+  font-weight: 900;
+  color: $rz-ink;
 }
 </style>

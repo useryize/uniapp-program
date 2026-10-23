@@ -10,7 +10,13 @@
  *    - stock  可售库存：正常可下单
  *    - locked 锁定库存：已下单待付款（15 分钟内），支付后转实扣，超时释放
  * 4. 数据仅存运行期内存：小程序热重载/重启即重置（mock 的期望行为）。
- *    如联调时需要保持状态，可自行挂 uni.setStorageSync，默认保持纯净。
+ *    如需联调时保持状态，可自行挂 uni.setStorageSync，默认保持纯净。
+ *
+ * 【服装电商改造 · 2026-10-23】
+ * 相对通用商城版本，模型做了三处扩展，支撑「尺码决策 + 发售机制」双主线：
+ *   - SPU 增加 colors（颜色维度）/ sizes（尺码维度）/ sizeChart（尺码表）
+ *   - SKU 由「SPU × 颜色 × 尺码」笛卡尔积派生，id = goodsId*1000 + 色序*100 + 码序
+ *   - 增加 drops（发售日历），承载限量款「即将发售/正在发售/已售罄」三态
  */
 
 import { MALL_CONFIG } from '../config'
@@ -41,49 +47,213 @@ export function nextId(prefix) {
 }
 
 /**
- * 商品 SPU 种子数据
+ * 类目树（服装）：一级类目 → 二级类目
+ * 分类页左侧栏渲染一级类目，右侧商品网格按当前一级类目过滤
+ */
+export const CATEGORIES = [
+  { id: 0, name: '全部', icon: 'grid' },
+  { id: 10, name: '上装', icon: 'tee', children: [{ id: 11, name: '卫衣' }, { id: 12, name: 'T恤' }, { id: 13, name: '衬衫' }] },
+  { id: 20, name: '下装', icon: 'pants', children: [{ id: 21, name: '工装裤' }, { id: 22, name: '牛仔裤' }] },
+  { id: 30, name: '外套', icon: 'coat', children: [{ id: 31, name: '牛仔外套' }, { id: 32, name: '教练夹克' }] },
+  { id: 40, name: '鞋履', icon: 'shoe', children: [{ id: 41, name: '运动鞋' }] },
+  { id: 50, name: '配件', icon: 'cap', children: [{ id: 51, name: '帽子' }, { id: 52, name: '包袋' }] }
+]
+
+/**
+ * 通用尺码表（服装类目共用一份，mock 阶段不按品牌差异化）
+ * 身高/体重单位 cm / kg，胸围单位 cm
+ */
+const SIZE_CHART = {
+  unit: 'cm',
+  rows: [
+    { size: 'S',  height: '170', weight: '58-66', chest: '96' },
+    { size: 'M',  height: '175', weight: '66-75', chest: '100' },
+    { size: 'L',  height: '180', weight: '75-85', chest: '104' },
+    { size: 'XL', height: '185', weight: '85-95', chest: '108' },
+    { size: 'XXL', height: '190', weight: '95-105', chest: '112' }
+  ]
+}
+
+/**
+ * 商品 SPU 种子数据（服装）
  * @property {number}   id          商品 ID
  * @property {string}   title       标题
- * @property {number}   categoryId  类目：1 数码配件 / 2 家居生活 / 3 服饰箱包
+ * @property {number}   categoryId  类目（见 CATEGORIES）
  * @property {number}   originPrice 划线价（分），仅展示不可下单（PRD §①规则 2）
  * @property {number}   sales       销量
  * @property {string}   color       占位色块背景（mock 专用，真实接口无此字段）
  * @property {string}   description 一句话卖点
  * @property {number}   status      0 草稿 / 1 上架 / 2 下架（PRD §①）
- * @property {string}   cover       封面图（mock 恒空，接接口后走 CDN）
+ * @property {string}   cover       封面图（static/mall 内绝对路径）
+ * @property {Array}    colors      颜色维度 [{ id, name, hex }]
+ * @property {Array}    sizes       尺码维度
  */
 const goodsSeed = [
-  { id: 1, title: '无线降噪蓝牙耳机', categoryId: 1, originPrice: 29900, sales: 1523, color: '#378ADD', description: '主动降噪 · 40h 续航', status: 1 },
-  { id: 2, title: '机械键盘 87键', categoryId: 1, originPrice: 39900, sales: 866, color: '#534AB7', description: '热插拔轴体 · 全键无冲', status: 1 },
-  { id: 3, title: '智能保温杯 500ml', categoryId: 2, originPrice: 9900, sales: 3210, color: '#1D9E75', description: '316不锈钢 · 温度显屏', status: 1 },
-  { id: 4, title: '香薰蜡烛礼盒', categoryId: 2, originPrice: 12800, sales: 542, color: '#D4537E', description: '大豆蜡 · 45h 燃烧', status: 1 },
-  { id: 5, title: '纯棉T恤基础款', categoryId: 3, originPrice: 9900, sales: 8891, color: '#854F0B', description: '270g 重磅 · 不透不变形', status: 1 },
-  { id: 6, title: '双肩背包 15.6寸', categoryId: 3, originPrice: 15900, sales: 1204, color: '#993C1D', description: '防泼水 · 独立电脑仓', status: 1 },
-  { id: 7, title: '桌面加湿器', categoryId: 2, originPrice: 8900, sales: 2345, color: '#185FA5', description: '静音雾化 · 3L 大容量', status: 1 },
-  { id: 8, title: '铝合金手机支架', categoryId: 1, originPrice: 4900, sales: 6720, color: '#5F5E5A', description: '可折叠 · 双轴调节', status: 1 }
+  {
+    id: 1,
+    title: '落肩宽松连帽卫衣 STREET KING 印花',
+    categoryId: 11,
+    originPrice: 29900,
+    sales: 12000,
+    color: '#0A0A0A',
+    description: '270g 重磅纯棉 · 落肩剪裁',
+    status: 1,
+    cover: '/static/mall/hoodie.jpg',
+    colors: [
+      { id: 1, name: '黑色', hex: '#0A0A0A' },
+      { id: 2, name: '白色', hex: '#FFFFFF' },
+      { id: 3, name: '灰色', hex: '#8C8C8C' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL']
+  },
+  {
+    id: 2,
+    title: '重磅纯棉印花短袖 P3A',
+    categoryId: 12,
+    originPrice: 12900,
+    sales: 36000,
+    color: '#F2F2F2',
+    description: '270g 厚磅 · 不透不变形',
+    status: 1,
+    cover: '/static/mall/tee.jpg',
+    colors: [
+      { id: 1, name: '白色', hex: '#FFFFFF' },
+      { id: 2, name: '黑色', hex: '#0A0A0A' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL']
+  },
+  {
+    id: 3,
+    title: '机能工装束脚裤 CARGO',
+    categoryId: 21,
+    originPrice: 35900,
+    sales: 3400,
+    color: '#3A3A3A',
+    description: '多口袋 · 抽绳束脚',
+    status: 1,
+    cover: '/static/mall/cargo.jpg',
+    colors: [
+      { id: 1, name: '黑色', hex: '#0A0A0A' },
+      { id: 2, name: '军绿', hex: '#4A4A32' }
+    ],
+    sizes: ['M', 'L', 'XL', 'XXL']
+  },
+  {
+    id: 4,
+    title: '水洗做旧牛仔外套 DENIM',
+    categoryId: 31,
+    originPrice: 49900,
+    sales: 2400,
+    color: '#4A6B8A',
+    description: '落肩廓形 · 复古水洗',
+    status: 1,
+    cover: '/static/mall/denim.jpg',
+    colors: [
+      { id: 1, name: '蓝色', hex: '#4A6B8A' },
+      { id: 2, name: '浅蓝', hex: '#8AA8C4' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL']
+  },
+  {
+    id: 5,
+    title: '复古厚底运动鞋 RETRO',
+    categoryId: 41,
+    originPrice: 59900,
+    sales: 5600,
+    color: '#D9D5CC',
+    description: '增高厚底 · 皮革拼色',
+    status: 1,
+    cover: '/static/mall/sneaker.jpg',
+    colors: [
+      { id: 1, name: '米白', hex: '#D9D5CC' },
+      { id: 2, name: '黑色', hex: '#0A0A0A' }
+    ],
+    sizes: ['39', '40', '41', '42', '43']
+  },
+  {
+    id: 6,
+    title: 'RAWZONE × 涂鸦艺术家联名卫衣',
+    categoryId: 11,
+    originPrice: 39900,
+    sales: 412,
+    color: '#FFD500',
+    description: '限量 500 件 · 涂鸦艺术家联名',
+    status: 1,
+    cover: '/static/mall/lookbook.jpg',
+    colors: [{ id: 1, name: '黑色', hex: '#0A0A0A' }],
+    sizes: ['M', 'L', 'XL']
+  },
+  {
+    id: 7,
+    title: '街头廓形教练夹克 VARSITY',
+    categoryId: 32,
+    originPrice: 45900,
+    sales: 1800,
+    color: '#1F3A5F',
+    description: '字母织标 · 撞色袖条',
+    status: 1,
+    cover: '/static/mall/hoodie.jpg',
+    colors: [
+      { id: 1, name: '藏蓝', hex: '#1F3A5F' },
+      { id: 2, name: '黑色', hex: '#0A0A0A' }
+    ],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL']
+  },
+  {
+    id: 8,
+    title: '联名款工装裤（已下架）',
+    categoryId: 21,
+    originPrice: 32900,
+    sales: 890,
+    color: '#4A4A32',
+    description: '联名限定 · 已售罄',
+    status: 2,
+    cover: '/static/mall/cargo.jpg',
+    colors: [{ id: 1, name: '军绿', hex: '#4A4A32' }],
+    sizes: ['M', 'L']
+  }
 ]
 
 /**
- * mock 数据库（单一数据源，所有 handler 共享读写）
- * @property {Array} goods     商品 SPU 列表
- * @property {Array} skus      SKU 列表（最小可售单位，PRD §①）
- * @property {Array} cart      购物车项（服务端存储，跨设备同步，PRD §5.5）
- * @property {Array} orders    订单列表（含快照，PRD §7.1 规则 3）
- * @property {Array} addresses 收货地址列表
+ * 构造某商品的 SKU 列表：颜色 × 尺码 笛卡尔积
+ * 库存按 (goodsId + 颜色 + 尺码) 稳定散列生成，保证每次启动 mock 库存一致
+ * 约定：每个尺码序列的末位（XXL / 43）刻意置 0 库存，用于演示「售罄保留展示」
+ * @param {Object} goods 商品 SPU
+ * @returns {Array<Object>} SKU 列表
  */
-export const db = {
-  goods: goodsSeed.map((g) => ({ ...g, cover: '' })),
+function buildSkus(goods) {
+  const list = []
+  goods.colors.forEach((c, ci) => {
+    goods.sizes.forEach((size, si) => {
+      const seed = (goods.id * 97 + c.id * 13 + si * 7) % 20
+      const isTailSize = si >= goods.sizes.length - 1
+      const stock = isTailSize ? 0 : Math.max(3, seed)
+      list.push({
+        id: goods.id * 1000 + (ci + 1) * 100 + (si + 1),
+        goodsId: goods.id,
+        colorId: c.id,
+        colorName: c.name,
+        colorHex: c.hex,
+        size,
+        spec: `${c.name} / ${size}`,
+        price: Math.round(goods.originPrice * 0.6),
+        stock,
+        locked: 0
+      })
+    })
+  })
+  return list
+}
 
-  /**
-   * SKU 由 SPU 派生：每个商品两个规格
-   * @property {number} id     SKU ID（goodsId*10+n，保证稳定可被订单快照引用）
-   * @property {number} stock  可售库存（分），条件扣减原子性见 order.create
-   * @property {number} locked 锁定库存：下单转锁定，支付实扣，取消/超时释放
-   */
-  skus: goodsSeed.flatMap((g) => [
-    { id: g.id * 10 + 1, goodsId: g.id, spec: '标准版', price: Math.round(g.originPrice * 0.6), stock: 50, locked: 0 },
-    { id: g.id * 10 + 2, goodsId: g.id, spec: '升级版', price: Math.round(g.originPrice * 0.8), stock: 20, locked: 0 }
-  ]),
+export const db = {
+  goods: goodsSeed.map((g) => ({
+    ...g,
+    images: [g.cover],
+    sizeChart: SIZE_CHART
+  })),
+
+  /** SKU：由 SPU × 颜色 × 尺码 派生 */
+  skus: goodsSeed.flatMap(buildSkus),
 
   cart: [],
 
@@ -93,5 +263,58 @@ export const db = {
   addresses: [
     { id: 1, receiver: '张三', phone: '13812348000', region: '天津市 和平区', detail: '南京路 100 号 3-501', isDefault: true },
     { id: 2, receiver: '李四', phone: '18687654321', region: '北京市 朝阳区', detail: '望京 SOHO T1 座 2201', isDefault: false }
-  ]
+  ],
+
+  /**
+   * 发售日历（潮牌限量款三态）
+   * - type: 'soon'    即将发售 → 倒计时 + 订阅提醒
+   * - type: 'live'    正在发售 → 剩余库存 + 抢购
+   * - type: 'soldout' 已售罄 → 到货提醒
+   * @property {number} goodsId 关联商品
+   * @property {string} type    状态
+   * @property {number} startAt 发售时间戳
+   * @property {number} endAt   结束时间戳
+   * @property {number} limit   限量总数
+   * @property {number} sold    已售数量
+   */
+  drops: [
+    {
+      id: 'D1',
+      goodsId: 1,
+      type: 'soon',
+      title: 'STREET KING 2 · 黑白熊猫联名',
+      startAt: Date.now() + 2 * 24 * 3600 * 1000 + 10 * 3600 * 1000,
+      endAt: Date.now() + 3 * 24 * 3600 * 1000,
+      limit: 800,
+      sold: 0
+    },
+    {
+      id: 'D2',
+      goodsId: 6,
+      type: 'live',
+      title: 'RAWZONE × 涂鸦艺术家联名卫衣',
+      startAt: Date.now() - 3600 * 1000,
+      endAt: Date.now() + 2 * 3600 * 1000,
+      limit: 500,
+      sold: 412
+    },
+    {
+      id: 'D3',
+      goodsId: 2,
+      type: 'soldout',
+      title: '重磅纯棉印花短袖 P3A',
+      startAt: Date.now() - 5 * 24 * 3600 * 1000,
+      endAt: Date.now() - 4 * 24 * 3600 * 1000,
+      limit: 300,
+      sold: 300
+    }
+  ],
+
+  /** 用户尺码档案（mock 阶段存内存；真实环境随用户表持久化） */
+  sizeProfile: {
+    height: 175,
+    weight: 68,
+    fit: 'A',        // Y 偏瘦 / A 标准 / B 偏胖
+    updatedAt: Date.now()
+  }
 }

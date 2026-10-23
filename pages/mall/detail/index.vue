@@ -1,105 +1,170 @@
 <!--
   商品详情页（pages/mall/detail/index?id={goodsId}）
   交互规格：docs/交互规格说明书-商城M1-M2.md §P1
-  核心：SKU 选择弹层（规格切换联动价格/库存，售罄禁用，PRD §①规则 4）
-  数据来源：goodsApi.detail / cartApi.add / orderApi.create（直购在结算页提交）
+  服装电商要点（对齐设计稿「尺码决策链」）：
+    - 售罄尺码【保留展示】并置灰划线，不隐藏（稀缺性需要被看见）
+    - 尺码推荐条 + 尺码助手入口常驻价格区下方
+    - 规格入口【悬浮吸底】，下滑时始终可见，避免回滚找尺码
+    - 规格面板为可滑动大面板，底部双按钮：加购 + 立即购买
+  数据：goodsApi.detail / sizeApi.profile / sizeApi.recommend / cartApi.add
 -->
 <template>
-  <view class="detail-page" v-if="goods">
-    <!-- 图集轮播：mock 阶段单张色块占位，接真实接口后为图集 -->
-    <swiper class="banner-swiper" indicator-dots circular>
-      <swiper-item>
-        <view class="banner-cover" :style="{ backgroundColor: goods.color }">
-          <image v-if="goods.cover" class="banner-img" :src="goods.cover" mode="aspectFill" />
-          <text v-else class="banner-fallback">{{ goods.title.slice(0, 1) }}</text>
+  <view class="detail">
+    <!-- 图集轮播 -->
+    <swiper class="gallery" indicator-dots circular>
+      <swiper-item v-for="(img, i) in images" :key="i">
+        <view class="gallery-cover" :style="{ backgroundColor: goods.color }">
+          <image v-if="img" class="gallery-img" :src="img" mode="aspectFill" />
+          <text v-else class="gallery-fallback">{{ goods.title.slice(0, 1) }}</text>
         </view>
       </swiper-item>
     </swiper>
 
-    <!-- 价格区：仅展示服务端返回值 -->
-    <view class="price-block">
-      <view class="price-row">
-        <text class="price">¥{{ fen2yuan(currentPrice) }}</text>
-        <text class="origin-price">¥{{ fen2yuan(goods.originPrice) }}</text>
+    <view class="detail-body">
+      <!-- 价格区 -->
+      <view class="price-block">
+        <view class="price-row">
+          <text class="price">¥{{ fen2yuan(currentPrice) }}</text>
+          <text class="origin-price">¥{{ fen2yuan(goods.originPrice) }}</text>
+          <view class="discount"><text class="discount-text">限时 {{ discountRate }} 折</text></view>
+        </view>
+        <view class="meta-row">
+          <text class="meta-text">已售 {{ salesText }}</text>
+          <text class="meta-stock">{{ stockHint }}</text>
+        </view>
+
+        <!-- 尺码推荐条 -->
+        <view class="rec-bar" @click="goSizeGuide">
+          <view class="rec-icon"><image class="rec-img" src="/static/mall/icons/ruler.png" mode="aspectFit" /></view>
+          <text class="rec-text">{{ recommendText }}</text>
+          <text class="rec-link">尺码助手 ></text>
+        </view>
       </view>
-      <text class="sales">已售 {{ goods.sales }}</text>
+
+      <!-- 标题与卖点 -->
+      <view class="title-block">
+        <text class="title">{{ goods.title }}</text>
+        <text class="desc">{{ goods.description }}  ·  满 99 包邮  ·  7 天无理由退换</text>
+      </view>
+
+      <!-- 规格选择区 -->
+      <view class="spec-block">
+        <view class="spec-row">
+          <text class="spec-label">颜色</text>
+          <text class="spec-value">{{ selectedColorName || '请选择' }}</text>
+        </view>
+        <view class="spec-row">
+          <text class="spec-label">尺码</text>
+          <text class="spec-value">{{ selectedSize ? selectedSize : '请选择' }}</text>
+        </view>
+        <size-picker
+          :goods="goods"
+          :color-id="colorId"
+          :size="selectedSize"
+          @change="onSizeChange"
+        />
+      </view>
+
+      <!-- 服务保障 -->
+      <view class="svc-block">
+        <view class="svc-item">
+          <image class="svc-img" src="/static/mall/icons/truck.png" mode="aspectFit" />
+          <text class="svc-text">满99包邮</text>
+        </view>
+        <view class="svc-item">
+          <image class="svc-img" src="/static/mall/icons/check.png" mode="aspectFit" />
+          <text class="svc-text">7天无理由退换</text>
+        </view>
+        <view class="svc-item">
+          <image class="svc-img" src="/static/mall/icons/star.png" mode="aspectFit" />
+          <text class="svc-text">官方正品</text>
+        </view>
+      </view>
+
+      <!-- 评价 -->
+      <view class="rev-block">
+        <view class="rev-head">
+          <text class="rev-title">用户评价 (2,431)</text>
+          <text class="rev-more">查看全部 ></text>
+        </view>
+        <view class="rev-item">
+          <view class="rev-user">
+            <view class="rev-avatar"><text class="rev-avatar-text">K</text></view>
+            <text class="rev-name">K***</text>
+            <image class="rev-stars" src="/static/mall/icons/star.png" mode="aspectFit" />
+          </view>
+          <text class="rev-content">面料比想象中厚实，oversize 版型很街头，黑色百搭。发货快，第二天就到了。</text>
+          <text class="rev-spec">黑色 / L   ·   2026-10-18</text>
+        </view>
+      </view>
     </view>
 
-    <!-- 标题与卖点 -->
-    <view class="title-block">
-      <text class="title">{{ goods.title }}</text>
-      <text class="desc">{{ goods.description }}</text>
-    </view>
-
-    <!-- 规格入口行：点开 SKU 弹层 -->
-    <view class="sku-entry" @click="openSku('cart')">
-      <text class="sku-entry-label">选择规格</text>
-      <text class="sku-entry-value">{{ selectedSku ? `${selectedSku.spec} × ${quantity}` : '请选择规格' }}</text>
-      <text class="sku-entry-arrow">›</text>
-    </view>
-
-    <!-- 详情描述 -->
-    <view class="desc-block">
-      <text class="desc-title">商品详情</text>
-      <text class="desc-content">{{ goods.description }}</text>
-    </view>
-
-    <!-- 底部操作栏：全部售罄时禁用（PRD §①：售罄保留展示不可下单） -->
+    <!-- 底部固定区：规格条 + 加购 + 立即购买（竖排全宽，对齐设计稿） -->
     <view class="footer-bar">
-      <view class="footer-cart" :class="{ disabled: allSoldOut }" @click="allSoldOut ? null : openSku('cart')">
-        <text>加入购物车</text>
+      <!-- 悬浮规格入口条：下滑时始终可见 -->
+      <view class="float-spec">
+        <text class="float-spec-text">{{ selectedColorName }} / {{ selectedSize || '选尺码' }}   ¥{{ fen2yuan(currentPrice) }}</text>
+        <view class="float-spec-btn" @click="openSku('cart')">
+          <text class="float-spec-btn-text">选规格</text>
+        </view>
       </view>
-      <view class="footer-buy" :class="{ disabled: allSoldOut }" @click="allSoldOut ? null : openSku('buy')">
-        <text>立即购买</text>
+      <view class="footer-btn footer-add" :class="{ disabled: allSoldOut }" @click="openSku('cart')">
+        <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '加入购物车' }}</text>
+      </view>
+      <view class="footer-btn footer-buy" :class="{ disabled: allSoldOut }" @click="openSku('buy')">
+        <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '立即购买' }}</text>
       </view>
     </view>
 
-    <!-- SKU 选择弹层（mode: cart=加购 / buy=直购） -->
+    <!-- 规格选择面板（mode: cart 加购 / buy 直购） -->
     <view v-if="skuPopupShow" class="sku-mask" @click="closeSku">
       <view class="sku-popup" @click.stop>
-        <view class="sku-goods">
+        <view class="sku-head">
           <view class="sku-cover" :style="{ backgroundColor: goods.color }">
-            <text class="sku-cover-text">{{ goods.title.slice(0, 1) }}</text>
+            <image v-if="goods.cover" class="sku-cover-img" :src="goods.cover" mode="aspectFill" />
           </view>
-          <view class="sku-goods-info">
+          <view class="sku-info">
             <text class="sku-price">¥{{ fen2yuan(currentPrice) }}</text>
-            <text class="sku-stock">库存 {{ selectedSku ? selectedSku.stock : 0 }}</text>
+            <text class="sku-stock">库存 {{ selectedSku ? selectedSku.stock : 0 }}  ·  {{ selectedColorName || '未选色' }}</text>
+            <text class="sku-selected">已选：{{ selectedColorName || '未选色' }} / {{ selectedSize || '未选码' }} / {{ quantity }} 件</text>
+          </view>
+          <view class="sku-close" @click="closeSku">
+            <image class="sku-close-img" src="/static/mall/icons/close.png" mode="aspectFit" />
           </view>
         </view>
 
-        <!-- 规格选择：售罄 SKU 置灰禁用 -->
-        <view class="sku-specs">
-          <text class="sku-spec-label">规格</text>
-          <view class="sku-spec-list">
-            <view
-              v-for="sku in goods.skuList"
-              :key="sku.id"
-              class="sku-spec-item"
-              :class="{ active: selectedSku && selectedSku.id === sku.id, disabled: sku.stock === 0 }"
-              @click="onSelectSku(sku)"
-            >
-              <text>{{ sku.spec }}</text>
-            </view>
+        <scroll-view class="sku-scroll" scroll-y>
+          <!-- 尺码助手入口 -->
+          <view class="sku-helper" @click="goSizeGuide">
+            <view class="sku-helper-icon"><image class="sku-helper-img" src="/static/mall/icons/ruler.png" mode="aspectFit" /></view>
+            <text class="sku-helper-text">不确定穿多大？用尺码助手 3 秒推荐</text>
+            <text class="sku-helper-link">去测 ></text>
           </view>
-        </view>
 
-        <!-- 数量步进器：上限为当前 SKU 可售库存 -->
-        <view class="sku-qty">
-          <text class="sku-spec-label">数量</text>
-          <view class="stepper">
-            <view class="stepper-btn" :class="{ disabled: quantity <= 1 }" @click="onQtyChange(-1)"><text>−</text></view>
-            <text class="stepper-num">{{ quantity }}</text>
-            <view
-              class="stepper-btn"
-              :class="{ disabled: !selectedSku || quantity >= selectedSku.stock }"
-              @click="onQtyChange(1)"
-            ><text>+</text></view>
+          <!-- 紧张库存提示 -->
+          <view v-if="stockTight" class="sku-stock-tip">
+            <text class="sku-stock-tip-text">该配色仅剩 {{ stockTight }} 件，售罄尺码不再补货</text>
           </view>
-        </view>
 
-        <!-- 弹层确认按钮：文案随 mode 变化 -->
-        <view class="sku-confirm" :class="{ disabled: !selectedSku || selectedSku.stock === 0 || submitting }" @click="onSkuConfirm">
-          <text>{{ mode === 'cart' ? '加入购物车' : '立即购买' }}</text>
+          <view class="sku-content">
+            <size-picker :goods="goods" :color-id="colorId" :size="selectedSize" @change="onSizeChange" />
+          </view>
+
+          <!-- 数量 -->
+          <view class="sku-qty">
+            <text class="sku-label">购买数量</text>
+            <stepper :value="quantity" :max="maxStock" @change="onQtyChange" />
+          </view>
+          <text class="sku-note">当前规格库存 {{ selectedSku ? selectedSku.stock : 0 }} 件，最多可购买 {{ maxStock }} 件</text>
+        </scroll-view>
+
+        <view class="sku-foot">
+          <view class="sku-btn sku-btn-ghost" :class="{ disabled: !canSubmit }" @click="onSkuConfirm('cart')">
+            <text class="sku-btn-text">加入购物车</text>
+          </view>
+          <view class="sku-btn sku-btn-primary" :class="{ disabled: !canSubmit }" @click="onSkuConfirm('buy')">
+            <text class="sku-btn-text">立即购买</text>
+          </view>
         </view>
       </view>
     </view>
@@ -107,53 +172,114 @@
 </template>
 
 <script setup>
-/** 商品详情页逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { goodsApi, cartApi } from '../api/index.js'
+import { goodsApi, cartApi, sizeApi } from '../api/index.js'
 import { fen2yuan } from '../utils/format.js'
+import SizePicker from '../components/size-picker.vue'
+import Stepper from '../components/stepper.vue'
 
-/** 商品详情（含 skuList） */
-const goods = ref(null)
-/** SKU 弹层开关 */
+/** 商品详情（含 skuList / colors / sizes / sizeChart） */
+const goods = ref({})
+/** 规格面板开关 */
 const skuPopupShow = ref(false)
-/** 弹层模式：cart=加入购物车 / buy=立即购买 */
+/** 面板模式：cart 加购 / buy 直购 */
 const mode = ref('cart')
-/** 当前选中 SKU（默认页面加载后选第一个有库存的） */
-const selectedSku = ref(null)
-/** 购买数量（1 ~ 当前 SKU 库存） */
+/** 选中颜色 id */
+const colorId = ref(0)
+/** 选中尺码 */
+const selectedSize = ref('')
+/** 购买数量 */
 const quantity = ref(1)
-/** 提交防重标记 */
+/** 提交防重 */
 const submitting = ref(false)
+/** 用户尺码档案（用于推荐文案） */
+const profile = ref({ height: 175, weight: 68 })
+
+/** 图集 */
+const images = computed(() => goods.value.images || [])
+
+/** 当前颜色的 SKU 列表 */
+const colorSkus = computed(() =>
+  (goods.value.skuList || []).filter((s) => s.colorId === colorId.value)
+)
+
+/** 当前选中 SKU */
+const selectedSku = computed(() =>
+  colorSkus.value.find((s) => s.size === selectedSize.value) || null
+)
 
 /** 当前展示价格：跟随选中 SKU 联动（服务端数据，前端不算价） */
 const currentPrice = computed(() => {
   if (selectedSku.value) return selectedSku.value.price
-  return goods.value ? Math.min(...goods.value.skuList.map((s) => s.price)) : 0
+  const prices = (goods.value.skuList || []).map((s) => s.price)
+  return prices.length ? Math.min(...prices) : 0
 })
 
-/** 是否全部规格售罄（PRD §①规则 4：售罄保留展示但不可下单） */
-const allSoldOut = computed(() => goods.value ? goods.value.skuList.every((s) => s.stock === 0) : false)
-
-/**
- * 页面加载：取参并拉取详情
- */
-onLoad(async (options) => {
-  try {
-    const data = await goodsApi.detail({ id: options.id })
-    goods.value = data
-    // 默认选中第一个有库存的 SKU
-    selectedSku.value = data.skuList.find((s) => s.stock > 0) || null
-  } catch (e) {
-    uni.showToast({ title: e.msg || '商品加载失败', icon: 'none' })
-    setTimeout(() => uni.navigateBack(), 1500)
-  }
+/** 当前颜色名 */
+const selectedColorName = computed(() => {
+  const c = (goods.value.colors || []).find((x) => x.id === colorId.value)
+  return c ? c.name : ''
 })
 
-/**
- * 打开 SKU 弹层
- * @param {'cart'|'buy'} m 弹层模式
- */
+/** 是否全部尺码售罄（售罄保留展示但不可下单） */
+const allSoldOut = computed(() =>
+  (goods.value.skuList || []).length > 0 && goods.value.skuList.every((s) => s.stock === 0)
+)
+
+/** 当前规格最大可购数量 */
+const maxStock = computed(() => (selectedSku.value ? selectedSku.value.stock : 1))
+
+/** 紧张库存提示：当前颜色下最少的有货数量 */
+const stockTight = computed(() => {
+  const stocks = colorSkus.value.filter((s) => s.stock > 0).map((s) => s.stock)
+  return stocks.length ? Math.min(...stocks) : 0
+})
+
+/** 是否可提交 */
+const canSubmit = computed(
+  () => !!(selectedSku.value && selectedSku.value.stock > 0 && quantity.value <= selectedSku.value.stock && !submitting.value)
+)
+
+/** 销量展示 */
+const salesText = computed(() => {
+  const s = Number(goods.value.sales || 0)
+  return s >= 10000 ? (s / 10000).toFixed(1) + 'w' : String(s)
+})
+
+/** 折扣（现价 / 划线价 × 10，取一位小数） */
+const discountRate = computed(() => {
+  if (!goods.value.originPrice) return ''
+  const r = (currentPrice.value / goods.value.originPrice) * 10
+  return r.toFixed(1)
+})
+
+/** 库存提示文案 */
+const stockHint = computed(() => {
+  if (allSoldOut.value) return '已售罄'
+  const n = stockTight.value
+  return n && n <= 10 ? `仅剩 ${n} 件 · 售罄码不再补货` : '现货充足'
+})
+
+/** 尺码推荐文案（基于用户档案，服务端推荐结果回显） */
+const recommendText = computed(() => {
+  if (!profile.value.height) return '填写身高体重，3 秒推荐尺码'
+  return `根据你的 ${profile.value.height}cm / ${profile.value.weight}kg，推荐尺码 ${profile.value.recommendSize || 'M'}`
+})
+
+/** 尺码选择变化回调 */
+function onSizeChange(payload) {
+  colorId.value = payload.colorId
+  selectedSize.value = payload.size
+  quantity.value = 1
+}
+
+/** 数量变化 */
+function onQtyChange(v) {
+  quantity.value = v
+}
+
+/** 打开规格面板 */
 function openSku(m) {
   mode.value = m
   quantity.value = 1
@@ -165,32 +291,14 @@ function closeSku() {
 }
 
 /**
- * 切换规格：售罄规格不可选（disabled 态）
+ * 面板确认：按 mode 分发到加购 / 直购
+ * @param {'cart'|'buy'} m
  */
-function onSelectSku(sku) {
-  if (sku.stock === 0) return
-  selectedSku.value = sku
-  quantity.value = 1 // 切规格后数量重置
-}
-
-/**
- * 数量步进：下限 1，上限当前 SKU 可售库存
- */
-function onQtyChange(delta) {
-  if (!selectedSku.value) return
-  const next = quantity.value + delta
-  if (next < 1 || next > selectedSku.value.stock) return
-  quantity.value = next
-}
-
-/**
- * 弹层确认：按 mode 分发到加购 / 直购
- */
-async function onSkuConfirm() {
-  if (!selectedSku.value || selectedSku.value.stock === 0 || submitting.value) return
+async function onSkuConfirm(m) {
+  if (!canSubmit.value) return
   submitting.value = true
   try {
-    if (mode.value === 'cart') {
+    if (m === 'cart') {
       await cartApi.add({ goodsId: goods.value.id, skuId: selectedSku.value.id, quantity: quantity.value })
       uni.showToast({ title: '已加入购物车', icon: 'success' })
       closeSku()
@@ -207,176 +315,385 @@ async function onSkuConfirm() {
     submitting.value = false
   }
 }
+
+function goSizeGuide() {
+  uni.navigateTo({ url: '/pages/mall/size-guide/index' })
+}
+
+function goCart() {
+  uni.switchTab({ url: '/pages/mall/cart/index' })
+}
+
+function onService() {
+  uni.showToast({ title: '客服将在 9:00-22:00 为你服务', icon: 'none' })
+}
+
+onLoad(async (options) => {
+  try {
+    const data = await goodsApi.detail({ id: options.id })
+    goods.value = data
+    // 默认选中第一个有库存的颜色 + 第一个有库存的尺码
+    const firstColor = (data.colors || []).find((c) =>
+      (data.skuList || []).some((s) => s.colorId === c.id && s.stock > 0)
+    )
+    colorId.value = firstColor ? firstColor.id : (data.colors[0] ? data.colors[0].id : 0)
+    const firstSize = (data.skuList || []).find((s) => s.colorId === colorId.value && s.stock > 0)
+    selectedSize.value = firstSize ? firstSize.size : ''
+
+    // 读取用户尺码档案并请求推荐，用于详情页推荐条
+    try {
+      const p = await sizeApi.profile()
+      const rec = await sizeApi.recommend({ height: p.height, weight: p.weight, fit: p.fit })
+      profile.value = { ...p, recommendSize: rec.size }
+    } catch (e) {
+      // 档案缺失不影响详情页
+    }
+  } catch (e) {
+    uni.showToast({ title: e.msg || '商品加载失败', icon: 'none' })
+    setTimeout(() => uni.navigateBack(), 1500)
+  }
+})
 </script>
 
 <style scoped>
-.detail-page {
+.detail {
   min-height: 100vh;
-  background-color: #f5f6f8;
-  padding-bottom: 140rpx;
+  background-color: $rz-grey-50;
+  /* 底部预留：悬浮规格条 80 + 操作栏 120 */
+  padding-bottom: 200rpx;
 }
 
-.banner-swiper {
-  height: 640rpx;
+/* ---- 图集 ---- */
+.gallery {
+  height: 750rpx;
+  background-color: $rz-ink;
 }
 
-.banner-cover {
+.gallery-cover {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
 }
 
-.banner-img {
+.gallery-img {
   width: 100%;
   height: 100%;
 }
 
-.banner-fallback {
+.gallery-fallback {
   font-size: 140rpx;
   color: rgba(255, 255, 255, 0.85);
 }
 
+/* ---- 价格区 ---- */
 .price-block {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  background-color: #ffffff;
-  padding: 24rpx;
+  background-color: $rz-white;
+  padding: 24rpx $rz-page-pad;
 }
 
 .price-row {
   display: flex;
   align-items: baseline;
-  gap: 12rpx;
+  gap: 16rpx;
 }
 
 .price {
-  font-size: 40rpx;
-  font-weight: 500;
-  color: #e24b4a;
+  font-size: 64rpx;
+  font-weight: 900;
+  color: $rz-price;
+  line-height: 1.1;
 }
 
 .origin-price {
-  font-size: 24rpx;
-  color: #bbbbbb;
+  font-size: 26rpx;
+  color: $rz-grey-300;
   text-decoration: line-through;
 }
 
-.sales {
-  font-size: 24rpx;
-  color: #999999;
+.discount {
+  padding: 4rpx 12rpx;
+  background-color: $rz-ink;
 }
 
-.title-block {
-  background-color: #ffffff;
+.discount-text {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: $rz-acid;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-top: 12rpx;
+}
+
+.meta-text {
+  font-size: 24rpx;
+  color: $rz-grey-500;
+}
+
+.meta-stock {
+  font-size: 24rpx;
+  color: $rz-danger;
+}
+
+/* 尺码推荐条 */
+.rec-bar {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
   margin-top: 20rpx;
-  padding: 24rpx;
+  padding: 16rpx 20rpx;
+  background-color: $rz-warn-bg;
+}
+
+.rec-icon {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-acid;
+}
+
+.rec-img {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.rec-text {
+  flex: 1;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: $rz-ink;
+}
+
+.rec-link {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+/* ---- 标题 ---- */
+.title-block {
+  background-color: $rz-white;
+  padding: 24rpx $rz-page-pad;
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  gap: 12rpx;
 }
 
 .title {
-  font-size: 32rpx;
-  color: #222222;
-  line-height: 1.5;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: $rz-ink;
+  line-height: 1.4;
 }
 
 .desc {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
+  line-height: 1.5;
 }
 
-.sku-entry {
+/* ---- 规格区 ---- */
+.spec-block {
+  background-color: $rz-white;
+  margin-top: 16rpx;
+  padding: 24rpx $rz-page-pad;
+}
+
+.spec-row {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
-  margin-top: 20rpx;
-  padding: 24rpx;
+  margin-bottom: 20rpx;
 }
 
-.sku-entry-label {
+.spec-label {
+  width: 90rpx;
   font-size: 26rpx;
-  color: #999999;
-  margin-right: 24rpx;
+  color: $rz-ink;
 }
 
-.sku-entry-value {
-  flex: 1;
+.spec-value {
   font-size: 26rpx;
-  color: #222222;
+  color: $rz-grey-500;
 }
 
-.sku-entry-arrow {
-  font-size: 32rpx;
-  color: #cccccc;
+/* ---- 服务保障 ---- */
+.svc-block {
+  display: flex;
+  align-items: center;
+  gap: 40rpx;
+  background-color: $rz-grey-50;
+  margin-top: 16rpx;
+  padding: 24rpx $rz-page-pad;
 }
 
-.desc-block {
-  background-color: #ffffff;
-  margin-top: 20rpx;
-  padding: 24rpx;
+.svc-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.svc-img {
+  width: 26rpx;
+  height: 26rpx;
+}
+
+.svc-text {
+  font-size: 22rpx;
+  color: $rz-ink;
+}
+
+/* ---- 评价 ---- */
+.rev-block {
+  background-color: $rz-white;
+  margin-top: 16rpx;
+  padding: 24rpx $rz-page-pad;
+}
+
+.rev-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.rev-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+.rev-more {
+  font-size: 24rpx;
+  color: $rz-grey-500;
+}
+
+.rev-item {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 
-.desc-title {
-  font-size: 28rpx;
-  color: #222222;
-  font-weight: 500;
+.rev-user {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
 }
 
-.desc-content {
+.rev-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-ink;
+}
+
+.rev-avatar-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: $rz-acid;
+}
+
+.rev-name {
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+.rev-stars {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.rev-content {
   font-size: 26rpx;
-  color: #666666;
+  color: $rz-ink;
   line-height: 1.6;
 }
 
+.rev-spec {
+  font-size: 22rpx;
+  color: $rz-grey-500;
+}
+
+/* ---- 底部固定区：规格条 + 双按钮（竖排） ---- */
 .footer-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  background-color: #ffffff;
-  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
-  gap: 20rpx;
+  flex-direction: column;
+  background-color: $rz-white;
+  border-top: 4rpx solid $rz-ink;
+  z-index: 11;
 }
 
-.footer-cart,
-.footer-buy {
-  flex: 1;
+/* 规格入口条 */
+.float-spec {
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $rz-page-pad;
+  background-color: $rz-white;
+}
+
+.float-spec-text {
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+.float-spec-btn {
+  padding: 10rpx 20rpx;
+  background-color: $rz-ink;
+}
+
+.float-spec-btn-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: $rz-acid;
+}
+
+.footer-btn {
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 22rpx 0;
-  border-radius: 44rpx;
-  font-size: 28rpx;
-  color: #ffffff;
+  border-top: 4rpx solid $rz-ink;
 }
 
-.footer-cart {
-  background-color: #ba7517;
+.footer-add {
+  background-color: $rz-white;
 }
 
 .footer-buy {
-  background-color: #e24b4a;
+  background-color: $rz-acid;
+}
+
+.footer-btn-text {
+  font-size: 30rpx;
+  font-weight: 900;
+  color: $rz-ink;
 }
 
 .disabled {
   opacity: 0.4;
 }
 
+/* ---- 规格面板 ---- */
 .sku-mask {
-  /* 兼容写法：低版本基础库不支持 inset 简写 */
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   z-index: 100;
   display: flex;
   align-items: flex-end;
@@ -384,135 +701,175 @@ async function onSkuConfirm() {
 
 .sku-popup {
   width: 100%;
-  background-color: #ffffff;
-  border-radius: 24rpx 24rpx 0 0;
-  padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  height: 1080rpx;
+  display: flex;
+  flex-direction: column;
+  background-color: $rz-white;
+  border-top: 4rpx solid $rz-ink;
 }
 
-.sku-goods {
+.sku-head {
   display: flex;
-  gap: 24rpx;
-  padding-bottom: 24rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx $rz-page-pad;
+  border-bottom: 2rpx solid $rz-line;
+  flex-shrink: 0;
 }
 
 .sku-cover {
-  width: 140rpx;
-  height: 140rpx;
-  border-radius: 12rpx;
+  width: 144rpx;
+  height: 144rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sku-cover-img {
+  width: 100%;
+  height: 100%;
+}
+
+.sku-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.sku-price {
+  font-size: 44rpx;
+  font-weight: 900;
+  color: $rz-price;
+}
+
+.sku-stock {
+  font-size: 22rpx;
+  color: $rz-grey-500;
+}
+
+.sku-selected {
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+.sku-close {
+  width: 48rpx;
+  height: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.sku-cover-text {
-  font-size: 56rpx;
-  color: rgba(255, 255, 255, 0.85);
+.sku-close-img {
+  width: 28rpx;
+  height: 28rpx;
 }
 
-.sku-goods-info {
+.sku-scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 0 $rz-page-pad;
+}
+
+.sku-helper {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 10rpx;
-  padding-bottom: 8rpx;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  padding: 16rpx 20rpx;
+  background-color: $rz-warn-bg;
 }
 
-.sku-price {
-  font-size: 36rpx;
-  font-weight: 500;
-  color: #e24b4a;
-}
-
-.sku-stock {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.sku-specs {
-  padding: 24rpx 0;
-}
-
-.sku-spec-label {
-  font-size: 26rpx;
-  color: #666666;
-}
-
-.sku-spec-list {
+.sku-helper-icon {
+  width: 36rpx;
+  height: 36rpx;
   display: flex;
-  flex-wrap: wrap;
-  gap: 16rpx;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-acid;
+}
+
+.sku-helper-img {
+  width: 22rpx;
+  height: 22rpx;
+}
+
+.sku-helper-text {
+  flex: 1;
+  font-size: 22rpx;
+  color: $rz-ink;
+}
+
+.sku-helper-link {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+.sku-stock-tip {
   margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background-color: $rz-danger-bg;
 }
 
-.sku-spec-item {
-  padding: 12rpx 32rpx;
-  background-color: #f5f6f8;
-  border-radius: 8rpx;
-  font-size: 26rpx;
-  color: #222222;
-  border: 1rpx solid #f5f6f8;
+.sku-stock-tip-text {
+  font-size: 22rpx;
+  color: $rz-danger;
 }
 
-.sku-spec-item.active {
-  background-color: #fcebeb;
-  border-color: #e24b4a;
-  color: #e24b4a;
-}
-
-.sku-spec-item.disabled {
-  color: #cccccc;
-  background-color: #fafafa;
+.sku-content {
+  margin-top: 24rpx;
 }
 
 .sku-qty {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 0;
+  margin-top: 24rpx;
 }
 
-.stepper {
+.sku-label {
+  font-size: 26rpx;
+  color: $rz-ink;
+}
+
+.sku-note {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: $rz-grey-500;
+}
+
+.sku-foot {
   display: flex;
-  align-items: center;
-  gap: 4rpx;
+  gap: 20rpx;
+  padding: 20rpx $rz-page-pad;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid $rz-line;
+  flex-shrink: 0;
 }
 
-.stepper-btn {
-  width: 56rpx;
-  height: 56rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f6f8;
-  border-radius: 8rpx;
-  font-size: 32rpx;
-  color: #222222;
-}
-
-.stepper-btn.disabled {
-  color: #cccccc;
-}
-
-.stepper-num {
-  width: 80rpx;
-  text-align: center;
-  font-size: 28rpx;
-}
-
-.sku-confirm {
+.sku-btn {
+  flex: 1;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24rpx 0;
-  border-radius: 44rpx;
-  background-color: #e24b4a;
-  color: #ffffff;
-  font-size: 28rpx;
-  margin-top: 8rpx;
+  border: 4rpx solid $rz-ink;
 }
 
-.sku-confirm.disabled {
-  opacity: 0.4;
+.sku-btn-ghost {
+  background-color: $rz-white;
+}
+
+.sku-btn-primary {
+  background-color: $rz-acid;
+}
+
+.sku-btn-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
 }
 </style>

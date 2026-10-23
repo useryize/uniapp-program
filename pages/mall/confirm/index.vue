@@ -8,23 +8,23 @@
   实付金额一律以 order.create 返回为准，页面无任何金额输入口
 -->
 <template>
-  <view class="confirm-page" v-if="loaded">
-    <!-- 地址卡 -->
+  <view class="confirm" v-if="loaded">
+    <!-- 地址卡：黑底反白 -->
     <view class="address-card" @click="onPickAddress">
-      <template v-if="address">
-        <view class="address-info">
-          <view class="address-line1">
-            <text class="address-receiver">{{ address.receiver }}</text>
-            <text class="address-phone">{{ maskedPhone(address.phone) }}</text>
+      <view class="address-icon">
+        <image class="address-icon-img" src="/static/mall/icons/location.png" mode="aspectFit" />
+      </view>
+      <view class="address-info">
+        <view class="address-line1">
+          <text class="address-receiver">{{ address ? address.receiver : '请选择收货地址' }}</text>
+          <text v-if="address" class="address-phone">{{ maskedPhone(address.phone) }}</text>
+          <view v-if="address && address.isDefault" class="address-tag">
+            <text class="address-tag-text">默认</text>
           </view>
-          <text class="address-detail">{{ address.region }} {{ address.detail }}</text>
         </view>
-        <text class="address-arrow">›</text>
-      </template>
-      <template v-else>
-        <text class="address-empty">+ 请选择收货地址</text>
-        <text class="address-arrow">›</text>
-      </template>
+        <text class="address-detail">{{ address ? address.region + ' ' + address.detail : '地址管理页待交付，默认地址已自动带入' }}</text>
+      </view>
+      <image class="address-arrow" src="/static/mall/icons/arrow_right.png" mode="aspectFit" />
     </view>
 
     <!-- 商品清单 -->
@@ -45,36 +45,52 @@
       </view>
     </view>
 
-    <!-- 金额明细：运费仅展示规则文案，实付以提交后服务端返回为准 -->
-    <view class="amount-block">
-      <view class="amount-row">
-        <text>商品金额</text>
-        <text>¥{{ fen2yuan(goodsTotal) }}</text>
-      </view>
-      <view class="amount-row">
-        <text>运费</text>
-        <text class="amount-freight-tip">{{ freightTip }}</text>
-      </view>
+    <!-- 配送方式 -->
+    <view class="row-block">
+      <text class="row-label">配送方式</text>
+      <text class="row-value">快递配送  ·  预计 2-4 天送达</text>
     </view>
 
     <!-- 订单备注 -->
-    <view class="remark-block">
-      <text class="remark-label">订单备注</text>
+    <view class="row-block">
+      <text class="row-label">订单备注</text>
       <input
         class="remark-input"
         v-model="remark"
-        placeholder="选填，给商家留言（50 字内）"
+        placeholder="选填，可备注尺码或颜色偏好"
+        placeholder-class="remark-ph"
         maxlength="50"
       />
     </view>
 
+    <!-- 金额明细：运费仅展示规则文案，实付以提交后服务端返回为准 -->
+    <view class="amount-block">
+      <view class="amount-row">
+        <text class="amount-label">商品合计</text>
+        <text class="amount-value">¥{{ fen2yuan(goodsTotal) }}</text>
+      </view>
+      <view class="amount-row">
+        <text class="amount-label">运费</text>
+        <text class="amount-value">{{ freightTip }}</text>
+      </view>
+      <view class="amount-row">
+        <text class="amount-label">优惠券</text>
+        <text class="amount-value">¥0</text>
+      </view>
+      <view class="amount-row amount-total">
+        <text class="amount-total-label">应付金额</text>
+        <text class="amount-total-value">¥{{ fen2yuan(goodsTotal) }}</text>
+      </view>
+    </view>
+
     <!-- 底部提交栏 -->
     <view class="footer-bar">
-      <view class="footer-note">
-        <text class="footer-note-text">提交后生成订单，支付以微信支付为准</text>
+      <view class="footer-total">
+        <text class="footer-total-label">应付金额</text>
+        <text class="footer-total-price">¥{{ fen2yuan(goodsTotal) }}</text>
       </view>
       <view class="footer-submit" :class="{ disabled: submitting }" @click="onSubmit">
-        <text>{{ submitting ? '提交中...' : '提交订单' }}</text>
+        <text class="footer-submit-text">{{ submitting ? '提交中...' : '提交订单' }}</text>
       </view>
     </view>
   </view>
@@ -110,7 +126,7 @@ const goodsTotal = computed(() =>
 const freightTip = computed(() => {
   const threshold = (MALL_CONFIG.FREE_SHIPPING_THRESHOLD / 100).toFixed(0)
   const freight = (MALL_CONFIG.FREIGHT / 100).toFixed(0)
-  return `满 ¥${threshold} 包邮，否则收 ¥${freight}`
+  return `满 ¥${threshold} 包邮，否则 ¥${freight}`
 })
 
 /**
@@ -187,95 +203,112 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-.confirm-page {
+.confirm {
   min-height: 100vh;
-  background-color: #f5f6f8;
-  padding: 20rpx 24rpx 160rpx;
+  background-color: $rz-grey-50;
+  padding: 20rpx 24rpx 180rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
 }
 
+/* ---- 地址卡 ---- */
 .address-card {
   display: flex;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 16rpx;
+  gap: 16rpx;
   padding: 28rpx 24rpx;
+  background-color: $rz-ink;
+}
+
+.address-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-icon-img {
+  width: 30rpx;
+  height: 30rpx;
 }
 
 .address-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  gap: 8rpx;
+  min-width: 0;
 }
 
 .address-line1 {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16rpx;
 }
 
 .address-receiver {
   font-size: 30rpx;
-  color: #222222;
-  font-weight: 500;
+  font-weight: 700;
+  color: $rz-white;
 }
 
 .address-phone {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
+}
+
+.address-tag {
+  padding: 2rpx 10rpx;
+  background-color: $rz-acid;
+}
+
+.address-tag-text {
+  font-size: 18rpx;
+  font-weight: 700;
+  color: $rz-ink;
 }
 
 .address-detail {
-  font-size: 26rpx;
-  color: #666666;
+  font-size: 24rpx;
+  color: $rz-white;
   line-height: 1.5;
 }
 
-.address-empty {
-  flex: 1;
-  font-size: 28rpx;
-  color: #999999;
-}
-
 .address-arrow {
-  font-size: 32rpx;
-  color: #cccccc;
+  width: 24rpx;
+  height: 24rpx;
+  opacity: 0.6;
+  flex-shrink: 0;
 }
 
+/* ---- 商品清单：通栏无边框 ---- */
 .goods-block {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  padding: 8rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 24rpx $rz-page-pad;
+  background-color: $rz-white;
+  margin: 20rpx 0 0;
 }
 
 .goods-item {
   display: flex;
+  align-items: center;
   gap: 20rpx;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid #f5f6f8;
-}
-
-.goods-item:last-child {
-  border-bottom: none;
 }
 
 .cover {
-  width: 140rpx;
-  height: 140rpx;
-  border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 128rpx;
+  height: 128rpx;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
 .cover-img {
   width: 100%;
   height: 100%;
-  border-radius: 12rpx;
 }
 
 .cover-fallback {
@@ -288,115 +321,169 @@ async function onSubmit() {
   display: flex;
   flex-direction: column;
   gap: 8rpx;
-  overflow: hidden;
+  min-width: 0;
 }
 
 .goods-title {
   font-size: 28rpx;
-  color: #222222;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 700;
+  color: $rz-ink;
+  line-height: 1.4;
 }
 
 .goods-spec {
   font-size: 22rpx;
-  color: #999999;
-  background-color: #f5f6f8;
-  align-self: flex-start;
-  padding: 4rpx 12rpx;
-  border-radius: 6rpx;
+  color: $rz-grey-500;
 }
 
 .goods-bottom {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-top: 8rpx;
 }
 
 .goods-price {
-  font-size: 28rpx;
-  color: #e24b4a;
+  font-size: 32rpx;
+  font-weight: 900;
+  color: $rz-price;
 }
 
 .goods-qty {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
 }
 
+/* ---- 通用行：通栏无边框 ---- */
+.row-block {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 26rpx $rz-page-pad;
+  background-color: $rz-white;
+  margin-top: 20rpx;
+}
+
+.row-label {
+  font-size: 26rpx;
+  color: $rz-ink;
+  flex-shrink: 0;
+}
+
+.row-value {
+  flex: 1;
+  text-align: right;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: $rz-ink;
+}
+
+.remark-input {
+  flex: 1;
+  text-align: right;
+  font-size: 26rpx;
+  color: $rz-ink;
+  height: 40rpx;
+}
+
+.remark-ph {
+  color: $rz-grey-300;
+  font-size: 24rpx;
+}
+
+/* ---- 金额明细 ---- */
 .amount-block {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  padding: 8rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 26rpx 24rpx;
+  background-color: $rz-white;
+  border: 4rpx solid $rz-ink;
 }
 
 .amount-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22rpx 0;
+}
+
+.amount-label {
   font-size: 26rpx;
-  color: #666666;
-  border-bottom: 1rpx solid #f5f6f8;
+  color: $rz-ink;
 }
 
-.amount-row:last-child {
-  border-bottom: none;
-}
-
-.amount-freight-tip {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.remark-block {
-  display: flex;
-  align-items: center;
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  padding: 28rpx 24rpx;
-  gap: 20rpx;
-}
-
-.remark-label {
+.amount-value {
   font-size: 26rpx;
-  color: #666666;
-  flex-shrink: 0;
+  color: $rz-ink;
 }
 
-.remark-input {
-  flex: 1;
-  font-size: 26rpx;
-  color: #222222;
+.amount-total {
+  padding-top: 16rpx;
+  border-top: 2rpx solid $rz-line;
 }
 
+.amount-total-label {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+.amount-total-value {
+  font-size: 40rpx;
+  font-weight: 900;
+  color: $rz-price;
+}
+
+/* ---- 底部提交栏 ---- */
 .footer-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 128rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #ffffff;
-  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  gap: 20rpx;
+  padding: 0 24rpx;
+  background-color: $rz-white;
+  border-top: 4rpx solid $rz-ink;
+  z-index: 10;
 }
 
-.footer-note-text {
-  font-size: 22rpx;
-  color: #999999;
+.footer-total {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+
+.footer-total-label {
+  font-size: 20rpx;
+  color: $rz-grey-500;
+}
+
+.footer-total-price {
+  font-size: 40rpx;
+  font-weight: 900;
+  color: $rz-price;
 }
 
 .footer-submit {
-  padding: 22rpx 56rpx;
-  background-color: #e24b4a;
-  border-radius: 44rpx;
-  color: #ffffff;
-  font-size: 28rpx;
+  width: 240rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-acid;
+  border: 4rpx solid $rz-ink;
 }
 
 .footer-submit.disabled {
   opacity: 0.5;
+}
+
+.footer-submit-text {
+  font-size: 30rpx;
+  font-weight: 900;
+  color: $rz-ink;
 }
 </style>

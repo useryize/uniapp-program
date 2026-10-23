@@ -15,7 +15,7 @@
         :class="{ active: currentTab === tab.key }"
         @click="onTabChange(tab.key)"
       >
-        <text>{{ tab.label }}</text>
+        <text class="tab-text">{{ tab.label }}</text>
       </view>
     </view>
 
@@ -34,8 +34,10 @@
             @click="goDetail(order)"
           >
             <view class="order-header">
-              <text class="order-no">订单号 {{ order.orderNo }}</text>
-              <text class="order-status">{{ orderStatusText(order.status) }}</text>
+              <text class="order-no">{{ order.orderNo }}</text>
+              <text class="order-status" :class="{ 'status-unpaid': order.status === 'UNPAID' }">
+                {{ orderStatusText(order.status) }}
+              </text>
             </view>
 
             <!-- 商品缩略：首个快照 + 件数（PRD §7.1：历史订单展示快照） -->
@@ -46,29 +48,39 @@
               </view>
               <view class="order-goods-info">
                 <text class="order-goods-title">{{ order.items[0].titleSnapshot }}</text>
-                <text class="order-goods-qty">共 {{ totalQty(order) }} 件</text>
+                <text class="order-goods-spec">{{ order.items[0].specSnapshot }}   共 {{ totalQty(order) }} 件</text>
               </view>
-              <text class="order-pay">实付 ¥{{ fen2yuan(order.payAmount) }}</text>
+              <text class="order-pay">¥{{ fen2yuan(order.payAmount) }}</text>
             </view>
 
             <!-- 操作按钮：按状态机渲染，非允许状态不展示按钮（PRD §5.7） -->
             <view class="order-actions">
               <template v-if="order.status === 'UNPAID'">
-                <view class="action-btn plain" @click.stop="onCancel(order)"><text>取消订单</text></view>
-                <view class="action-btn primary" @click.stop="goPay(order)"><text>去支付</text></view>
+                <view class="action-btn plain" @click.stop="onCancel(order)">
+                  <text class="action-btn-text">取消订单</text>
+                </view>
+                <view class="action-btn primary" @click.stop="goPay(order)">
+                  <text class="action-btn-text">去支付</text>
+                </view>
               </template>
               <template v-else-if="order.status === 'SHIPPED'">
-                <view class="action-btn plain" @click.stop="onConfirm(order)"><text>确认收货</text></view>
-                <view class="action-btn primary" @click.stop="goDetail(order)"><text>查看详情</text></view>
+                <view class="action-btn plain" @click.stop="onConfirm(order)">
+                  <text class="action-btn-text">确认收货</text>
+                </view>
+                <view class="action-btn primary" @click.stop="goDetail(order)">
+                  <text class="action-btn-text">查看详情</text>
+                </view>
               </template>
               <template v-else>
-                <view class="action-btn plain" @click.stop="goDetail(order)"><text>查看详情</text></view>
+                <view class="action-btn plain" @click.stop="goDetail(order)">
+                  <text class="action-btn-text">查看详情</text>
+                </view>
               </template>
             </view>
           </view>
 
           <view v-if="orderList.length" class="load-tip">
-            <text>{{ loading ? '加载中...' : hasMore ? '上拉加载更多' : '— 没有更多了 —' }}</text>
+            <text class="load-text">{{ loading ? '加载中...' : hasMore ? '上拉加载更多' : '— 没有更多了 —' }}</text>
           </view>
         </scroll-view>
       </swiper-item>
@@ -205,12 +217,15 @@ function goDetail(order) {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f6f8;
+  background-color: $rz-grey-50;
 }
 
+/* ---- tab ---- */
 .tabs {
   display: flex;
-  background-color: #ffffff;
+  height: 88rpx;
+  background-color: $rz-white;
+  flex-shrink: 0;
 }
 
 .tab-item {
@@ -218,95 +233,83 @@ function goDetail(order) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24rpx 0;
-  font-size: 28rpx;
-  color: #666666;
-  position: relative;
 }
 
 .tab-item.active {
-  color: #e24b4a;
-  font-weight: 500;
+  background-color: $rz-ink;
 }
 
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 8rpx;
-  width: 48rpx;
-  height: 6rpx;
-  background-color: #e24b4a;
-  border-radius: 3rpx;
-  transform: translateX(-50%);
+.tab-text {
+  font-size: 26rpx;
+  color: $rz-ink;
+}
+
+.tab-item.active .tab-text {
+  color: $rz-acid;
+  font-weight: 700;
 }
 
 .tab-swiper {
   flex: 1;
+  min-height: 0;
 }
 
 .tab-scroll {
   height: 100%;
+  padding: 20rpx 24rpx 40rpx;
+  box-sizing: border-box;
 }
 
-.empty {
-  display: flex;
-  justify-content: center;
-  padding-top: 240rpx;
-}
-
-.empty-text {
-  font-size: 28rpx;
-  color: #999999;
-}
-
+/* ---- 订单卡 ---- */
 .order-card {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  margin: 20rpx 24rpx 0;
-  padding: 24rpx;
+  background-color: $rz-white;
+  border: 4rpx solid $rz-ink;
+  margin-bottom: 20rpx;
 }
 
 .order-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 20rpx;
+  padding: 22rpx 24rpx;
+  border-bottom: 2rpx solid $rz-line;
 }
 
 .order-no {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-ink;
 }
 
 .order-status {
-  font-size: 26rpx;
-  color: #e24b4a;
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+.status-unpaid {
+  color: $rz-price;
 }
 
 .order-goods {
   display: flex;
   align-items: center;
   gap: 20rpx;
+  padding: 24rpx;
 }
 
 .cover {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 128rpx;
+  height: 128rpx;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
 .cover-img {
   width: 100%;
   height: 100%;
-  border-radius: 12rpx;
 }
 
 .cover-fallback {
-  font-size: 44rpx;
+  font-size: 52rpx;
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -314,61 +317,80 @@ function goDetail(order) {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
-  overflow: hidden;
+  gap: 8rpx;
+  min-width: 0;
 }
 
 .order-goods-title {
-  font-size: 28rpx;
-  color: #222222;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: $rz-ink;
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.order-goods-qty {
-  font-size: 24rpx;
-  color: #999999;
+.order-goods-spec {
+  font-size: 22rpx;
+  color: $rz-grey-500;
 }
 
 .order-pay {
-  font-size: 28rpx;
-  color: #222222;
-  font-weight: 500;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: $rz-ink;
+  flex-shrink: 0;
 }
 
+/* ---- 操作按钮 ---- */
 .order-actions {
   display: flex;
   justify-content: flex-end;
   gap: 16rpx;
-  margin-top: 24rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid #f5f6f8;
+  padding: 0 24rpx 24rpx;
 }
 
 .action-btn {
-  padding: 12rpx 32rpx;
-  border-radius: 32rpx;
-  font-size: 24rpx;
+  min-width: 156rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid $rz-ink;
 }
 
 .action-btn.plain {
-  border: 1rpx solid #dddddd;
-  color: #666666;
+  background-color: $rz-white;
 }
 
 .action-btn.primary {
-  background-color: #e24b4a;
-  color: #ffffff;
+  background-color: $rz-acid;
 }
 
-.load-tip {
-  padding: 32rpx 0;
+.action-btn-text {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+.empty {
+  padding: 160rpx 0;
   text-align: center;
 }
 
-.load-tip text {
+.empty-text {
+  font-size: 26rpx;
+  color: $rz-grey-500;
+}
+
+.load-tip {
+  padding: 24rpx 0;
+  text-align: center;
+}
+
+.load-text {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
 }
 </style>

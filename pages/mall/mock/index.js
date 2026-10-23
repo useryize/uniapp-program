@@ -18,13 +18,17 @@ import goods from './handlers/goods'
 import cart from './handlers/cart'
 import order from './handlers/order'
 import address from './handlers/address'
+import size from './handlers/size'
+import drop from './handlers/drop'
 
 /** 通道注册表：key = 'domain.action'，value = handler(params) => data */
 const handlers = {
   ...goods,
   ...cart,
   ...order,
-  ...address
+  ...address,
+  ...size,
+  ...drop
 }
 
 /**

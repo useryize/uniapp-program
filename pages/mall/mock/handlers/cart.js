@@ -99,6 +99,40 @@ export default {
   },
 
   /**
+   * 修改购物车项的规格（换 SKU）
+   * 服装电商必备：用户在购物车对比后改尺码/颜色（交互规格说明书 §P2）
+   * 规则：目标 SKU 必须属于同一 SPU 且有货；换到已存在的同 SKU 则合并数量
+   * @param {{id:string, skuId:number, quantity?:number}} params
+   * @returns {Object}
+   * @throws 40402 购物车项不存在 / 40401 SKU 不存在 / 40001 超出可售库存
+   */
+  'cart.updateSku'(params) {
+    const item = db.cart.find((c) => c.id === params.id)
+    if (!item) throw { code: 40402, msg: '购物车项不存在' }
+
+    const sku = db.skus.find((s) => s.id === Number(params.skuId))
+    if (!sku || sku.goodsId !== item.goodsId) throw { code: 40401, msg: 'SKU 不存在' }
+    if (sku.stock <= 0) throw { code: 40001, msg: '该规格已售罄' }
+
+    const qty = Number(params.quantity || item.quantity)
+    if (!Number.isInteger(qty) || qty < 1) throw { code: 40007, msg: '数量不合法' }
+    if (qty > sku.stock) throw { code: 40001, msg: '超出可售库存' }
+
+    // 目标 SKU 已在购物车中（同商品不同项）→ 合并数量，移除原项
+    const exist = db.cart.find((c) => c.skuId === sku.id && c.id !== item.id)
+    if (exist) {
+      if (exist.quantity + qty > sku.stock) throw { code: 40001, msg: '超出可售库存' }
+      exist.quantity += qty
+      exist.checked = exist.checked || item.checked
+      db.cart = db.cart.filter((c) => c.id !== item.id)
+    } else {
+      item.skuId = sku.id
+      item.quantity = qty
+    }
+    return {}
+  },
+
+  /**
    * 单项勾选/取消勾选
    * @param {{id:string, checked:boolean}} params
    */

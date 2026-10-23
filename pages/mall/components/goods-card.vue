@@ -1,44 +1,58 @@
 <!--
-  商品卡片（公共组件）：首页列表 / 搜索结果复用
+  商品卡片（公共组件）：首页推荐 / 分类页 / 搜索结果复用
+  视觉：街头潮流 —— 2px 纯黑硬描边、圆角 0、酸性黄角标、价格红大号
   封面规则：goods.cover 有值显示图片，否则 color 色块 + 标题首字（mock 占位）
   金额展示：仅展示服务端返回值（fen2yuan），组件内不做任何计算
 -->
 <template>
   <view class="goods-card" @click="$emit('tap', goods)">
-    <view class="cover" :style="{ backgroundColor: goods.color }">
+    <view class="cover" :style="{ backgroundColor: goods.color, height: coverHeight + 'rpx' }">
       <image v-if="goods.cover" class="cover-img" :src="goods.cover" mode="aspectFill" />
       <text v-else class="cover-fallback">{{ goods.title.slice(0, 1) }}</text>
     </view>
 
+    <!-- 角标：图下独立一行（对齐设计稿商品卡结构） -->
+    <view v-if="tag" class="tag-row">
+      <text class="tag">{{ tag }}</text>
+    </view>
+
     <view class="info">
       <text class="title">{{ goods.title }}</text>
-      <text class="desc">{{ goods.description }}</text>
       <view class="price-row">
         <text class="price">¥{{ fen2yuan(goods.minPrice) }}</text>
         <text class="origin-price">¥{{ fen2yuan(goods.originPrice) }}</text>
       </view>
       <view class="bottom-row">
-        <text class="sales">已售 {{ goods.sales }}</text>
-        <view class="add-cart-btn" @click.stop="$emit('add', goods)">加购</view>
+        <text class="sales">已售 {{ salesText }}</text>
+        <view v-if="showAdd" class="add-btn" @click.stop="$emit('add', goods)">
+          <text class="add-icon">+</text>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { fen2yuan } from '../utils/format.js'
 
-/**
- * 商品卡片
- * @prop {Object} goods 商品项（goods.list 返回结构，含 minPrice/originPrice/color/cover）
- * @emits {tap} 点击卡片（父页面跳详情）
- * @emits {add} 点击加购按钮（父页面调 cartApi.add）
- */
-defineProps({
-  goods: { type: Object, required: true }
+const props = defineProps({
+  goods: { type: Object, required: true },
+  /** 角标文案：NEW / HOT / LIMITED 等，为空则不渲染 */
+  tag: { type: String, default: '' },
+  /** 是否显示快捷加购按钮 */
+  showAdd: { type: Boolean, default: false },
+  /** 封面高度（rpx），调用方按卡片宽度传入以保持 1:1 */
+  coverHeight: { type: Number, default: 320 }
 })
 
 defineEmits(['tap', 'add'])
+
+/** 销量展示：超过 1 万折算为「x.x万」 */
+const salesText = computed(() => {
+  const s = Number(props.goods.sales || 0)
+  return s >= 10000 ? (s / 10000).toFixed(1) + 'w' : String(s)
+})
 </script>
 
 <style scoped>
@@ -51,7 +65,7 @@ defineEmits(['tap', 'add'])
 .goods-card {
   width: 100%;
   background-color: #ffffff;
-  border-radius: 16rpx;
+  border: 4rpx solid $rz-ink;
   overflow: hidden;
 }
 
@@ -60,7 +74,6 @@ defineEmits(['tap', 'add'])
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 320rpx;
 }
 
 .cover-img {
@@ -73,14 +86,31 @@ defineEmits(['tap', 'add'])
   color: rgba(255, 255, 255, 0.85);
 }
 
+/* 角标：图下独立一行，黑底黄字硬边 */
+.tag-row {
+  padding: 12rpx 14rpx 0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  font-size: $rz-fs-cap;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  color: $rz-acid;
+  background-color: $rz-ink;
+}
+
 .info {
-  padding: 16rpx 20rpx 20rpx;
+  padding: 14rpx 16rpx 16rpx;
 }
 
 .title {
   display: block;
   font-size: 28rpx;
-  color: #222222;
+  font-weight: 700;
+  color: $rz-ink;
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -89,8 +119,8 @@ defineEmits(['tap', 'add'])
 .desc {
   display: block;
   margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #999999;
+  font-size: $rz-fs-cap;
+  color: $rz-grey-500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -99,19 +129,19 @@ defineEmits(['tap', 'add'])
 .price-row {
   display: flex;
   align-items: baseline;
-  gap: 12rpx;
+  gap: 10rpx;
   margin-top: 12rpx;
 }
 
 .price {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #e24b4a;
+  font-size: 38rpx;
+  font-weight: 900;
+  color: $rz-price;
 }
 
 .origin-price {
   font-size: 22rpx;
-  color: #bbbbbb;
+  color: $rz-grey-300;
   text-decoration: line-through;
 }
 
@@ -119,19 +149,29 @@ defineEmits(['tap', 'add'])
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 12rpx;
+  margin-top: 10rpx;
 }
 
 .sales {
-  font-size: 22rpx;
-  color: #999999;
+  font-size: $rz-fs-cap;
+  color: $rz-grey-500;
 }
 
-.add-cart-btn {
-  padding: 8rpx 28rpx;
-  font-size: 24rpx;
-  color: #ffffff;
-  background-color: #e24b4a;
-  border-radius: 28rpx;
+/* 快捷加购：黑底黄字方块 */
+.add-btn {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-acid;
+  border: 4rpx solid $rz-ink;
+}
+
+.add-icon {
+  font-size: 30rpx;
+  font-weight: 900;
+  color: $rz-ink;
+  line-height: 1;
 }
 </style>

@@ -4,67 +4,100 @@
   规则（PRD §②）：
   - 输入防抖 300ms；历史仅存本地、上限 10 条、可清空（隐私要求）
   - 无结果空态 + 清空筛选；搜索无结果率是板块②健康指标（目标 ≤15%）
+  服装电商要点（对齐设计稿）：
+  - 结果为横向行式卡片，突出规格与价格（尺码决策前置）
 -->
 <template>
-  <view class="search-page">
+  <view class="search">
     <!-- 搜索栏 -->
     <view class="search-bar">
-      <text class="search-icon">🔍</text>
-      <input
-        class="search-input"
-        v-model="keyword"
-        placeholder="搜索商品"
-        confirm-type="search"
-        focus
-        @input="onInput"
-        @confirm="onSearch"
-      />
-      <text v-if="keyword" class="search-clear" @click="clearKeyword">✕</text>
+      <view class="search-back" @click="goBack">
+        <image class="search-back-img" src="/static/mall/icons/back.png" mode="aspectFit" />
+      </view>
+      <view class="search-input-wrap">
+        <image class="search-icon" src="/static/mall/icons/search.png" mode="aspectFit" />
+        <input
+          class="search-input"
+          v-model="keyword"
+          placeholder="搜索卫衣 / 联名款 / 工装裤"
+          placeholder-class="search-ph"
+          confirm-type="search"
+          focus
+          @input="onInput"
+          @confirm="onSearch"
+        />
+        <view v-if="keyword" class="search-clear" @click="clearKeyword">
+          <image class="search-clear-img" src="/static/mall/icons/close.png" mode="aspectFit" />
+        </view>
+      </view>
+      <text class="search-submit" @click="onSearch">搜索</text>
     </view>
 
     <!-- 搜索历史（无关键词时展示） -->
-    <view v-if="!keyword && history.length" class="history-block">
-      <view class="history-header">
+    <view v-if="!keyword && history.length" class="block">
+      <view class="block-head">
         <text class="block-title">搜索历史</text>
-        <text class="history-clear" @click="onClearHistory">清空</text>
+        <text class="block-action" @click="onClearHistory">清空</text>
       </view>
-      <view class="history-list">
-        <view v-for="word in history" :key="word" class="history-tag" @click="onHistoryTap(word)">
-          <text>{{ word }}</text>
+      <view class="tag-row">
+        <view v-for="word in history" :key="word" class="tag" @click="onHistoryTap(word)">
+          <text class="tag-text">{{ word }}</text>
         </view>
       </view>
     </view>
 
-    <!-- 热词占位（真实环境来自服务端配置，PRD §②） -->
-    <view v-if="!keyword && hotWords.length" class="history-block">
-      <text class="block-title">热门搜索</text>
-      <view class="history-list">
-        <view v-for="word in hotWords" :key="word" class="history-tag hot" @click="onHistoryTap(word)">
-          <text>{{ word }}</text>
+    <!-- 热门搜索 -->
+    <view v-if="!keyword && hotWords.length" class="block">
+      <view class="block-head">
+        <text class="block-title">热门搜索</text>
+        <text class="block-en">HOT</text>
+      </view>
+      <view class="tag-row">
+        <view
+          v-for="(word, i) in hotWords"
+          :key="word"
+          class="tag"
+          :class="{ 'tag-hot': i === 0 }"
+          @click="onHistoryTap(word)"
+        >
+          <text class="tag-text" :class="{ 'tag-hot-text': i === 0 }">{{ word }}</text>
         </view>
       </view>
     </view>
 
-    <!-- 搜索结果：复用商品卡组件 -->
-    <view v-if="keyword" class="result-list">
+    <!-- 搜索结果 -->
+    <view v-if="keyword" class="result">
+      <view class="result-head">
+        <text class="result-title">“{{ keyword }}” 的搜索结果</text>
+        <text class="result-count">共 {{ total }} 件</text>
+      </view>
+
       <view v-if="searched && !resultList.length" class="empty">
-        <text class="empty-text">没有找到「{{ keyword }}」相关商品</text>
-        <view class="empty-btn" @click="clearKeyword"><text>清空搜索</text></view>
+        <view class="empty-art">
+          <image class="empty-img" src="/static/mall/icons/search.png" mode="aspectFit" />
+        </view>
+        <text class="empty-text">没有找到相关商品</text>
+        <view class="empty-btn" @click="clearKeyword">
+          <text class="empty-btn-text">清空筛选</text>
+        </view>
       </view>
 
-      <view v-else class="goods-grid">
-        <goods-card
-          v-for="goods in resultList"
-          :key="goods.id"
-          class="goods-cell"
-          :goods="goods"
-          @tap="goDetail"
-          @add="onAddCart"
-        />
+      <view v-else class="result-list">
+        <view v-for="g in resultList" :key="g.id" class="row-item" @click="goDetail(g)">
+          <view class="row-cover" :style="{ backgroundColor: g.color }">
+            <image v-if="g.cover" class="row-cover-img" :src="g.cover" mode="aspectFill" />
+            <text v-else class="row-cover-fallback">{{ g.title.slice(0, 1) }}</text>
+          </view>
+          <view class="row-info">
+            <text class="row-name">{{ g.title }}</text>
+            <text class="row-spec">{{ g.description }}  ·  已售 {{ g.sales }}</text>
+            <text class="row-price">¥{{ fen2yuan(g.minPrice) }}</text>
+          </view>
+        </view>
       </view>
 
       <view v-if="resultList.length" class="load-tip">
-        <text>{{ loading ? '加载中...' : hasMore ? '上拉加载更多' : '— 没有更多了 —' }}</text>
+        <text class="load-text">{{ loading ? '加载中...' : hasMore ? '上拉加载更多' : '— 没有更多了 —' }}</text>
       </view>
     </view>
   </view>
@@ -74,8 +107,8 @@
 /** 搜索页逻辑（Vue3 setup） */
 import { ref } from 'vue'
 import { onPullDownRefresh, onReachBottom, onUnload } from '@dcloudio/uni-app'
-import { goodsApi, cartApi } from '../api/index.js'
-import GoodsCard from '../components/goods-card.vue'
+import { goodsApi } from '../api/index.js'
+import { fen2yuan } from '../utils/format.js'
 
 const HISTORY_KEY = 'mall_search_history'
 const HISTORY_MAX = 10
@@ -84,6 +117,7 @@ const DEBOUNCE_MS = 300
 /** 关键词与结果 */
 const keyword = ref('')
 const resultList = ref([])
+const total = ref(0)
 const page = ref(0)
 const hasMore = ref(true)
 const loading = ref(false)
@@ -93,75 +127,67 @@ const searched = ref(false)
 /** 搜索历史（仅本地存储，PRD §②规则 4） */
 const history = ref(uni.getStorageSync(HISTORY_KEY) || [])
 /** 热词（mock 静态占位，真实环境服务端下发） */
-const hotWords = ['蓝牙耳机', '保温杯', 'T恤', '背包']
+const hotWords = ['oversize 卫衣', 'STREET KING', '落肩连帽', '男女同款', '秋冬新品']
 
 let debounceTimer = null
 
 /**
- * 输入防抖 300ms（PRD §5.3：防抖 + 丢弃过期请求由重置分页天然覆盖）
+ * 输入防抖 300ms
  */
 function onInput() {
-  clearTimeout(debounceTimer)
+  if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
-    if (keyword.value.trim()) doSearch(true)
-    else resetResult()
+    if (keyword.value) doSearch(1)
   }, DEBOUNCE_MS)
 }
 
-/** 键盘确认立即搜索 */
+/** 主动搜索（点搜索按钮或回车） */
 function onSearch() {
-  clearTimeout(debounceTimer)
-  if (keyword.value.trim()) doSearch(true)
-}
-
-/** 点历史/热词直接搜索 */
-function onHistoryTap(word) {
-  keyword.value = word
-  doSearch(true)
+  if (debounceTimer) clearTimeout(debounceTimer)
+  if (!keyword.value) return
+  doSearch(1)
+  saveHistory(keyword.value)
 }
 
 /**
  * 执行搜索
- * @param {boolean} reset - true 从第一页开始
+ * @param {number} next 页码
  */
-async function doSearch(reset = false) {
-  const word = keyword.value.trim()
-  if (!word) return
+async function doSearch(next) {
   if (loading.value) return
-  if (!reset && !hasMore.value) return
-
   loading.value = true
+  searched.value = true
   try {
-    const next = reset ? 1 : page.value + 1
-    const data = await goodsApi.list({ keyword: word, page: next, pageSize: 10 })
-    resultList.value = reset ? data.list : resultList.value.concat(data.list)
+    const data = await goodsApi.list({ keyword: keyword.value, page: next, pageSize: 10 })
+    resultList.value = next === 1 ? data.list : resultList.value.concat(data.list)
+    total.value = data.total
     page.value = next
     hasMore.value = data.hasMore
-    searched.value = true
-    saveHistory(word)
   } catch (e) {
     uni.showToast({ title: e.msg || '搜索失败', icon: 'none' })
   } finally {
     loading.value = false
-    if (reset) uni.stopPullDownRefresh()
+    if (next === 1) uni.stopPullDownRefresh()
   }
 }
 
-/** 清空关键词回到历史/热词视图 */
-function clearKeyword() {
-  keyword.value = ''
-  resetResult()
+/** 点击历史/热词 */
+function onHistoryTap(word) {
+  keyword.value = word
+  onSearch()
 }
 
-function resetResult() {
+/** 清空关键词 */
+function clearKeyword() {
+  keyword.value = ''
   resultList.value = []
-  page.value = 0
-  hasMore.value = true
   searched.value = false
+  total.value = 0
+  hasMore.value = true
 }
 
 /**
- * 保存搜索历史（去重置顶，上限 10 条，仅本地存储）
+ * 保存搜索历史（上限 10 条，去重后最新的在前）
  */
 function saveHistory(word) {
   const next = [word, ...history.value.filter((w) => w !== word)].slice(0, HISTORY_MAX)
@@ -169,147 +195,306 @@ function saveHistory(word) {
   uni.setStorageSync(HISTORY_KEY, next)
 }
 
-/** 清空历史（二次确认） */
+/** 清空搜索历史 */
 function onClearHistory() {
-  uni.showModal({
-    title: '提示',
-    content: '确定清空搜索历史吗？',
-    success: (res) => {
-      if (!res.confirm) return
-      history.value = []
-      uni.removeStorageSync(HISTORY_KEY)
-    }
-  })
-}
-
-/** 结果页加购（与首页一致：自动选有库存 SKU） */
-async function onAddCart(goods) {
-  try {
-    await cartApi.add({ goodsId: goods.id, quantity: 1 })
-    uni.showToast({ title: '已加入购物车', icon: 'success' })
-  } catch (e) {
-    uni.showToast({ title: e.msg || '加购失败', icon: 'none' })
-  }
+  history.value = []
+  uni.removeStorageSync(HISTORY_KEY)
 }
 
 function goDetail(goods) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 
-// 下拉刷新 / 触底分页
-onPullDownRefresh(() => keyword.value && doSearch(true))
-onReachBottom(() => keyword.value && doSearch(false))
-onUnload(() => clearTimeout(debounceTimer))
+function goBack() {
+  uni.navigateBack()
+}
+
+onPullDownRefresh(() => {
+  if (keyword.value) doSearch(1)
+  else uni.stopPullDownRefresh()
+})
+
+onReachBottom(() => {
+  if (keyword.value && hasMore.value) doSearch(page.value + 1)
+})
+
+onUnload(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
 </script>
 
 <style scoped>
-.search-page {
+.search {
   min-height: 100vh;
-  background-color: #f5f6f8;
-  padding-bottom: 40rpx;
+  background-color: $rz-grey-50;
 }
 
+/* ---- 搜索栏 ---- */
 .search-bar {
   display: flex;
   align-items: center;
+  gap: 16rpx;
+  height: 112rpx;
+  padding: 0 24rpx;
+  background-color: $rz-white;
+  border-bottom: 2rpx solid $rz-line;
+}
+
+.search-back {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-back-img {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
   gap: 12rpx;
-  margin: 20rpx 24rpx;
-  padding: 18rpx 24rpx;
-  background-color: #ffffff;
-  border-radius: 44rpx;
+  height: 72rpx;
+  padding: 0 20rpx;
+  background-color: $rz-grey-100;
+  min-width: 0;
+}
+
+.search-icon {
+  width: 26rpx;
+  height: 26rpx;
+  opacity: 0.5;
+  flex-shrink: 0;
 }
 
 .search-input {
   flex: 1;
+  font-size: 28rpx;
+  color: $rz-ink;
+  height: 72rpx;
+  min-width: 0;
+}
+
+.search-ph {
+  color: $rz-grey-500;
   font-size: 26rpx;
 }
 
 .search-clear {
-  font-size: 28rpx;
-  color: #999999;
-  padding: 0 8rpx;
-}
-
-.history-block {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  margin: 20rpx 24rpx 0;
-  padding: 24rpx;
-}
-
-.history-header {
+  width: 36rpx;
+  height: 36rpx;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-grey-300;
+  border-radius: 18rpx;
+  flex-shrink: 0;
+}
+
+.search-clear-img {
+  width: 18rpx;
+  height: 18rpx;
+}
+
+.search-submit {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
+  flex-shrink: 0;
+}
+
+/* ---- 历史 / 热词 ---- */
+.block {
+  background-color: $rz-white;
+  margin-top: 16rpx;
+  padding: 28rpx $rz-page-pad;
+}
+
+.block-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
   margin-bottom: 20rpx;
 }
 
 .block-title {
-  font-size: 28rpx;
-  color: #222222;
-  font-weight: 500;
+  font-size: 32rpx;
+  font-weight: 900;
+  color: $rz-ink;
 }
 
-.history-clear {
+.block-en {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: $rz-price;
+}
+
+.block-action {
+  margin-left: auto;
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
 }
 
-.history-list {
+.tag-row {
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
 }
 
-.history-tag {
-  padding: 10rpx 28rpx;
-  background-color: #f5f6f8;
-  border-radius: 28rpx;
-  font-size: 24rpx;
-  color: #666666;
+.tag {
+  padding: 12rpx 24rpx;
+  background-color: $rz-grey-100;
+  border: 2rpx solid transparent;
 }
 
-.history-tag.hot {
-  color: #e24b4a;
-  background-color: #fcebeb;
+.tag-hot {
+  background-color: $rz-acid;
+  border-color: $rz-ink;
+}
+
+.tag-text {
+  font-size: 24rpx;
+  color: $rz-ink;
+}
+
+.tag-hot-text {
+  font-weight: 700;
+}
+
+/* ---- 结果 ---- */
+.result {
+  margin-top: 16rpx;
+}
+
+.result-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 24rpx $rz-page-pad 16rpx;
+  background-color: $rz-white;
+}
+
+.result-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
+}
+
+.result-count {
+  font-size: 24rpx;
+  color: $rz-grey-500;
 }
 
 .result-list {
-  padding: 0 24rpx;
-}
-
-/* 两列网格：宽度作用在 <goods-card> 宿主节点上，与首页同规格（341rpx） */
-.goods-grid {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 20rpx;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 20rpx 24rpx 0;
 }
 
-.goods-cell {
-  display: block;
-  width: 341rpx;
-  margin-bottom: 20rpx;
+.row-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx;
+  background-color: $rz-white;
+  border: 4rpx solid $rz-ink;
 }
 
+.row-cover {
+  width: 144rpx;
+  height: 144rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.row-cover-img {
+  width: 100%;
+  height: 100%;
+}
+
+.row-cover-fallback {
+  font-size: 56rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.row-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.row-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
+  line-height: 1.4;
+}
+
+.row-spec {
+  font-size: 22rpx;
+  color: $rz-grey-500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-price {
+  font-size: 34rpx;
+  font-weight: 900;
+  color: $rz-price;
+}
+
+/* ---- 空态 ---- */
 .empty {
+  padding-top: 120rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 160rpx;
-  gap: 24rpx;
+  gap: 20rpx;
+}
+
+.empty-art {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-grey-100;
+}
+
+.empty-img {
+  width: 56rpx;
+  height: 56rpx;
+  opacity: 0.35;
 }
 
 .empty-text {
   font-size: 28rpx;
-  color: #999999;
+  color: $rz-grey-500;
 }
 
 .empty-btn {
-  padding: 14rpx 56rpx;
-  background-color: #e24b4a;
-  border-radius: 40rpx;
-  color: #ffffff;
-  font-size: 26rpx;
+  width: 220rpx;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid $rz-ink;
+  background-color: $rz-white;
+}
+
+.empty-btn-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $rz-ink;
 }
 
 .load-tip {
@@ -317,8 +502,8 @@ onUnload(() => clearTimeout(debounceTimer))
   text-align: center;
 }
 
-.load-tip text {
+.load-text {
   font-size: 24rpx;
-  color: #999999;
+  color: $rz-grey-500;
 }
 </style>

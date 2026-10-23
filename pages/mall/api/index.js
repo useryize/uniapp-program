@@ -39,7 +39,45 @@ export const goodsApi = {
   list: (params) => call('goods.list', '/goods/list', params),
 
   /** 商品详情（含 SKU 列表）@param {{id:number}} params */
-  detail: (params) => call('goods.detail', '/goods/detail', params)
+  detail: (params) => call('goods.detail', '/goods/detail', params),
+
+  /** 类目树（分类页左侧栏 + 右侧过滤） */
+  categories: () => call('goods.categories', '/goods/categories', {})
+}
+
+/**
+ * 尺码域（服装电商核心：尺码决策链）
+ * 说明：尺码推荐与尺码表均由服务端计算，前端只展示推荐结果与依据
+ */
+export const sizeApi = {
+  /**
+   * 尺码推荐 @param {{height:number, weight:number, fit?:'Y'|'A'|'B'}} params
+   * @returns {Promise<{size:string, reason:string, chart:Object, range:string}>}
+   */
+  recommend: (params) => call('size.recommend', '/size/recommend', params, 'POST'),
+
+  /**
+   * 尺码表 @param {{goodsId?:number, height?:number, weight?:number}} params
+   * @returns {Promise<{unit:string, rows:Array<Object>, recommendSize:string}>}
+   */
+  chart: (params) => call('size.chart', '/size/chart', params),
+
+  /** 读取用户尺码档案 */
+  profile: () => call('size.profile.get', '/size/profile', {}),
+
+  /** 保存用户尺码档案 @param {{height:number, weight:number, fit?:string}} params */
+  saveProfile: (params) => call('size.profile.save', '/size/profile', params, 'POST')
+}
+
+/**
+ * 发售日历域（潮牌限量款：发售机制链）
+ */
+export const dropApi = {
+  /** 发售列表 @param {{type?:'soon'|'live'|'soldout'}} params */
+  list: (params) => call('drop.list', '/drop/list', params),
+
+  /** 订阅开售 / 到货提醒 @param {{goodsId:number}} params */
+  subscribe: (params) => call('drop.subscribe', '/drop/subscribe', params, 'POST')
 }
 
 /** 购物车域（PRD 板块③） */
@@ -52,6 +90,9 @@ export const cartApi = {
 
   /** 改数量：{ id, quantity }，上限为可售库存 */
   updateQty: (params) => call('cart.updateQty', '/cart/qty', params, 'POST'),
+
+  /** 改规格（换 SKU）：{ id, skuId, quantity? }，服装电商购物车内改尺码/颜色 */
+  updateSku: (params) => call('cart.updateSku', '/cart/sku', params, 'POST'),
 
   /** 单项勾选：{ id, checked } */
   setChecked: (params) => call('cart.setChecked', '/cart/checked', params, 'POST'),
