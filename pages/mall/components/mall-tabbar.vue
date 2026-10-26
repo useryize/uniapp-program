@@ -22,7 +22,7 @@ const items = [
   { key: 'home', label: '首页', path: '/pages/mall/index', icon: '/static/mall/ardot/tab-home.png' },
   { key: 'category', label: '分类', path: '/pages/mall/category/index', icon: '/static/mall/ardot/tab-category.png' },
   { key: 'cart', label: '购物车', path: '/pages/mall/cart/index', icon: '/static/mall/ardot/tab-cart.png' },
-  { key: 'person', label: '我的', path: '/pages/wallpaper/person/index', icon: '/static/mall/ardot/tab-person.png' }
+  { key: 'person', label: '我的', path: '/pages/mall/person/index', icon: '/static/mall/ardot/tab-person.png' }
 ]
 
 function switchTo(path) {

@@ -24,6 +24,7 @@ pages/mall/
 │       ├── order.js          计价/锁库存/支付回调/发货/确认收货/取消
 │       └── address.js        地址增删改 / 设默认
 ├── detail/index.vue          商品详情（SKU 弹层联动 / 加购 / 直购）
+├── person/index.vue          个人中心（订单 / 尺码档案 / 发售提醒）
 ├── cart/index.vue            购物车（勾选/改量/失效区/结算栏）
 ├── confirm/index.vue         结算页（购物车 ids / 直购 skuId 双入口）
 ├── pay/result.vue            支付结果（待支付/成功/超时竞态三态）

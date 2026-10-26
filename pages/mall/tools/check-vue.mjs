@@ -29,7 +29,7 @@ let pass = 0
 let fail = 0
 const problems = []
 
-for (const file of [...walk(SRC), path.join(ROOT, 'pages/wallpaper/person/index.vue')]) {
+for (const file of walk(SRC)) {
   const rel = path.relative(ROOT, file).replace(/\\/g, '/')
   const source = fs.readFileSync(file, 'utf8')
   const id = rel

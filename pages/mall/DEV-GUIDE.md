@@ -14,6 +14,7 @@ pages/mall/
 ├── search/index.vue       搜索页（重做：结果改横向行式，突出规格与价格）
 ├── detail/index.vue       商品详情（重做：尺码推荐条 / 售罄保留 / 吸底规格栏 / 大面板）
 ├── cart/index.vue         购物车（重做：凑单提示 / 规格可改 / 空态）
+├── person/index.vue       个人中心（商城订单 / 尺码档案 / 发售提醒）
 ├── confirm/index.vue      订单确认（重做：黑底地址卡 / 优惠券行 / 应付金额）
 ├── pay/result.vue         支付结果（重做：待支付 / 成功 / 异常三态）
 ├── order/list.vue         订单列表（重做：黑底选中 tab / 状态色）
@@ -33,9 +34,9 @@ pages/mall/
 └── api/index.js           接口出口（新增 sizeApi / dropApi / cartApi.updateSku）
 
 static/
-├── mall/                  商品图 7 张（12M → 813K 压缩）
-│   └── icons/             21 个线性图标（PNG，替代 emoji）
-└── tabbar/                4 个 tabBar 图标（81×81，8 个文件）
+└── mall/                  商品图 7 张（12M → 813K 压缩）
+    ├── icons/             21 个线性图标（PNG，替代 emoji）
+    └── tabbar/            4 个 tabBar 图标（81×81，8 个文件）
 ```
 
 ---
@@ -52,7 +53,7 @@ static/
 | 价格红 `#E24B4A` | 同名变量 |
 | 图标 | 21 个 PNG 线性图标（`static/mall/icons/`），不用 emoji |
 
-**令牌集中在 `uni.scss`**（uni-app 全局注入，页面无需 import）：
+**令牌集中在 `pages/mall/styles/tokens.scss`**，由根目录 `uni.scss` 引入并由 uni-app 注入：
 
 ```scss
 $rz-ink: #0A0A0A;   $rz-acid: #FFD500;  $rz-price: #E24B4A;
@@ -85,11 +86,11 @@ cartApi.updateSku({ id, skuId, quantity })  // 购物车改规格
 - 新增 3 个路由：`pages/mall/category/index`、`pages/mall/size-guide/index`、`pages/mall/drop/index`
 - tabBar 由 2 个扩到 **4 个**：首页 / 分类 / 购物车 / 我的
   - 分类页、购物车页是 tabBar 页，**跳转必须用 `uni.switchTab`**
-  - 「我的」沿用 `pages/wallpaper/person/index`（全局用户中心），已改造为设计稿风格并接入商城订单 / 尺码档案 / 发售提醒
+  - 「我的」位于 `pages/mall/person/index`（全局用户中心），已改造为设计稿风格并接入商城订单 / 尺码档案 / 发售提醒
 
 > 首页和个人中心使用 `components/mall-tabbar.vue` 绘制设计稿的胶囊导航；分类和购物车按设计稿隐藏底栏。四个路由仍注册在 `pages.json` 的 tabBar 中，通过 `uni.switchTab` 切换。
 
-> 所有商城 `.vue` 样式块与个人中心样式块声明 `lang="scss"` 并引入根目录 `uni.scss`，否则 `$rz-*` 设计变量不会正确编译。`check-vue.mjs` 会检查这一点。
+> 所有商城 `.vue` 样式块声明 `lang="scss"` 并引入根目录 `uni.scss`，否则 `$rz-*` 设计变量不会正确编译。`check-vue.mjs` 会检查这一点。
 
 ---
 

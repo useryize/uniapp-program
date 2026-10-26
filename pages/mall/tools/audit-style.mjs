@@ -74,7 +74,7 @@ function walk(dir, out = []) {
 
 const files = [
   ...walk(path.join(ROOT, 'pages/mall')),
-  path.join(ROOT, 'pages/wallpaper/person/index.vue')
+  path.join(ROOT, 'pages/mall/person/index.vue')
 ]
 
 const issues = []

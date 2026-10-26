@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 import os
 
 S = 81          # 画布边长
-OUT = "E:/github/uniapp-program/static/tabbar"
+OUT = "E:/github/uniapp-program/static/mall/tabbar"
 GREY = (140, 140, 140, 255)
 BLACK = (10, 10, 10, 255)
 

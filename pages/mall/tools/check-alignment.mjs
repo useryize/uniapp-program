@@ -21,7 +21,7 @@ const pages = {
   pay: read('pages/mall/pay/result.vue'),
   orderList: read('pages/mall/order/list.vue'),
   orderDetail: read('pages/mall/order/detail.vue'),
-  person: read('pages/wallpaper/person/index.vue'),
+  person: read('pages/mall/person/index.vue'),
   sizeGuide: read('pages/mall/size-guide/index.vue'),
   drop: read('pages/mall/drop/index.vue'),
   card: read('pages/mall/components/goods-card.vue'),

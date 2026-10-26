@@ -59,7 +59,7 @@ pages/mall/design/
 | 10 | 支付异常 | `pages/mall/pay/result` | 已有（同页态） |
 | 11 | 订单列表 | `pages/mall/order/list` | 已有 |
 | 12 | 订单详情 | `pages/mall/order/detail` | 已有 |
-| 13 | 个人中心 | `pages/wallpaper/person/index` | 已有 |
+| 13 | 个人中心 | `pages/mall/person/index` | 已有 |
 | 14 | 交互流程图 | — | 设计说明 |
 | 15 | 设计系统板 | — | 设计说明 |
 | 16 | 尺码助手 / 尺码表 | `pages/mall/size-guide/index` | **待新增** |
@@ -144,7 +144,7 @@ pages/mall/design/
 - **发售提醒依赖订阅消息能力**：mock 阶段可先做静态展示，不接推送。
 - **金额口径**沿用项目现有约定：整数「分」存储传输，展示层用 `fen2yuan()` 转元，前端不计算金额。
 - **运费规则**：满 ¥99 免邮，否则 ¥8（`pages/mall/config.js`，PRD 中为待业务确认项 Q7）。
-- 设计稿里的商品图取自 `assets/`，接入真实接口后应替换为 CDN 图，字段对应 `goods.cover`。
+- 设计稿里的商品图取自 `assets/`，原始生成图归档在 `source/`；接入真实接口后应替换为 CDN 图，字段对应 `goods.cover`。
 
 ---
 

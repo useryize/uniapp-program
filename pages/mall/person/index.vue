@@ -1,5 +1,5 @@
 <!--
-  个人中心（pages/wallpaper/person/index）—— tabBar「我的」
+  个人中心（pages/mall/person/index）—— tabBar「我的」
   说明：该页是全 App 共用的用户中心，同时承载商城订单入口与服装电商能力
         （尺码档案 / 发售提醒），壁纸模块功能保留在功能宫格内
   视觉：街头潮流 —— 墨黑头部 + 酸性黄强调 + 2px 硬描边
@@ -77,8 +77,8 @@
 /** 个人中心逻辑（Vue3 setup） */
 import { ref, reactive, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import MallTabbar from '../../mall/components/mall-tabbar.vue'
-import { sizeApi, dropApi } from '../../mall/api/index.js'
+import MallTabbar from '../components/mall-tabbar.vue'
+import { sizeApi, dropApi } from '../api/index.js'
 
 const isLogin = ref(false)
 const userInfo = reactive({

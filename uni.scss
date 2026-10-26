@@ -75,39 +75,4 @@ $uni-font-size-subtitle:26px;
 $uni-color-paragraph: #3F536E; // 文章段落颜色
 $uni-font-size-paragraph:15px;
 
-/* ============================================================
- * RAWZONE 街头潮流 · 设计令牌
- * 对齐 pages/mall/design/README.md 第四节「设计规范速查」
- * 换算基准：750rpx = 375px，即 1px = 2rpx
- * ============================================================ */
-
-/* 色彩 */
-$rz-ink:        #0A0A0A;  // 墨黑：主色 / 强调块 / 标题
-$rz-acid:       #FFD500;  // 酸性黄：主 CTA / 高亮 / 选中态
-$rz-price:      #E24B4A;  // 价格红：金额 / 折扣 / 紧张库存
-$rz-white:      #FFFFFF;
-$rz-grey-50:    #F7F7F7;  // 分组底 / 卡片间隙
-$rz-grey-100:   #F2F2F2;  // 浅灰底 / 禁用态
-$rz-grey-300:   #BFBFBF;  // 禁用文字
-$rz-grey-500:   #8C8C8C;  // 次要文字
-$rz-line:       #E5E5E5;  // 分割线
-$rz-warn-bg:    #FFF8D9;  // 尺码推荐条底
-$rz-danger-bg:  #FFF1F1;  // 紧张库存条底
-$rz-danger:     #F43F5E;
-
-/* 形状：街头感来自硬边与硬描边，不来自圆角 */
-$rz-border-w:   4rpx;     // 2px 纯黑描边
-$rz-radius:     0;
-
-/* 间距 */
-$rz-page-pad:   32rpx;    // 页面左右安全边距（16px）
-$rz-gap:        20rpx;    // 基准间距（10px）
-$rz-gap-lg:     24rpx;    // 区块间距（12px）
-
-/* 字号（设计稿 px × 2） */
-$rz-fs-hero:    80rpx;    // 40px 页面主标题
-$rz-fs-title:   40rpx;    // 20px 区块标题
-$rz-fs-price:   64rpx;    // 32px 大价格
-$rz-fs-body:    28rpx;    // 14px 正文
-$rz-fs-desc:    26rpx;    // 13px 辅助说明
-$rz-fs-cap:     22rpx;    // 11px 角标 / 标签
+@import "./pages/mall/styles/tokens.scss";
