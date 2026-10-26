@@ -87,7 +87,9 @@ cartApi.updateSku({ id, skuId, quantity })  // 购物车改规格
   - 分类页、购物车页是 tabBar 页，**跳转必须用 `uni.switchTab`**
   - 「我的」沿用 `pages/wallpaper/person/index`（全局用户中心），已改造为设计稿风格并接入商城订单 / 尺码档案 / 发售提醒
 
-> ⚠️ tabBar 原生不支持设计稿的「胶囊式」TabBar，落地为系统 tabBar + 街头风实心几何图标。若要完全还原胶囊样式，需放弃系统 tabBar 改为自绘组件（会失去 switchTab 的页面栈管理，不推荐）。
+> 首页和个人中心使用 `components/mall-tabbar.vue` 绘制设计稿的胶囊导航；分类和购物车按设计稿隐藏底栏。四个路由仍注册在 `pages.json` 的 tabBar 中，通过 `uni.switchTab` 切换。
+
+> 所有商城 `.vue` 样式块与个人中心样式块声明 `lang="scss"` 并引入根目录 `uni.scss`，否则 `$rz-*` 设计变量不会正确编译。`check-vue.mjs` 会检查这一点。
 
 ---
 
@@ -117,7 +119,7 @@ node pages/mall/tools/check-alignment.mjs     # 高保真对齐断言  66/66
 node pages/mall/tools/audit-style.mjs         # 样式 token 审计  0 偏差
 node pages/mall/tools/check-routes.mjs        # 路由可达性      0 问题
 node pages/mall/tools/check-design-rules.mjs  # 设计稿规则覆盖  33/33
-node pages/mall/tools/check-vue.mjs           # SFC 编译校验    15/15
+node pages/mall/tools/check-vue.mjs           # SFC + SCSS 编译校验    17/17
 node --import ./pages/mall/tools/reg.mjs \
      pages/mall/tools/smoke-mock.mjs          # 数据层冒烟      19/19
 ```
@@ -126,9 +128,7 @@ node --import ./pages/mall/tools/reg.mjs \
 （项目源码用 vite 风格的无扩展名导入，Node 直跑 mock handler 时需要）。
 
 > ⚠️ **真机/模拟器效果仍需在 HBuilderX 或微信开发者工具中运行确认**。
-> 尝试过用 CLI 起 H5 预览做像素级比对，但 uni-app 3.x alpha 与本项目的老结构
-> （HBuilderX 5.33 时代的 manifest + 根目录布局）不兼容：SSR 编译卡在
-> "Compiling..."，CSR 模式挂不上，`vite build` 也超时。HBuilderX 打开不受影响。
+> 当前仓库的 `npm run build:h5` 使用普通 Vite，未配置 uni-app 插件，构建在解析 `main.js` 的 `./App` 时失败；需在 HBuilderX 或微信开发者工具中做运行时截图对比。
 
 ---
 
@@ -139,7 +139,7 @@ node --import ./pages/mall/tools/reg.mjs \
 | 规则 | 说明 |
 |---|---|
 | **页面区块通栏无边框** | `.panel` / `.card` / `.goods-block` 等页面级区块**不加** 2px 描边，靠背景色与留白分段 |
-| **交互元素才有硬描边** | 按钮、商品卡、输入框、选项块、订单卡用 `4rpx solid #0A0A0A` |
+| **按画面选择描边** | 按钮、选项块和首页商品卡用 `4rpx solid #0A0A0A`；分类商品卡、购物车商品行和订单卡为无描边白底 |
 | **Hero 图文分离** | 图片与标题文案是两个独立区块，标题在图下方的黑底区，不叠在图上 |
 | **商品卡角标在图下** | 独立成行（黑底黄字），不叠在图片左上角 |
 | **封面 1:1** | 高度由调用方按卡宽传入（`cover-height` prop） |

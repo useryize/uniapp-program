@@ -5,6 +5,16 @@
 -->
 <template>
   <view class="category">
+    <view class="category-head">
+      <view class="category-back" @click="goHome">
+        <image src="/static/mall/icons/back.png" mode="aspectFit" />
+      </view>
+      <text class="category-title">分类</text>
+    </view>
+    <view class="category-search" @click="goSearch">
+      <image src="/static/mall/icons/search.png" mode="aspectFit" />
+      <text>搜索卫衣 / 联名款 / 工装裤</text>
+    </view>
     <view class="cat-body">
       <!-- 左侧类目栏 -->
       <scroll-view class="cat-rail" scroll-y>
@@ -53,6 +63,7 @@
               :key="g.id"
               class="cat-cell-item"
               :goods="g"
+              :plain="true"
               :cover-height="251"
               @tap="goDetail"
             />
@@ -169,6 +180,14 @@ function goDetail(goods) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 
+function goHome() {
+  uni.switchTab({ url: '/pages/mall/index' })
+}
+
+function goSearch() {
+  uni.navigateTo({ url: '/pages/mall/search/index' })
+}
+
 onLoad(async () => {
   try {
     categories.value = await goodsApi.categories()
@@ -179,21 +198,69 @@ onLoad(async () => {
 })
 
 onShow(() => {
+  uni.hideTabBar({ animation: false })
   // 从详情页返回时刷新（价格/库存可能已变）
   if (categories.value.length) loadGoods(true)
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .category {
   height: 100vh;
   background-color: $rz-grey-50;
   overflow: hidden;
 }
 
+.category-head {
+  height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $rz-white;
+  position: relative;
+}
+
+.category-back {
+  position: absolute;
+  left: 32rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+}
+
+.category-back image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.category-title {
+  color: $rz-ink;
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
+.category-search {
+  height: 80rpx;
+  padding: 0 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background-color: $rz-grey-100;
+  color: $rz-grey-500;
+  font-size: 26rpx;
+}
+
+.category-search image {
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.5;
+}
+
 .cat-body {
   display: flex;
-  height: 100%;
+  height: calc(100% - 192rpx);
 }
 
 /* ---- 左侧类目栏（白底，选中黑块，无分隔线） ---- */

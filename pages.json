@@ -4,9 +4,10 @@
     {
       "path": "pages/mall/index",
       "style": {
-        "navigationBarTitleText": "商城首页",
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
         "enablePullDownRefresh": true,
-        "navigationBarBackgroundColor": "#ffffff"
+        "backgroundColor": "#0A0A0A"
       }
     },
     {
@@ -19,7 +20,7 @@
     {
       "path": "pages/mall/cart/index",
       "style": {
-        "navigationBarTitleText": "购物车",
+        "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
@@ -33,7 +34,7 @@
     {
       "path": "pages/mall/pay/result",
       "style": {
-        "navigationBarTitleText": "支付结果",
+        "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
@@ -55,7 +56,7 @@
     {
       "path": "pages/mall/search/index",
       "style": {
-        "navigationBarTitleText": "搜索",
+        "navigationStyle": "custom",
         "enablePullDownRefresh": true,
         "navigationBarBackgroundColor": "#ffffff"
       }
@@ -63,7 +64,7 @@
     {
       "path": "pages/mall/category/index",
       "style": {
-        "navigationBarTitleText": "分类",
+        "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
@@ -79,7 +80,8 @@
     {
       "path": "pages/mall/drop/index",
       "style": {
-        "navigationBarTitleText": "发售日历",
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
         "navigationBarBackgroundColor": "#ffffff"
       }
     },
@@ -95,9 +97,10 @@
     {
       "path": "pages/wallpaper/person/index",
       "style": {
-        "navigationBarTitleText": "壁纸我的",
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
         "enablePullDownRefresh": true,
-        "navigationBarBackgroundColor": "#ffffff"
+        "backgroundColor": "#0A0A0A"
       }
     },
     {

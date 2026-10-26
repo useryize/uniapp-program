@@ -6,6 +6,7 @@
 -->
 <template>
   <view class="home">
+    <view class="home-status" />
     <!-- 顶部品牌栏：黑底黄标 -->
     <view class="brand-bar">
       <view class="logo">
@@ -130,6 +131,7 @@
     <view class="load-tip">
       <text class="load-text">{{ loadingText }}</text>
     </view>
+    <mall-tabbar current="home" />
   </view>
 </template>
 
@@ -140,6 +142,7 @@ import { onLoad, onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-
 import { goodsApi, cartApi, dropApi } from './api/index.js'
 import { fen2yuan } from './utils/format.js'
 import GoodsCard from './components/goods-card.vue'
+import MallTabbar from './components/mall-tabbar.vue'
 
 /** 商品列表数据源 */
 const goodsList = ref([])
@@ -265,16 +268,25 @@ onLoad(() => {
   loadGoods(true)
   loadDrops()
 })
-onShow(() => refreshCartCount())
+onShow(() => {
+  uni.hideTabBar({ animation: false })
+  refreshCartCount()
+})
 onPullDownRefresh(() => loadGoods(true))
 onReachBottom(() => loadGoods(false))
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../uni.scss";
 .home {
   min-height: 100vh;
   background-color: $rz-grey-50;
-  padding-bottom: 40rpx;
+  padding-bottom: 192rpx;
+}
+
+.home-status {
+  height: 124rpx;
+  background-color: $rz-ink;
 }
 
 /* ---- 品牌栏 ---- */
@@ -282,7 +294,7 @@ onReachBottom(() => loadGoods(false))
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 96rpx;
+  height: 192rpx;
   padding: 0 $rz-page-pad;
   background-color: $rz-ink;
 }
@@ -361,7 +373,7 @@ onReachBottom(() => loadGoods(false))
 .hero-img-wrap {
   position: relative;
   width: 100%;
-  height: 480rpx;
+  height: 594rpx;
 }
 
 .hero-img {

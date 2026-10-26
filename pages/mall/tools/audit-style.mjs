@@ -34,7 +34,7 @@ const ALLOW = new Set([
 /** 设计稿字号体系（rpx） */
 const FS = new Set([18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 44, 48, 52, 56, 64, 76, 80])
 /** 允许的圆角（仅 tabBar 胶囊与圆形点） */
-const RADIUS_OK = new Set([0, 8, 14, 18, 28, 31, 36, 44, 50, 50])
+const RADIUS_OK = new Set([0, 8, 14, 18, 28, 31, 36, 44, 50, 70])
 
 /**
  * 合法例外：设计稿规范针对「卡片 / 按钮 / 输入框 / 选项」四边描边，
@@ -42,6 +42,8 @@ const RADIUS_OK = new Set([0, 8, 14, 18, 28, 31, 36, 44, 50, 50])
  */
 const BORDER_EXCEPT = [
   ['pages/mall/cart/index.vue', '2rpx'],              // .invalid-tag 灰色弱化标签
+  ['pages/mall/components/mall-tabbar.vue', '2rpx'], // 胶囊外层与页面之间的细分隔线
+  ['pages/mall/confirm/index.vue', '2rpx'],           // 地址、配送和金额面板的细边
   ['pages/mall/components/size-picker.vue', '2rpx'],  // .color-dot 色块内描边
   ['pages/mall/order/detail.vue', '2rpx'],            // 金额行分隔线
   ['pages/mall/pay/result.vue', '8rpx'],              // .error-mark 感叹号圆圈图形

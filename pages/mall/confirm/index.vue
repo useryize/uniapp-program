@@ -9,7 +9,7 @@
 -->
 <template>
   <view class="confirm" v-if="loaded">
-    <!-- 地址卡：黑底反白 -->
+    <!-- 地址卡 -->
     <view class="address-card" @click="onPickAddress">
       <view class="address-icon">
         <image class="address-icon-img" src="/static/mall/icons/location.png" mode="aspectFit" />
@@ -202,7 +202,8 @@ async function onSubmit() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .confirm {
   min-height: 100vh;
   background-color: $rz-grey-50;
@@ -218,7 +219,8 @@ async function onSubmit() {
   align-items: center;
   gap: 16rpx;
   padding: 28rpx 24rpx;
-  background-color: $rz-ink;
+  background-color: $rz-white;
+  border: 2rpx solid $rz-line;
 }
 
 .address-icon {
@@ -227,6 +229,7 @@ async function onSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: $rz-ink;
 }
 
 .address-icon-img {
@@ -251,12 +254,12 @@ async function onSubmit() {
 .address-receiver {
   font-size: 30rpx;
   font-weight: 700;
-  color: $rz-white;
+  color: $rz-ink;
 }
 
 .address-phone {
   font-size: 24rpx;
-  color: $rz-grey-500;
+  color: $rz-ink;
 }
 
 .address-tag {
@@ -272,7 +275,7 @@ async function onSubmit() {
 
 .address-detail {
   font-size: 24rpx;
-  color: $rz-white;
+  color: $rz-grey-500;
   line-height: 1.5;
 }
 
@@ -289,7 +292,7 @@ async function onSubmit() {
   flex-direction: column;
   gap: 20rpx;
   padding: 24rpx $rz-page-pad;
-  background-color: $rz-white;
+  background-color: $rz-grey-50;
   margin: 20rpx 0 0;
 }
 
@@ -297,6 +300,8 @@ async function onSubmit() {
   display: flex;
   align-items: center;
   gap: 20rpx;
+  padding: 24rpx;
+  background-color: $rz-white;
 }
 
 .cover {
@@ -360,7 +365,7 @@ async function onSubmit() {
   gap: 16rpx;
   padding: 26rpx $rz-page-pad;
   background-color: $rz-white;
-  margin-top: 20rpx;
+  border: 2rpx solid $rz-line;
 }
 
 .row-label {
@@ -397,7 +402,7 @@ async function onSubmit() {
   gap: 20rpx;
   padding: 26rpx $rz-page-pad;
   background-color: $rz-white;
-  margin-top: 20rpx;
+  border: 2rpx solid $rz-line;
 }
 
 .amount-row {

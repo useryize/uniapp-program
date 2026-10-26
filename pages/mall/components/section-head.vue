@@ -24,7 +24,8 @@ defineProps({
 defineEmits(['more'])
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .section-head {
   display: flex;
   align-items: baseline;

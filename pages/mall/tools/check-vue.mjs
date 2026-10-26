@@ -29,7 +29,7 @@ let pass = 0
 let fail = 0
 const problems = []
 
-for (const file of walk(SRC)) {
+for (const file of [...walk(SRC), path.join(ROOT, 'pages/wallpaper/person/index.vue')]) {
   const rel = path.relative(ROOT, file).replace(/\\/g, '/')
   const source = fs.readFileSync(file, 'utf8')
   const id = rel
@@ -61,6 +61,9 @@ for (const file of walk(SRC)) {
     // style (SCSS)
     const styles = descriptor.styles || []
     for (const s of styles) {
+      if (s.content.includes('$rz-') && s.lang !== 'scss') {
+        throw new Error('使用设计变量的样式块必须声明 lang="scss"')
+      }
       if (s.lang !== 'scss' && s.lang !== 'sass') continue
       const res = sass.compileString(s.content, {
         loadPaths: [path.dirname(file), path.join(ROOT, 'node_modules')],

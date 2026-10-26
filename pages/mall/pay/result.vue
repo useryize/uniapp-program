@@ -9,7 +9,7 @@
   支付结果以服务端回调为唯一依据，此处仅 mock 阶段模拟回调行为）
 -->
 <template>
-  <view class="result" v-if="order">
+  <view class="result" :class="viewState" v-if="order">
     <!-- 待支付态 -->
     <template v-if="viewState === 'pending'">
       <view class="state-icon pending-icon">
@@ -43,11 +43,11 @@
       </view>
       <text class="state-title">支付成功</text>
       <text class="state-amount">¥{{ fen2yuan(order.payAmount) }}</text>
-      <text class="state-tip">商家将尽快为您发货</text>
+      <text class="state-tip">订单号 {{ order.orderNo }}</text>
       <view class="info-card">
         <view class="info-row">
-          <text class="info-label">订单号</text>
-          <text class="info-value">{{ order.orderNo }}</text>
+          <text class="info-label">支付方式</text>
+          <text class="info-value">微信支付</text>
         </view>
         <view class="info-row">
           <text class="info-label">支付时间</text>
@@ -57,7 +57,7 @@
       <view class="btn btn-primary" @click="goOrderDetail">
         <text class="btn-text">查看订单</text>
       </view>
-      <view class="btn btn-ghost" @click="goOrderList">
+      <view class="btn btn-ghost" @click="goHome">
         <text class="btn-text">继续逛逛</text>
       </view>
     </template>
@@ -69,17 +69,11 @@
       </view>
       <text class="state-title">订单已超时关闭</text>
       <text class="state-tip error-tip">{{ errorTip }}</text>
-      <view class="info-card">
-        <view class="info-row">
-          <text class="info-label">订单号</text>
-          <text class="info-value">{{ order.orderNo || '—' }}</text>
-        </view>
-      </view>
-      <view class="btn btn-primary" @click="goOrderList">
-        <text class="btn-text">返回订单列表</text>
-      </view>
-      <view class="btn btn-ghost" @click="goHome">
+      <view class="btn btn-primary" @click="goHome">
         <text class="btn-text">重新下单</text>
+      </view>
+      <view class="btn btn-ghost" @click="goOrderList">
+        <text class="btn-text">查看订单</text>
       </view>
     </template>
   </view>
@@ -172,7 +166,8 @@ function goHome() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .result {
   min-height: 100vh;
   background-color: $rz-white;
@@ -180,6 +175,32 @@ function goHome() {
   flex-direction: column;
   align-items: center;
   padding: 140rpx 48rpx 60rpx;
+  box-sizing: border-box;
+}
+
+.result.success {
+  padding-top: 480rpx;
+}
+
+.result.error {
+  padding-top: 560rpx;
+}
+
+.result.success .state-icon,
+.result.error .state-icon {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+
+.result.error .state-tip {
+  white-space: pre-line;
+  margin-bottom: 32rpx;
+}
+
+.result.success .info-card {
+  margin-top: 0;
 }
 
 .state-icon {

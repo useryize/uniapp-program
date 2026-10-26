@@ -212,7 +212,8 @@ function goDetail(order) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .order-list-page {
   height: 100vh;
   display: flex;
@@ -263,7 +264,6 @@ function goDetail(order) {
 /* ---- 订单卡 ---- */
 .order-card {
   background-color: $rz-white;
-  border: 4rpx solid $rz-ink;
   margin-bottom: 20rpx;
 }
 

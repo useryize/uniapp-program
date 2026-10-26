@@ -201,7 +201,8 @@ onLoad(async () => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .guide {
   min-height: 100vh;
   background-color: $rz-grey-50;

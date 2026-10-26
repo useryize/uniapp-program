@@ -355,7 +355,8 @@ onLoad(async (options) => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .detail {
   min-height: 100vh;
   background-color: $rz-grey-50;

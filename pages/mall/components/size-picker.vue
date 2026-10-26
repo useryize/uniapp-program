@@ -124,7 +124,8 @@ watch(
 )
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .group {
   margin-bottom: 28rpx;
 }

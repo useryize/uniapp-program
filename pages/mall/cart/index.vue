@@ -11,15 +11,21 @@
 -->
 <template>
   <view class="cart">
+    <view class="cart-head">
+      <view class="cart-back" @click="goHome">
+        <image src="/static/mall/icons/back.png" mode="aspectFit" />
+      </view>
+      <text class="cart-head-title">购物车</text>
+    </view>
     <!-- 空态 -->
     <view v-if="!loading && !cartList.length" class="empty">
-      <view class="empty-art">
-        <image class="empty-img" src="/static/mall/icons/cart.png" mode="aspectFit" />
-      </view>
       <text class="empty-title">购物车还是空的</text>
       <text class="empty-sub">挑几件街头单品，凑满 99 包邮</text>
       <view class="empty-btn" @click="goHome">
         <text class="empty-btn-text">去逛逛</text>
+      </view>
+      <view class="empty-art">
+        <image class="empty-img" src="/static/mall/icons/cart.png" mode="aspectFit" />
       </view>
     </view>
 
@@ -211,7 +217,10 @@ async function loadCart() {
   }
 }
 
-onShow(loadCart)
+onShow(() => {
+  uni.hideTabBar({ animation: false })
+  loadCart()
+})
 
 /**
  * 勾选/取消单项
@@ -360,16 +369,46 @@ function goHome() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .cart {
   min-height: 100vh;
   background-color: $rz-grey-50;
   padding-bottom: 160rpx;
 }
 
+.cart-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 112rpx;
+  background-color: $rz-white;
+}
+
+.cart-back {
+  position: absolute;
+  left: 32rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+}
+
+.cart-back image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.cart-head-title {
+  font-size: 32rpx;
+  font-weight: 900;
+  color: $rz-ink;
+}
+
 /* ---- 空态 ---- */
 .empty {
-  padding-top: 240rpx;
+  padding-top: 360rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -377,17 +416,18 @@ function goHome() {
 }
 
 .empty-art {
-  width: 160rpx;
-  height: 160rpx;
+  width: 320rpx;
+  height: 320rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: $rz-grey-100;
+  margin-top: 20rpx;
 }
 
 .empty-img {
-  width: 80rpx;
-  height: 80rpx;
+  width: 120rpx;
+  height: 120rpx;
   opacity: 0.35;
 }
 
@@ -404,7 +444,7 @@ function goHome() {
 
 .empty-btn {
   margin-top: 20rpx;
-  width: 240rpx;
+  width: 320rpx;
   height: 84rpx;
   display: flex;
   align-items: center;
@@ -471,7 +511,6 @@ function goHome() {
   gap: 16rpx;
   padding: 20rpx;
   background-color: $rz-white;
-  border: 4rpx solid $rz-ink;
 }
 
 .checkbox {
@@ -524,9 +563,10 @@ function goHome() {
   font-weight: 700;
   color: $rz-ink;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* 规格行：可点击修改 */
@@ -535,8 +575,7 @@ function goHome() {
   align-items: center;
   gap: 6rpx;
   align-self: flex-start;
-  padding: 4rpx 12rpx;
-  background-color: $rz-grey-100;
+  padding: 4rpx 0;
 }
 
 .item-spec-text {

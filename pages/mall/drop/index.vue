@@ -183,7 +183,8 @@ onLoad(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .drop {
   height: 100vh;
   display: flex;
@@ -193,7 +194,7 @@ onLoad(() => {
 
 /* ---- 顶部 ---- */
 .drop-head {
-  height: 96rpx;
+  height: 112rpx;
   display: flex;
   align-items: center;
   padding: 0 $rz-page-pad;
@@ -263,7 +264,6 @@ onLoad(() => {
 /* ---- 发售卡 ---- */
 .drop-card {
   background-color: $rz-white;
-  border: 4rpx solid $rz-ink;
 }
 
 .dc-head {

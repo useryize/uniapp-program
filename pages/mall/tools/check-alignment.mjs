@@ -84,14 +84,14 @@ const suites = [
       ['凑单门槛取服务端常量', /FREE_SHIPPING_THRESHOLD/.test(pages.cart)],
       ['规格行标注「点击修改」', /点击修改/.test(pages.cart)],
       ['调用改规格接口', /cartApi\.updateSku/.test(pages.cart)],
-      ['商品项有硬描边', /\.cart-item\s*\{[^}]*border: 4rpx solid \$rz-ink/.test(pages.cart)]
+      ['商品项为白底无描边', /\.cart-item\s*\{[^}]*background-color: \$rz-white/.test(pages.cart) && !/\.cart-item\s*\{[^}]*border: 4rpx/.test(pages.cart)]
     ]
   },
   {
     name: '结算页 · 通栏区块',
     page: 'confirm',
     checks: [
-      ['地址卡为黑底通栏', /\.address-card\s*\{[^}]*background-color: \$rz-ink/.test(pages.confirm)],
+      ['地址卡为白底细边', /\.address-card\s*\{[^}]*background-color: \$rz-white/.test(pages.confirm) && /\.address-card\s*\{[^}]*border: 2rpx solid \$rz-line/.test(pages.confirm)],
       ['商品清单无描边（通栏）', /\.goods-block\s*\{[^}]*\}/.test(pages.confirm) && !/\.goods-block\s*\{[^}]*border: 4rpx/.test(pages.confirm)],
       ['配送/备注行无描边', !/\.row-block\s*\{[^}]*border: 4rpx/.test(pages.confirm)],
       ['金额明细无描边', !/\.amount-block\s*\{[^}]*border: 4rpx/.test(pages.confirm)],
@@ -114,7 +114,7 @@ const suites = [
     page: 'orderList',
     checks: [
       ['Tab 选中态为黑底', /\.tab-item\.active\s*\{[^}]*background-color: \$rz-ink/.test(pages.orderList)],
-      ['订单卡有硬描边', /\.order-card\s*\{[^}]*border: 4rpx solid \$rz-ink/.test(pages.orderList)],
+      ['订单卡为白底无描边', /\.order-card\s*\{[^}]*background-color: \$rz-white/.test(pages.orderList) && !/\.order-card\s*\{[^}]*border: 4rpx/.test(pages.orderList)],
       ['待付款状态为价格红', /status-unpaid/.test(pages.orderList)]
     ]
   },

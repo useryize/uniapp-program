@@ -11,9 +11,6 @@
   <view class="search">
     <!-- 搜索栏 -->
     <view class="search-bar">
-      <view class="search-back" @click="goBack">
-        <image class="search-back-img" src="/static/mall/icons/back.png" mode="aspectFit" />
-      </view>
       <view class="search-input-wrap">
         <image class="search-icon" src="/static/mall/icons/search.png" mode="aspectFit" />
         <input
@@ -31,6 +28,9 @@
         </view>
       </view>
       <text class="search-submit" @click="onSearch">搜索</text>
+      <view class="search-back" @click="goBack">
+        <image class="search-back-img" src="/static/mall/icons/back.png" mode="aspectFit" />
+      </view>
     </view>
 
     <!-- 搜索历史（无关键词时展示） -->
@@ -223,10 +223,11 @@ onUnload(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .search {
   min-height: 100vh;
-  background-color: $rz-grey-50;
+  background-color: $rz-white;
 }
 
 /* ---- 搜索栏 ---- */
@@ -237,7 +238,6 @@ onUnload(() => {
   height: 112rpx;
   padding: 0 24rpx;
   background-color: $rz-white;
-  border-bottom: 2rpx solid $rz-line;
 }
 
 .search-back {

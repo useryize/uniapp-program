@@ -69,6 +69,7 @@
     <view v-if="isLogin" class="logout" @click="handleLogout">
       <text class="logout-text">退出登录</text>
     </view>
+    <mall-tabbar current="person" />
   </view>
 </template>
 
@@ -76,6 +77,7 @@
 /** 个人中心逻辑（Vue3 setup） */
 import { ref, reactive, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import MallTabbar from '../../mall/components/mall-tabbar.vue'
 import { sizeApi, dropApi } from '../../mall/api/index.js'
 
 const isLogin = ref(false)
@@ -129,6 +131,7 @@ async function loadData() {
 }
 
 onShow(() => {
+  uni.hideTabBar({ animation: false })
   const cached = uni.getStorageSync('userInfo')
   if (cached) {
     userInfo.avatarUrl = cached.avatarUrl
@@ -207,11 +210,12 @@ function onFunc(f) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 .person {
   min-height: 100vh;
   background-color: $rz-grey-50;
-  padding-bottom: 40rpx;
+  padding-bottom: 192rpx;
 }
 
 /* ---- 用户头部 ---- */

@@ -5,7 +5,7 @@
   金额展示：仅展示服务端返回值（fen2yuan），组件内不做任何计算
 -->
 <template>
-  <view class="goods-card" @click="$emit('tap', goods)">
+  <view class="goods-card" :class="{ plain }" @click="$emit('tap', goods)">
     <view class="cover" :style="{ backgroundColor: goods.color, height: coverHeight + 'rpx' }">
       <image v-if="goods.cover" class="cover-img" :src="goods.cover" mode="aspectFill" />
       <text v-else class="cover-fallback">{{ goods.title.slice(0, 1) }}</text>
@@ -42,6 +42,7 @@ const props = defineProps({
   tag: { type: String, default: '' },
   /** 是否显示快捷加购按钮 */
   showAdd: { type: Boolean, default: false },
+  plain: { type: Boolean, default: false },
   /** 封面高度（rpx），调用方按卡片宽度传入以保持 1:1 */
   coverHeight: { type: Number, default: 320 }
 })
@@ -55,7 +56,8 @@ const salesText = computed(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "../../../uni.scss";
 /*
  * 宽度说明：编译到微信小程序后，<goods-card> 会生成自定义宿主节点，
  * flex 容器的子项是宿主节点而非本 view —— 因此宽度/间距必须由使用方
@@ -67,6 +69,16 @@ const salesText = computed(() => {
   background-color: #ffffff;
   border: 4rpx solid $rz-ink;
   overflow: hidden;
+}
+
+.goods-card.plain {
+  border: 0;
+}
+
+.plain .tag-row,
+.plain .info {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .cover {
