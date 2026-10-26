@@ -41,6 +41,7 @@ const RADIUS_OK = new Set([0, 8, 14, 18, 28, 31, 36, 44, 50, 70])
  * 以下属于图形描边、分隔线、占位元素与内部留白，不适用 4rpx 规则。
  */
 const BORDER_EXCEPT = [
+  ['pages/mall/index.vue', '2rpx'],               // Ardot 首页搜索/购物车及尺码入口为 1px 描边
   ['pages/mall/cart/index.vue', '2rpx'],              // .invalid-tag 灰色弱化标签
   ['pages/mall/components/mall-tabbar.vue', '2rpx'], // 胶囊外层与页面之间的细分隔线
   ['pages/mall/confirm/index.vue', '2rpx'],           // 地址、配送和金额面板的细边
@@ -57,6 +58,8 @@ const FS_EXCEPT = [
 ]
 /** 内边距例外：输入框内部单位文字的留白，非页面安全边距 */
 const PAD_EXCEPT = [
+  ['pages/mall/index.vue', 'left:20rpx'],         // Ardot 发售入口左内边距 10px
+  ['pages/mall/index.vue', 'right:16rpx'],        // Ardot 发售入口右内边距 8px
   ['pages/mall/size-guide/index.vue', 'right:20rpx']
 ]
 

@@ -1,6 +1,7 @@
 /**
  * 高保真对齐断言：逐页核对代码结构与设计稿
- * 基线取自 pages/mall/design/screens/*.png（Ardot 导出）+ design/README.md 规范
+ * 首页基线取自 Ardot 文件 739096499841184 的 Frame 2:1 图层属性。
+ * 其他页面维持现有断言，待逐页按 Ardot 图层更新。
  * 断言维度：区块顺序 / 关键尺寸 / 视觉状态（通栏 vs 描边）
  * 运行：node pages/mall/tools/check-alignment.mjs
  */
@@ -35,8 +36,11 @@ const suites = [
     checks: [
       ['品牌栏在 Hero 之前', /brand-bar[\s\S]*?hero-img-wrap/.test(pages.home)],
       ['Hero 图片与文案分属两个区块（图下独立黑底区）', /hero-img-wrap[\s\S]*?<\/view>[\s\S]*?hero-copy/.test(pages.home)],
-      ['入口区为 2×2 网格（width:50%）', /\.entry\s*\{[^}]*width: 50%/.test(pages.home)],
+      ['入口区为两行两列，列间距 10px', (pages.home.match(/class="entry-row"/g) || []).length === 2 && /\.entry-row\s*\{[^}]*gap: 20rpx/.test(pages.home)],
       ['入口区共 4 个格子', (pages.home.match(/class="entry[ "]/g) || []).length === 4],
+      ['Hero 总高 360px，使用 Ardot 原图', /\.hero\s*\{[^}]*height: 720rpx/.test(pages.home) && pages.home.includes('/static/mall/ardot/hero.jpg')],
+      ['入口区内边距 16px、卡片高 56px', /\.entries\s*\{[^}]*padding: 32rpx/.test(pages.home) && /\.entry\s*\{[^}]*height: 112rpx/.test(pages.home)],
+      ['秒杀与推荐商品图高 160px', (pages.home.match(/:cover-height="320"/g) || []).length === 2],
       ['含「联名专区」入口', pages.home.includes('联名专区')],
       ['FLASH SALE 区块为黑底通栏', /\.flash-block\s*\{[^}]*background-color: \$rz-ink/.test(pages.home)],
       ['倒计时数字为白底黑字', /\.cd-num\s*\{[^}]*background-color: \$rz-white/.test(pages.home)]

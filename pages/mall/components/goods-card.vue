@@ -52,6 +52,10 @@ defineEmits(['tap', 'add'])
 /** 销量展示：超过 1 万折算为「x.x万」 */
 const salesText = computed(() => {
   const s = Number(props.goods.sales || 0)
+  if (props.plain) {
+    if (s >= 10000) return (s / 10000).toFixed(1) + '万'
+    if (s >= 1000) return (s / 1000).toFixed(1) + 'k'
+  }
   return s >= 10000 ? (s / 10000).toFixed(1) + 'w' : String(s)
 })
 </script>
@@ -73,12 +77,55 @@ const salesText = computed(() => {
 
 .goods-card.plain {
   border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .plain .tag-row,
 .plain .info {
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0;
+}
+
+.plain .info {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.plain .tag {
+  padding: 6rpx 12rpx;
+  font-family: 'Bungee', sans-serif;
+  font-size: 18rpx;
+  letter-spacing: 0;
+}
+
+.plain .title {
+  font-size: 26rpx;
+  line-height: 36rpx;
+}
+
+.plain .price-row,
+.plain .bottom-row {
+  margin-top: 0;
+}
+
+.plain .price-row {
+  gap: 12rpx;
+}
+
+.plain .price {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 36rpx;
+}
+
+.plain .origin-price {
+  font-size: 22rpx;
+  color: $rz-grey-500;
+}
+
+.plain .sales {
+  font-size: 20rpx;
 }
 
 .cover {

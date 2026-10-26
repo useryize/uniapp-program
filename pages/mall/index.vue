@@ -1,8 +1,8 @@
 <!--
   商城首页（pages/mall/index）
   职责：品牌主视觉 + 服务入口区 + 限时秒杀 + 推荐商品流
-  视觉：街头潮流 —— 墨黑/酸性黄撞色、2px 硬描边、圆角 0（对齐 pages/mall/design）
-  数据：goodsApi.list / goodsApi.categories / dropApi.list / cartApi.add
+  视觉来源：Ardot 文件 739096499841184，首页 Frame 2:1
+  数据：goodsApi.list / dropApi.list / cartApi.list
 -->
 <template>
   <view class="home">
@@ -10,77 +10,71 @@
     <!-- 顶部品牌栏：黑底黄标 -->
     <view class="brand-bar">
       <view class="logo">
-        <view class="logo-mark"><text class="logo-letter">R</text></view>
-        <text class="logo-text">RAWZONE</text>
+        <image class="brand-lockup" src="/static/mall/ardot/brand.png" mode="aspectFit" />
       </view>
       <view class="brand-actions">
-        <view class="icon-btn" @click="goSearch">
-          <image class="icon-img" src="/static/mall/icons/search.png" mode="aspectFit" />
+        <view class="icon-btn search-btn" @click="goSearch">
+          <image class="icon-img" src="/static/mall/ardot/search-button.png" mode="aspectFit" />
         </view>
         <view class="icon-btn" @click="goCart">
-          <image class="icon-img" src="/static/mall/icons/cart.png" mode="aspectFit" />
+          <image class="icon-img" src="/static/mall/ardot/cart-button.png" mode="aspectFit" />
           <text v-if="cartCount" class="badge">{{ cartCount > 99 ? '99+' : cartCount }}</text>
         </view>
       </view>
     </view>
 
-    <!-- 主视觉：图片 + 图下黑底文案区（对齐设计稿结构） -->
+    <!-- Ardot 2:95：360px 主视觉 -->
     <view class="hero">
       <view class="hero-img-wrap">
-        <image class="hero-img" src="/static/mall/hero.jpg" mode="aspectFill" />
-        <view class="hero-tag"><text class="hero-tag-text">26SS NEW DROP</text></view>
-        <view class="hero-count"><text class="hero-count-text">1/4</text></view>
+        <image class="hero-img" src="/static/mall/ardot/hero.jpg" mode="aspectFill" />
+        <image class="hero-tag" src="/static/mall/ardot/hero-tag.png" mode="aspectFit" />
       </view>
       <view class="hero-copy">
         <text class="hero-title">街头不设限</text>
-        <text class="hero-sub">OVERSIZE CUT · 重磅 270G · 限量联名</text>
+        <text class="hero-sub">OVERSIZE CUT  ·  重磅 270G  ·  限量联名</text>
       </view>
     </view>
 
-    <!-- 服务入口区：2×2 网格（发售日历 / 尺码助手 / 联名专区 / 全部商品） -->
+    <!-- Ardot 2:101：16px 外边距、10px 列间距的两行入口 -->
     <view class="entries">
+      <view class="entry-row">
       <view class="entry entry-acid" @click="goDrop">
-        <view class="entry-icon">
-          <image class="entry-img" src="/static/mall/icons/calendar.png" mode="aspectFit" />
-        </view>
+        <image class="entry-img" src="/static/mall/ardot/calendar-icon.png" mode="aspectFit" />
         <view class="entry-info">
           <text class="entry-title">发售日历</text>
           <text class="entry-sub">{{ dropHint }}</text>
         </view>
       </view>
       <view class="entry entry-warn" @click="goSizeGuide">
-        <view class="entry-icon entry-icon-dark">
-          <image class="entry-img" src="/static/mall/icons/ruler.png" mode="aspectFit" />
-        </view>
+        <image class="entry-img" src="/static/mall/ardot/ruler-icon.png" mode="aspectFit" />
         <view class="entry-info">
           <text class="entry-title">尺码助手</text>
           <text class="entry-sub">输入身高体重 · 3秒推荐</text>
         </view>
       </view>
+      </view>
+      <view class="entry-row">
       <view class="entry" @click="goCategory">
-        <view class="entry-icon entry-icon-red">
-          <image class="entry-img" src="/static/mall/icons/grid_white.png" mode="aspectFit" />
-        </view>
+        <image class="entry-img entry-img-large" src="/static/mall/ardot/collab-icon.png" mode="aspectFit" />
         <view class="entry-info">
           <text class="entry-title">联名专区</text>
           <text class="entry-sub">艺术家合作系列</text>
         </view>
       </view>
       <view class="entry" @click="goCategory">
-        <view class="entry-icon">
-          <image class="entry-img" src="/static/mall/icons/grid.png" mode="aspectFit" />
-        </view>
+        <image class="entry-img entry-img-large" src="/static/mall/ardot/all-icon.png" mode="aspectFit" />
         <view class="entry-info">
           <text class="entry-title">全部商品</text>
           <text class="entry-sub">卫衣 / 外套 / 鞋履</text>
         </view>
+      </view>
       </view>
     </view>
 
     <!-- 限时秒杀 -->
     <view class="block flash-block">
       <view class="block-head">
-        <text class="block-title flash-title">FLASH SALE</text>
+        <image class="flash-title-img" src="/static/mall/ardot/flash-title.png" mode="aspectFit" />
         <view class="countdown">
           <text class="cd-num">02</text>
           <text class="cd-sep">:</text>
@@ -92,27 +86,25 @@
       </view>
       <scroll-view class="flash-scroll" scroll-x>
         <view class="flash-row">
-          <view
+          <goods-card
             v-for="g in flashList"
             :key="g.id"
             class="flash-card"
-            @click="goDetail(g)"
-          >
-            <view class="flash-cover" :style="{ backgroundColor: g.color }">
-              <image v-if="g.cover" class="flash-img" :src="g.cover" mode="aspectFill" />
-            </view>
-            <text class="flash-name">{{ g.title }}</text>
-            <text class="flash-price">¥{{ fen2yuan(g.minPrice) }}</text>
-          </view>
+            :goods="g"
+            :tag="flashTags[g.id] || 'SALE'"
+            :cover-height="320"
+            plain
+            @tap="goDetail"
+          />
         </view>
       </scroll-view>
     </view>
 
     <!-- 为你推荐 -->
-    <view class="block">
+    <view class="recommend-block">
       <view class="block-head">
         <text class="block-title">为你推荐</text>
-        <text class="block-en">TRENDING NOW</text>
+        <image class="trending-title-img" src="/static/mall/ardot/trending-title.png" mode="aspectFit" />
       </view>
       <view class="goods-grid">
         <goods-card
@@ -120,10 +112,10 @@
           :key="g.id"
           class="goods-cell"
           :goods="g"
-          :tag="g.id % 2 === 0 ? 'HOT' : 'NEW'"
-          :show-add="true"
+          :tag="recommendTags[g.id] || 'NEW'"
+          :cover-height="320"
+          plain
           @tap="goDetail"
-          @add="onAddCart"
         />
       </view>
     </view>
@@ -140,7 +132,6 @@
 import { ref, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
 import { goodsApi, cartApi, dropApi } from './api/index.js'
-import { fen2yuan } from './utils/format.js'
 import GoodsCard from './components/goods-card.vue'
 import MallTabbar from './components/mall-tabbar.vue'
 
@@ -158,6 +149,25 @@ const loading = ref(false)
 const cartCount = ref(0)
 /** 发售日历摘要 */
 const dropInfo = ref(null)
+
+// 首页展示图和短标题对应 Ardot Frame 2:1；商品 id、价格与跳转仍来自接口。
+const artGoods = {
+  1: { cover: '/static/mall/ardot/hoodie.jpg', title: '落肩宽松连帽卫衣' },
+  2: { cover: '/static/mall/ardot/tee.jpg', title: '重磅纯棉印花短袖' },
+  3: { cover: '/static/mall/ardot/cargo-flash.jpg', title: '机能工装裤' },
+  4: { cover: '/static/mall/ardot/denim.jpg', title: '水洗做旧牛仔外套' },
+  5: { cover: '/static/mall/ardot/sneaker.jpg', title: '复古厚底运动鞋' }
+}
+const flashArt = {
+  1: '/static/mall/ardot/hoodie-flash.jpg',
+  2: '/static/mall/ardot/tee-flash.jpg',
+  3: '/static/mall/ardot/cargo-flash.jpg'
+}
+const flashTags = { 1: '-30%', 2: '-25%', 3: '-40%' }
+const recommendTags = { 1: 'HOT', 2: 'NEW', 4: 'LIMITED', 5: 'NEW' }
+function homeGoods(goods) {
+  return { ...goods, ...(artGoods[goods.id] || {}) }
+}
 
 const loadingText = computed(() => {
   if (loading.value) return '加载中...'
@@ -185,10 +195,12 @@ async function loadGoods(reset = false) {
     const next = reset ? 1 : page.value + 1
     const data = await goodsApi.list({ page: next, pageSize: 10 })
 
-    goodsList.value = reset ? data.list : goodsList.value.concat(data.list)
+    const mapped = data.list.map(homeGoods)
+    const ordered = reset ? [1, 2, 4, 5].map((id) => mapped.find((g) => g.id === id)).filter(Boolean).concat(mapped.filter((g) => ![1, 2, 4, 5].includes(g.id))) : mapped
+    goodsList.value = reset ? ordered : goodsList.value.concat(ordered)
     page.value = next
     hasMore.value = data.hasMore
-    if (reset) flashList.value = data.list.slice(0, 3)
+    if (reset) flashList.value = data.list.slice(0, 3).map((g) => ({ ...homeGoods(g), cover: flashArt[g.id] || homeGoods(g).cover, title: g.id === 1 ? '落肩连帽卫衣' : g.id === 2 ? '重磅印花短袖' : homeGoods(g).title }))
   } catch (e) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   } finally {
@@ -215,17 +227,6 @@ async function loadDrops() {
 function formatDropDate(ts) {
   const d = new Date(ts)
   return `${d.getMonth() + 1}月${d.getDate()}日`
-}
-
-/** 快捷加购（列表页场景）：不传 skuId，服务端自动选择有库存 SKU */
-async function onAddCart(goods) {
-  try {
-    const res = await cartApi.add({ goodsId: goods.id, quantity: 1 })
-    cartCount.value = res.cartCount
-    uni.showToast({ title: '已加入购物车', icon: 'success' })
-  } catch (e) {
-    uni.showToast({ title: e.msg || '加购失败', icon: 'none' })
-  }
 }
 
 /** 刷新购物车角标 */
@@ -280,7 +281,7 @@ onReachBottom(() => loadGoods(false))
 @import "../../uni.scss";
 .home {
   min-height: 100vh;
-  background-color: $rz-grey-50;
+  background-color: $rz-white;
   padding-bottom: 192rpx;
 }
 
@@ -302,51 +303,41 @@ onReachBottom(() => loadGoods(false))
 .logo {
   display: flex;
   align-items: center;
-  gap: 14rpx;
 }
 
-.logo-mark {
-  width: 56rpx;
-  height: 56rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $rz-acid;
-}
-
-.logo-letter {
-  font-size: 36rpx;
-  font-weight: 900;
-  color: $rz-ink;
-  line-height: 1;
-}
-
-.logo-text {
-  font-size: 40rpx;
-  font-weight: 900;
-  letter-spacing: 3rpx;
-  color: $rz-white;
+.brand-lockup {
+  width: 302rpx;
+  height: 60rpx;
 }
 
 .brand-actions {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .icon-btn {
   position: relative;
-  width: 56rpx;
-  height: 56rpx;
+  width: 68rpx;
+  height: 68rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 4rpx solid $rz-white;
+  border: 2rpx solid $rz-white;
 }
 
 .icon-img {
-  width: 34rpx;
-  height: 34rpx;
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.search-btn {
+  border: 0;
+}
+
+.search-btn .icon-img {
+  width: 68rpx;
+  height: 68rpx;
 }
 
 .badge {
@@ -368,6 +359,7 @@ onReachBottom(() => loadGoods(false))
 /* ---- 主视觉 ---- */
 .hero {
   background-color: $rz-ink;
+  height: 720rpx;
 }
 
 .hero-img-wrap {
@@ -383,116 +375,93 @@ onReachBottom(() => loadGoods(false))
 
 .hero-tag {
   position: absolute;
-  top: 24rpx;
-  left: 24rpx;
-  padding: 6rpx 16rpx;
-  background-color: $rz-acid;
-}
-
-.hero-tag-text {
-  font-size: 22rpx;
-  font-weight: 900;
-  letter-spacing: 1rpx;
-  color: $rz-ink;
-}
-
-/* 图片计数角标 */
-.hero-count {
-  position: absolute;
-  top: 24rpx;
-  right: 24rpx;
-  padding: 4rpx 12rpx;
-  background-color: $rz-ink;
-}
-
-.hero-count-text {
-  font-size: 20rpx;
-  font-weight: 700;
-  color: $rz-white;
+  top: 32rpx;
+  left: 32rpx;
+  width: 242rpx;
+  height: 44rpx;
 }
 
 /* 图下黑底文案区 */
 .hero-copy {
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
-  padding: 24rpx 32rpx 28rpx;
+  align-items: center;
+  justify-content: center;
+  height: 126rpx;
 }
 
 .hero-title {
-  font-size: 76rpx;
+  font-size: 80rpx;
   font-weight: 900;
   color: $rz-white;
-  line-height: 1.2;
+  line-height: 92rpx;
 }
 
 .hero-sub {
   font-size: 24rpx;
+  font-weight: 500;
   color: $rz-acid;
-  letter-spacing: 1rpx;
+  line-height: 28rpx;
 }
 
-/* ---- 服务入口区：2×2 通栏网格 ---- */
+/* Ardot 2:101：白底 16px 内边距，两行各 56px。 */
 .entries {
   display: flex;
-  flex-wrap: wrap;
-  background-color: $rz-ink;
-  padding-bottom: 2rpx;
+  flex-direction: column;
+  padding: 32rpx;
+  background-color: $rz-white;
+}
+
+.entry-row {
+  display: flex;
+  gap: 20rpx;
 }
 
 .entry {
-  width: 50%;
+  flex: 1;
+  min-width: 0;
+  height: 112rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 24rpx 24rpx;
-  background-color: $rz-white;
-  border-bottom: 2rpx solid $rz-ink;
-  border-right: 2rpx solid $rz-ink;
+  gap: 12rpx;
+  padding: 0 24rpx;
+  background-color: $rz-grey-50;
   box-sizing: border-box;
 }
 
 .entry-acid {
   background-color: $rz-ink;
+  padding-left: 20rpx;
+  padding-right: 16rpx;
 }
 
 .entry-warn {
   background-color: $rz-warn-bg;
-}
-
-.entry-icon {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $rz-acid;
-}
-
-.entry-icon-dark {
-  background-color: $rz-ink;
-}
-
-.entry-icon-red {
-  background-color: $rz-price;
+  border: 2rpx solid $rz-ink;
 }
 
 .entry-img {
-  width: 38rpx;
-  height: 38rpx;
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.entry-img-large {
+  width: 64rpx;
+  height: 64rpx;
 }
 
 .entry-info {
-  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
 }
 
 .entry-title {
-  font-size: 30rpx;
+  font-size: 26rpx;
   font-weight: 700;
   color: $rz-ink;
+  line-height: 36rpx;
 }
 
 .entry-acid .entry-title {
@@ -500,60 +469,59 @@ onReachBottom(() => loadGoods(false))
 }
 
 .entry-sub {
-  font-size: 22rpx;
+  font-size: 20rpx;
   color: $rz-grey-500;
+  line-height: 26rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .entry-acid .entry-sub {
+  font-size: 18rpx;
   color: $rz-acid;
-}
-
-/* ---- 区块 ---- */
-.block {
-  margin-top: 24rpx;
-  padding: 24rpx 0 8rpx;
-  background-color: $rz-white;
 }
 
 .block-head {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 20rpx;
   padding: 0 $rz-page-pad;
-  margin-bottom: 20rpx;
 }
 
 .block-title {
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: 900;
   color: $rz-ink;
 }
 
-.block-en {
-  font-size: 20rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
-  color: $rz-grey-500;
+.trending-title-img {
+  width: 214rpx;
+  height: 24rpx;
 }
 
 .block-more {
   margin-left: auto;
-  font-size: $rz-fs-desc;
+  font-size: 24rpx;
   color: $rz-grey-500;
 }
 
 .countdown {
   display: flex;
   align-items: center;
-  gap: 4rpx;
+  gap: 8rpx;
 }
 
 .cd-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52rpx;
+  height: 44rpx;
   font-size: 24rpx;
   font-weight: 900;
   color: $rz-ink;
   background-color: $rz-white;
-  padding: 2rpx 8rpx;
 }
 
 .cd-sep {
@@ -565,11 +533,16 @@ onReachBottom(() => loadGoods(false))
 /* 秒杀区块：通栏黑底 */
 .flash-block {
   background-color: $rz-ink;
-  padding: 24rpx 0 8rpx;
+  padding: 28rpx 0 36rpx;
 }
 
-.flash-title {
-  color: $rz-acid;
+.flash-block .block-head {
+  margin-bottom: 24rpx;
+}
+
+.flash-title-img {
+  width: 250rpx;
+  height: 40rpx;
 }
 
 .block-more-light {
@@ -589,49 +562,32 @@ onReachBottom(() => loadGoods(false))
 }
 
 .flash-card {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 8rpx;
   width: 208rpx;
+  flex-shrink: 0;
+  white-space: normal;
 }
 
-.flash-cover {
-  width: 208rpx;
-  height: 240rpx;
-  overflow: hidden;
+.recommend-block {
+  background-color: $rz-white;
 }
 
-.flash-img {
-  width: 100%;
-  height: 100%;
+.recommend-block .block-head {
+  padding-top: 40rpx;
+  padding-bottom: 24rpx;
 }
 
-.flash-name {
-  font-size: 24rpx;
-  color: $rz-ink;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flash-price {
-  font-size: 30rpx;
-  font-weight: 900;
-  color: $rz-price;
-}
-
-/* ---- 推荐网格 ---- */
+/* Ardot 2:143：左右各 16px、列与行间隔 12px。 */
 .goods-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  column-gap: 24rpx;
+  row-gap: 24rpx;
   padding: 0 $rz-page-pad;
 }
 
 .goods-cell {
   display: block;
-  width: 341rpx;
-  margin-bottom: 20rpx;
+  width: calc((100% - 24rpx) / 2);
 }
 
 .load-tip {

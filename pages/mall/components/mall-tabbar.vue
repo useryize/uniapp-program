@@ -8,7 +8,7 @@
         :class="{ active: current === item.key }"
         @click="switchTo(item.path)"
       >
-        <image class="tabbar-icon" :src="current === item.key ? item.on : item.off" mode="aspectFit" />
+        <image class="tabbar-icon" :src="item.icon" mode="aspectFit" />
         <text class="tabbar-label">{{ item.label }}</text>
       </view>
     </view>
@@ -19,10 +19,10 @@
 defineProps({ current: { type: String, required: true } })
 
 const items = [
-  { key: 'home', label: '首页', path: '/pages/mall/index', off: '/static/tabbar/home_off.png', on: '/static/tabbar/home_on.png' },
-  { key: 'category', label: '分类', path: '/pages/mall/category/index', off: '/static/tabbar/category_off.png', on: '/static/tabbar/category_on.png' },
-  { key: 'cart', label: '购物车', path: '/pages/mall/cart/index', off: '/static/tabbar/cart_off.png', on: '/static/tabbar/cart_on.png' },
-  { key: 'person', label: '我的', path: '/pages/wallpaper/person/index', off: '/static/tabbar/user_off.png', on: '/static/tabbar/user_on.png' }
+  { key: 'home', label: '首页', path: '/pages/mall/index', icon: '/static/mall/ardot/tab-home.png' },
+  { key: 'category', label: '分类', path: '/pages/mall/category/index', icon: '/static/mall/ardot/tab-category.png' },
+  { key: 'cart', label: '购物车', path: '/pages/mall/cart/index', icon: '/static/mall/ardot/tab-cart.png' },
+  { key: 'person', label: '我的', path: '/pages/wallpaper/person/index', icon: '/static/mall/ardot/tab-person.png' }
 ]
 
 function switchTo(path) {
@@ -53,6 +53,8 @@ function switchTo(path) {
   display: flex;
   border: 4rpx solid $rz-ink;
   border-radius: 70rpx;
+  padding: 8rpx;
+  gap: 8rpx;
   box-sizing: border-box;
   overflow: hidden;
 }
