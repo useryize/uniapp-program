@@ -1,22 +1,24 @@
 <template>
   <view class="tabbar-shell">
     <view class="tabbar-pill">
-      <view
+      <navigator
         v-for="item in items"
         :key="item.key"
         class="tabbar-item"
         :class="{ active: current === item.key }"
-        @click="switchTo(item)"
+        :url="current === item.key ? '' : item.path"
+        open-type="redirect"
+        hover-class="none"
       >
         <image class="tabbar-icon" :src="item.icon" mode="aspectFit" />
         <text class="tabbar-label">{{ item.label }}</text>
-      </view>
+      </navigator>
     </view>
   </view>
 </template>
 
 <script setup>
-const props = defineProps({ current: { type: String, required: true } })
+defineProps({ current: { type: String, required: true } })
 
 const items = [
   { key: 'home', label: '首页', path: '/pages/mall/index', icon: '/static/mall/ardot/tab-home.png' },
@@ -25,10 +27,6 @@ const items = [
   { key: 'person', label: '我的', path: '/pages/mall/person/index', icon: '/static/mall/ardot/tab-person.png' }
 ]
 
-function switchTo(item) {
-  if (item.key === props.current) return
-  uni.redirectTo({ url: item.path })
-}
 </script>
 
 <style lang="scss" scoped>

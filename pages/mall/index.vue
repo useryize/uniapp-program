@@ -82,7 +82,7 @@
           <text class="cd-sep">:</text>
           <text class="cd-num">30</text>
         </view>
-        <text class="block-more block-more-light" @click="goCategory">更多 ></text>
+        <text class="block-more block-more-light" @click="goCategory">更多</text>
       </view>
       <scroll-view class="flash-scroll" scroll-x>
         <view class="flash-row">
