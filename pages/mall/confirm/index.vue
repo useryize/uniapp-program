@@ -203,7 +203,7 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .confirm {
   min-height: 100vh;
   background-color: $rz-grey-50;

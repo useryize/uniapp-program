@@ -61,7 +61,7 @@ const salesText = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 /*
  * 宽度说明：编译到微信小程序后，<goods-card> 会生成自定义宿主节点，
  * flex 容器的子项是宿主节点而非本 view —— 因此宽度/间距必须由使用方

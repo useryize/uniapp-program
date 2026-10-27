@@ -25,7 +25,7 @@ defineEmits(['more'])
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .section-head {
   display: flex;
   align-items: baseline;

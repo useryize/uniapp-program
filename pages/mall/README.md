@@ -79,7 +79,8 @@ mock 层**不是假数据回显**，而是按 PRD v1.1 业务规则实现的内�
 ## 待办与注意
 
 - [x] M1-M2 用户侧页面全部交付（详情/购物车/结算/支付结果/订单/搜索），路由已接入 `pages.json`
-- [ ] **分包规划（技术审核 T2）**：tab 页（`pages/mall/index`）必须留主包；其余页面后续迁 `subPackages`（root 配 `pages/mall/sub`），迁移时需同步改页面内跳转路径
+- [x] 商城四个主页面使用 `components/mall-tabbar.vue` 维护页面内导航，不占用全局 `tabBar`。未来主入口可通过 `uni.navigateTo({ url: '/pages/mall/index' })` 进入商城。
+- [ ] **分包规划（技术审核 T2）**：商城不使用原生 tabBar，后续可迁入 `subPackages`；迁移时需同步改页面内跳转路径
 - [ ] 地址管理页（新增/编辑/设默认，接口已就绪）、收藏/浏览历史（M5）
 - [ ] 退款售后（M4：aftersale 实体 + handler + 页面）
 - [ ] `order.mockPay` / `order.mockShip` 为 mock 专用通道，切换真实接口后废弃（mockShip 由后台发货接口替代）

@@ -37,7 +37,7 @@ function onChange(delta) {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .stepper {
   display: flex;
   align-items: center;

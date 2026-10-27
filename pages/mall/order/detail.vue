@@ -208,7 +208,7 @@ function onConfirm() {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .order-detail-page {
   min-height: 100vh;
   background-color: $rz-grey-50;

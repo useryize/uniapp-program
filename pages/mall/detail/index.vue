@@ -321,7 +321,7 @@ function goSizeGuide() {
 }
 
 function goCart() {
-  uni.switchTab({ url: '/pages/mall/cart/index' })
+  uni.navigateTo({ url: '/pages/mall/cart/index' })
 }
 
 function onService() {
@@ -356,7 +356,7 @@ onLoad(async (options) => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .detail {
   min-height: 100vh;
   background-color: $rz-grey-50;

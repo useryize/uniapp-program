@@ -111,41 +111,6 @@
       }
     }
   ],
-  "tabBar": {
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
-    "fontSize": "22rpx",
-    "iconWidth": "22px",
-    "spacing": "3px",
-    "color": "#8C8C8C",
-    "selectedColor": "#0A0A0A",
-    "list": [
-      {
-        "pagePath": "pages/mall/index",
-        "text": "首页",
-        "iconPath": "static/mall/tabbar/home_off.png",
-        "selectedIconPath": "static/mall/tabbar/home_on.png"
-      },
-      {
-        "pagePath": "pages/mall/category/index",
-        "text": "分类",
-        "iconPath": "static/mall/tabbar/category_off.png",
-        "selectedIconPath": "static/mall/tabbar/category_on.png"
-      },
-      {
-        "pagePath": "pages/mall/cart/index",
-        "text": "购物车",
-        "iconPath": "static/mall/tabbar/cart_off.png",
-        "selectedIconPath": "static/mall/tabbar/cart_on.png"
-      },
-      {
-        "pagePath": "pages/mall/person/index",
-        "text": "我的",
-        "iconPath": "static/mall/tabbar/user_off.png",
-        "selectedIconPath": "static/mall/tabbar/user_on.png"
-      }
-    ]
-  },
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uni-app",

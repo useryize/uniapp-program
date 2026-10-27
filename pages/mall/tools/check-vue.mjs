@@ -1,17 +1,18 @@
 /**
  * uni-app SFC 编译校验
  * 逐个解析 .vue：template 结构 + script 语法 + style(SCSS) 编译
- * SCSS 编译时注入 uni.scss 令牌（uni-app 的全局变量注入机制）
- * 运行：node .workbuddy/tmp/check-vue.mjs
+ * 商城页面和组件自行引入 styles/tokens.scss
+ * 运行：node pages/mall/tools/check-vue.mjs
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
 import { parse, compileTemplate, compileScript } from '@vue/compiler-sfc'
 import * as sass from 'sass'
 
 const require = createRequire(import.meta.url)
-const ROOT = 'E:/github/uniapp-program'
+const ROOT = path.resolve(import.meta.dirname, '../../..')
 const SRC = path.join(ROOT, 'pages/mall')
 const UNI_SCSS = fs.readFileSync(path.join(ROOT, 'uni.scss'), 'utf8')
 
@@ -65,7 +66,8 @@ for (const file of walk(SRC)) {
         throw new Error('使用设计变量的样式块必须声明 lang="scss"')
       }
       if (s.lang !== 'scss' && s.lang !== 'sass') continue
-      const res = sass.compileString(s.content, {
+      const res = sass.compileString(`${UNI_SCSS}\n${s.content}`, {
+        url: pathToFileURL(file),
         loadPaths: [path.dirname(file), path.join(ROOT, 'node_modules')],
         importers: [
           {

@@ -162,12 +162,12 @@ function goOrderList() {
 }
 
 function goHome() {
-  uni.switchTab({ url: '/pages/mall/index' })
+  uni.redirectTo({ url: '/pages/mall/index' })
 }
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .result {
   min-height: 100vh;
   background-color: $rz-white;

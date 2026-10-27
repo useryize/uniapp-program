@@ -53,7 +53,7 @@ static/
 | 价格红 `#E24B4A` | 同名变量 |
 | 图标 | 21 个 PNG 线性图标（`static/mall/icons/`），不用 emoji |
 
-**令牌集中在 `pages/mall/styles/tokens.scss`**，由根目录 `uni.scss` 引入并由 uni-app 注入：
+**令牌集中在 `pages/mall/styles/tokens.scss`**，商城页面和组件在各自的 SCSS 中按相对路径引入：
 
 ```scss
 $rz-ink: #0A0A0A;   $rz-acid: #FFD500;  $rz-price: #E24B4A;
@@ -81,16 +81,16 @@ cartApi.updateSku({ id, skuId, quantity })  // 购物车改规格
 
 ---
 
-## 四、路由与 tabBar
+## 四、路由与商城页面内导航
 
 - 新增 3 个路由：`pages/mall/category/index`、`pages/mall/size-guide/index`、`pages/mall/drop/index`
-- tabBar 由 2 个扩到 **4 个**：首页 / 分类 / 购物车 / 我的
-  - 分类页、购物车页是 tabBar 页，**跳转必须用 `uni.switchTab`**
-  - 「我的」位于 `pages/mall/person/index`（全局用户中心），已改造为设计稿风格并接入商城订单 / 尺码档案 / 发售提醒
+- 商城四个主页面：首页 / 分类 / 购物车 / 我的，都渲染 `components/mall-tabbar.vue`。
+- 四个页面不在 `pages.json` 注册原生 tabBar；页面内切换用 `uni.redirectTo`，从商品详情等子页面进入购物车用 `uni.navigateTo`。
+- 「我的」位于 `pages/mall/person/index`，接入商城订单 / 尺码档案 / 发售提醒。
 
-> 首页和个人中心使用 `components/mall-tabbar.vue` 绘制设计稿的胶囊导航；分类和购物车按设计稿隐藏底栏。四个路由仍注册在 `pages.json` 的 tabBar 中，通过 `uni.switchTab` 切换。
+> 未来主入口使用 `uni.navigateTo({ url: '/pages/mall/index' })` 进入商城；商城内切换不占用主入口的全局导航。
 
-> 所有商城 `.vue` 样式块声明 `lang="scss"` 并引入根目录 `uni.scss`，否则 `$rz-*` 设计变量不会正确编译。`check-vue.mjs` 会检查这一点。
+> 所有商城 `.vue` 样式块声明 `lang="scss"` 并引入 `styles/tokens.scss`，否则 `$rz-*` 设计变量不会正确编译。`check-vue.mjs` 会检查样式编译。
 
 ---
 

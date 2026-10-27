@@ -224,7 +224,7 @@ onUnload(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .search {
   min-height: 100vh;
   background-color: $rz-white;

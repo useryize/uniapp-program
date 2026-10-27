@@ -213,7 +213,7 @@ function goDetail(order) {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .order-list-page {
   height: 100vh;
   display: flex;

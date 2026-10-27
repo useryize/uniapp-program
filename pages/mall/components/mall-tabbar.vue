@@ -6,7 +6,7 @@
         :key="item.key"
         class="tabbar-item"
         :class="{ active: current === item.key }"
-        @click="switchTo(item.path)"
+        @click="switchTo(item)"
       >
         <image class="tabbar-icon" :src="item.icon" mode="aspectFit" />
         <text class="tabbar-label">{{ item.label }}</text>
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-defineProps({ current: { type: String, required: true } })
+const props = defineProps({ current: { type: String, required: true } })
 
 const items = [
   { key: 'home', label: '首页', path: '/pages/mall/index', icon: '/static/mall/ardot/tab-home.png' },
@@ -25,21 +25,22 @@ const items = [
   { key: 'person', label: '我的', path: '/pages/mall/person/index', icon: '/static/mall/ardot/tab-person.png' }
 ]
 
-function switchTo(path) {
-  uni.switchTab({ url: path })
+function switchTo(item) {
+  if (item.key === props.current) return
+  uni.redirectTo({ url: item.path })
 }
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .tabbar-shell {
   position: fixed;
   z-index: 30;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 192rpx;
-  padding: 0 40rpx;
+  height: calc(192rpx + env(safe-area-inset-bottom));
+  padding: 0 40rpx env(safe-area-inset-bottom);
   display: flex;
   align-items: center;
   background: $rz-white;

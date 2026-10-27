@@ -1,5 +1,5 @@
 <!--
-  分类页（pages/mall/category/index）—— tabBar 页
+  分类页（pages/mall/category/index）—— 商城页面内导航
   布局：左侧一级类目栏（固定）+ 右侧排序栏与商品网格
   数据：goodsApi.categories / goodsApi.list（按 categoryId 过滤）
 -->
@@ -74,6 +74,7 @@
         </scroll-view>
       </view>
     </view>
+    <mall-tabbar current="category" />
   </view>
 </template>
 
@@ -82,6 +83,7 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { goodsApi } from '../api/index.js'
 import GoodsCard from '../components/goods-card.vue'
+import MallTabbar from '../components/mall-tabbar.vue'
 
 /** 一级类目树 */
 const categories = ref([])
@@ -181,7 +183,7 @@ function goDetail(goods) {
 }
 
 function goHome() {
-  uni.switchTab({ url: '/pages/mall/index' })
+  uni.redirectTo({ url: '/pages/mall/index' })
 }
 
 function goSearch() {
@@ -198,14 +200,13 @@ onLoad(async () => {
 })
 
 onShow(() => {
-  uni.hideTabBar({ animation: false })
   // 从详情页返回时刷新（价格/库存可能已变）
   if (categories.value.length) loadGoods(true)
 })
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .category {
   height: 100vh;
   background-color: $rz-grey-50;
@@ -260,7 +261,7 @@ onShow(() => {
 
 .cat-body {
   display: flex;
-  height: calc(100% - 192rpx);
+  height: calc(100% - 384rpx - env(safe-area-inset-bottom));
 }
 
 /* ---- 左侧类目栏（白底，选中黑块，无分隔线） ---- */

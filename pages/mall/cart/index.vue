@@ -1,5 +1,5 @@
 <!--
-  购物车页（pages/mall/cart/index）—— tabBar 页
+  购物车页（pages/mall/cart/index）—— 商城页面内导航
   交互规格：docs/交互规格说明书-商城M1-M2.md §P2
   规则（PRD §③）：
   - 合计金额只用服务端返回的 checkedAmount，前端不算钱
@@ -136,6 +136,7 @@
         </view>
       </view>
     </view>
+    <mall-tabbar current="cart" />
   </view>
 </template>
 
@@ -147,6 +148,7 @@ import { cartApi, goodsApi } from '../api/index.js'
 import { fen2yuan } from '../utils/format.js'
 import Stepper from '../components/stepper.vue'
 import SizePicker from '../components/size-picker.vue'
+import MallTabbar from '../components/mall-tabbar.vue'
 import { MALL_CONFIG } from '../config'
 
 /** 购物车列表（服务端返回，含失效标记） */
@@ -218,7 +220,6 @@ async function loadCart() {
 }
 
 onShow(() => {
-  uni.hideTabBar({ animation: false })
   loadCart()
 })
 
@@ -365,16 +366,16 @@ function goConfirm() {
 }
 
 function goHome() {
-  uni.switchTab({ url: '/pages/mall/index' })
+  uni.redirectTo({ url: '/pages/mall/index' })
 }
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .cart {
   min-height: 100vh;
   background-color: $rz-grey-50;
-  padding-bottom: 160rpx;
+  padding-bottom: calc(320rpx + env(safe-area-inset-bottom));
 }
 
 .cart-head {
@@ -655,7 +656,7 @@ function goHome() {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(192rpx + env(safe-area-inset-bottom));
   height: 128rpx;
   display: flex;
   align-items: center;

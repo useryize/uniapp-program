@@ -249,11 +249,11 @@ function goSearch() {
 }
 
 function goCategory() {
-  uni.switchTab({ url: '/pages/mall/category/index' })
+  uni.redirectTo({ url: '/pages/mall/category/index' })
 }
 
 function goCart() {
-  uni.switchTab({ url: '/pages/mall/cart/index' })
+  uni.redirectTo({ url: '/pages/mall/cart/index' })
 }
 
 function goDrop() {
@@ -270,7 +270,6 @@ onLoad(() => {
   loadDrops()
 })
 onShow(() => {
-  uni.hideTabBar({ animation: false })
   refreshCartCount()
 })
 onPullDownRefresh(() => loadGoods(true))
@@ -278,11 +277,11 @@ onReachBottom(() => loadGoods(false))
 </script>
 
 <style lang="scss" scoped>
-@import "../../uni.scss";
+@import "./styles/tokens.scss";
 .home {
   min-height: 100vh;
   background-color: $rz-white;
-  padding-bottom: 192rpx;
+  padding-bottom: calc(192rpx + env(safe-area-inset-bottom));
 }
 
 .home-status {

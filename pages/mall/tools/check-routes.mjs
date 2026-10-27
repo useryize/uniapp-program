@@ -2,18 +2,18 @@
  * 路由可达性检查
  * 1) 扫描所有 .vue 的跳转调用，提取目标 path
  * 2) 与 pages.json 注册路径比对，报告「跳转到未注册页面」
- * 3) 检查是否对 tabBar 页误用 navigateTo（小程序会直接失败）
- * 运行：node .workbuddy/tmp/check-routes.mjs
+ * 3) 检查普通页面是否误用 switchTab
+ * 运行：node pages/mall/tools/check-routes.mjs
  */
 import fs from 'node:fs'
 import path from 'node:path'
 
-const ROOT = 'E:/github/uniapp-program'
+const ROOT = path.resolve(import.meta.dirname, '../../..')
 const raw = fs.readFileSync(path.join(ROOT, 'pages.json'), 'utf8').replace(/\/\/.*$/gm, '')
 const conf = JSON.parse(raw)
 
 const registered = new Set(conf.pages.map((p) => p.path))
-const tabPages = new Set(conf.tabBar.list.map((t) => t.pagePath))
+const tabPages = new Set((conf.tabBar?.list || []).map((t) => t.pagePath))
 
 function walk(dir, out = []) {
   for (const f of fs.readdirSync(dir)) {
@@ -49,9 +49,12 @@ for (const file of files) {
       console.log(`  ✗ ${rel}  ${method} -> ${p}   【页面未在 pages.json 注册】`)
       continue
     }
-    if (tabPages.has(p) && method === 'navigateTo') {
+    if (tabPages.has(p) && method !== 'switchTab') {
       problems++
-      console.log(`  ✗ ${rel}  navigateTo -> ${p}   【tabBar 页必须用 switchTab】`)
+      console.log(`  ✗ ${rel}  ${method} -> ${p}   【tabBar 页必须用 switchTab】`)
+    } else if (!tabPages.has(p) && method === 'switchTab') {
+      problems++
+      console.log(`  ✗ ${rel}  switchTab -> ${p}   【普通页面不能用 switchTab】`)
     }
   }
 }

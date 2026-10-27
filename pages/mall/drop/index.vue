@@ -184,7 +184,7 @@ onLoad(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../uni.scss";
+@import "../styles/tokens.scss";
 .drop {
   height: 100vh;
   display: flex;
