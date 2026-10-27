@@ -24,12 +24,14 @@
     <view class="loading" v-if="loading">
       <view class="loading-spinner"></view>
     </view>
+    <WallpaperTabbar current="find" />
   </view>
 </template>
 
 <script setup>
 import { onReachBottom, onLoad, onPullDownRefresh } from "@dcloudio/uni-app";
 import { request } from "@/utils/request";
+import WallpaperTabbar from "../components/wallpaper-tabbar.vue";
 import { onMounted, ref, computed } from "vue";
 
 // 状态管理
@@ -126,8 +128,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .photo-wall {
-  padding: 0 30rpx;
+  padding: 0 30rpx calc(112rpx + env(safe-area-inset-bottom));
   min-height: 100vh;
+  box-sizing: border-box;
   background: #fff;
 
   .masonry {
