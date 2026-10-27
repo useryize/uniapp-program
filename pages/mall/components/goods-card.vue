@@ -5,7 +5,7 @@
   金额展示：仅展示服务端返回值（fen2yuan），组件内不做任何计算
 -->
 <template>
-  <view class="goods-card" :class="{ plain }" @click="$emit('tap', goods)">
+  <view class="goods-card" :class="{ plain }" @click="$emit('select', goods)">
     <view class="cover" :style="{ backgroundColor: goods.color, height: coverHeight + 'rpx' }">
       <image v-if="goods.cover" class="cover-img" :src="goods.cover" mode="aspectFill" />
       <text v-else class="cover-fallback">{{ goods.title.slice(0, 1) }}</text>
@@ -47,7 +47,7 @@ const props = defineProps({
   coverHeight: { type: Number, default: 320 }
 })
 
-defineEmits(['tap', 'add'])
+defineEmits(['select', 'add'])
 
 /** 销量展示：超过 1 万折算为「x.x万」 */
 const salesText = computed(() => {

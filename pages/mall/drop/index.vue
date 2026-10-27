@@ -9,7 +9,11 @@
 -->
 <template>
   <view class="drop">
+    <view class="drop-status-bar" />
     <view class="drop-head">
+      <view class="drop-back" @click="goBack">
+        <view class="drop-back-icon" />
+      </view>
       <view class="drop-head-left">
         <text class="drop-title">发售日历</text>
         <text class="drop-en">DROP CALENDAR</text>
@@ -172,6 +176,14 @@ function goDetail(d) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${d.goodsId}` })
 }
 
+function goBack() {
+  if (getCurrentPages().length > 1) {
+    uni.navigateBack()
+  } else {
+    uni.redirectTo({ url: '/pages/mall/index' })
+  }
+}
+
 onLoad(() => {
   loadDrops()
   // 每秒刷新倒计时
@@ -192,6 +204,12 @@ onLoad(() => {
   background-color: $rz-grey-50;
 }
 
+.drop-status-bar {
+  height: var(--status-bar-height);
+  flex-shrink: 0;
+  background-color: $rz-ink;
+}
+
 /* ---- 顶部 ---- */
 .drop-head {
   height: 112rpx;
@@ -200,6 +218,24 @@ onLoad(() => {
   padding: 0 $rz-page-pad;
   background-color: $rz-ink;
   flex-shrink: 0;
+}
+
+.drop-back {
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.drop-back-icon {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid $rz-white;
+  border-bottom: 4rpx solid $rz-white;
+  transform: rotate(45deg);
 }
 
 .drop-head-left {

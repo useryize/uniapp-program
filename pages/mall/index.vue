@@ -94,7 +94,7 @@
             :tag="flashTags[g.id] || 'SALE'"
             :cover-height="320"
             plain
-            @tap="goDetail"
+            @select="goDetail"
           />
         </view>
       </scroll-view>
@@ -115,7 +115,7 @@
           :tag="recommendTags[g.id] || 'NEW'"
           :cover-height="320"
           plain
-          @tap="goDetail"
+          @select="goDetail"
         />
       </view>
     </view>

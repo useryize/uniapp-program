@@ -99,7 +99,7 @@
       </view>
     </view>
 
-    <!-- 底部固定区：规格条 + 加购 + 立即购买（竖排全宽，对齐设计稿） -->
+    <!-- 底部固定区：规格条 + 左右并排的加购和购买按钮 -->
     <view class="footer-bar">
       <!-- 悬浮规格入口条：下滑时始终可见 -->
       <view class="float-spec">
@@ -108,11 +108,13 @@
           <text class="float-spec-btn-text">选规格</text>
         </view>
       </view>
-      <view class="footer-btn footer-add" :class="{ disabled: allSoldOut }" @click="openSku('cart')">
-        <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '加入购物车' }}</text>
-      </view>
-      <view class="footer-btn footer-buy" :class="{ disabled: allSoldOut }" @click="openSku('buy')">
-        <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '立即购买' }}</text>
+      <view class="footer-actions">
+        <view class="footer-btn footer-add" :class="{ disabled: allSoldOut }" @click="openSku('cart')">
+          <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '加入购物车' }}</text>
+        </view>
+        <view class="footer-btn footer-buy" :class="{ disabled: allSoldOut }" @click="openSku('buy')">
+          <text class="footer-btn-text">{{ allSoldOut ? '暂时售罄' : '立即购买' }}</text>
+        </view>
       </view>
     </view>
 
@@ -360,8 +362,8 @@ onLoad(async (options) => {
 .detail {
   min-height: 100vh;
   background-color: $rz-grey-50;
-  /* 底部预留：悬浮规格条 80 + 操作栏 120 */
-  padding-bottom: 200rpx;
+  /* 底部预留：规格条、操作按钮和安全区 */
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
 }
 
 /* ---- 图集 ---- */
@@ -622,7 +624,7 @@ onLoad(async (options) => {
   color: $rz-grey-500;
 }
 
-/* ---- 底部固定区：规格条 + 双按钮（竖排） ---- */
+/* ---- 底部固定区：规格条 + 双按钮 ---- */
 .footer-bar {
   position: fixed;
   left: 0;
@@ -632,6 +634,7 @@ onLoad(async (options) => {
   flex-direction: column;
   background-color: $rz-white;
   border-top: 4rpx solid $rz-ink;
+  padding-bottom: env(safe-area-inset-bottom);
   z-index: 11;
 }
 
@@ -661,7 +664,13 @@ onLoad(async (options) => {
   color: $rz-acid;
 }
 
+.footer-actions {
+  display: flex;
+}
+
 .footer-btn {
+  flex: 1;
+  min-width: 0;
   height: 88rpx;
   display: flex;
   align-items: center;
@@ -675,6 +684,7 @@ onLoad(async (options) => {
 
 .footer-buy {
   background-color: $rz-acid;
+  border-left: 4rpx solid $rz-ink;
 }
 
 .footer-btn-text {

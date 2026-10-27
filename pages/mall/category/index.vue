@@ -66,7 +66,7 @@
               :goods="g"
               :plain="true"
               :cover-height="251"
-              @tap="goDetail"
+              @select="goDetail"
             />
           </view>
           <view class="cat-tip">
