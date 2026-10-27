@@ -5,6 +5,7 @@
 -->
 <template>
   <view class="category">
+    <view class="category-status-bar" />
     <view class="category-head">
       <view class="category-back" @click="goHome">
         <image src="/static/mall/icons/back.png" mode="aspectFit" />
@@ -209,12 +210,23 @@ onShow(() => {
 @import "../styles/tokens.scss";
 .category {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-bottom: calc(192rpx + env(safe-area-inset-bottom));
   background-color: $rz-grey-50;
   overflow: hidden;
 }
 
+.category-status-bar {
+  height: var(--status-bar-height);
+  flex-shrink: 0;
+  background-color: $rz-white;
+}
+
 .category-head {
   height: 112rpx;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -244,6 +256,7 @@ onShow(() => {
 
 .category-search {
   height: 80rpx;
+  flex-shrink: 0;
   padding: 0 24rpx;
   display: flex;
   align-items: center;
@@ -261,7 +274,8 @@ onShow(() => {
 
 .cat-body {
   display: flex;
-  height: calc(100% - 384rpx - env(safe-area-inset-bottom));
+  flex: 1;
+  min-height: 0;
 }
 
 /* ---- 左侧类目栏（白底，选中黑块，无分隔线） ---- */
