@@ -147,6 +147,21 @@ const APPS = [
     cover: '',
     coverGradient: 'linear-gradient(160deg, #476FF2 0%, #B87AFF 55%, #FA8C9E 100%)',
     url: '/pages/wallpaper/home/index'
+  },
+  {
+    id: 'weather',
+    name: '天气助手',
+    desc: '实时天气 · 逐时预报 · 降水雷达',
+    tag: '实时更新',
+    meta: '367 城覆盖',
+    color: '#4C8DFF',
+    iconBg: 'rgba(76, 141, 255, 0.18)',
+    iconBorder: 'rgba(76, 141, 255, 0.36)',
+    tagBg: 'rgba(76, 141, 255, 0.16)',
+    glow: 'rgba(76, 141, 255, 0.24)',
+    cover: '',
+    coverGradient: 'linear-gradient(160deg, #014DB2 0%, #00317A 55%, #001645 100%)',
+    url: '/pages/weather/home/index'
   }
 ]
 

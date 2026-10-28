@@ -1,0 +1,64 @@
+/* 天气查询系统设计令牌（Ardot 741184924195659）
+   对应设计规范 pages/weather/docs/UI设计规范.md
+   基准 375px 设计稿，rpx = px × 2 */
+
+/* 色彩 */
+$wx-bg:          #F5F7FA;  // 页面画布（非纯白）
+$wx-card:        #FFFFFF;  // 卡片面
+$wx-card-2:      #F7F9FC;  // 表头 / 次级面
+$wx-line:        #EDEFF3;  // 分隔线
+$wx-line-2:      #D6D9DE;  // 描边（输入框 / 胶囊）
+$wx-line-3:      #E8EDF5;  // 进度槽
+
+$wx-text-1:      #0A1628;  // 主文字
+$wx-text-2:      #6B7280;  // 次要文字
+$wx-text-3:      #9AA5B4;  // 弱文字 / 占位
+$wx-text-4:      #C7D8F2;  // 深色背景上的次要文字
+
+$wx-blue:        #014DB2;  // 主色
+$wx-blue-deep:   #001645;  // 深蓝（渐变终点）
+$wx-blue-soft:   #EAF1FD;  // 浅蓝底
+$wx-blue-line:   #0F3F86;
+
+$wx-green:       #10B981;  // 优良
+$wx-amber:       #F59E0B;  // 注意
+$wx-red:         #EF4444;  // 预警
+$wx-green-soft:  #EAF7F1;
+$wx-green-ink:   #126B4C;
+$wx-amber-soft:  #FFF8E8;
+$wx-amber-ink:   #7A5A12;
+$wx-red-soft:    #FFF1F1;
+
+/* 渐变 */
+$wx-grad-hero:   linear-gradient(180deg, #014DB2 0%, #001645 100%);
+$wx-grad-aqi:    linear-gradient(135deg, #10B981 0%, #0A6B52 100%);
+$wx-grad-card:   linear-gradient(135deg, #10B981 0%, #4CC85A 100%);
+
+/* 形状 */
+$wx-radius-card: 44rpx;    // 22px 主卡片
+$wx-radius-lg:   40rpx;    // 20px 特色卡片
+$wx-radius-md:   32rpx;    // 16px 提示条 / 输入框
+$wx-radius-sm:   28rpx;    // 14px 搜索框
+$wx-radius-xs:   24rpx;    // 12px 标签
+$wx-radius-pill: 72rpx;    // 36px 胶囊
+
+/* 间距 */
+$wx-page-pad:    32rpx;    // 16px 页面左右边距（全局统一）
+$wx-gap:         28rpx;    // 14px 卡片间距
+$wx-gap-sm:      24rpx;    // 12px 元素内间距
+$wx-gap-xs:      16rpx;    // 8px 紧凑间距
+
+/* 字号（设计稿 px × 2） */
+$wx-fs-temp:     176rpx;   // 88px 主温度
+$wx-fs-aqi:      68rpx;    // 34px AQI 数值
+$wx-fs-nav:      34rpx;    // 17px 页面标题
+$wx-fs-title:    32rpx;    // 16px 卡片标题
+$wx-fs-value:    32rpx;    // 16px 指标数值
+$wx-fs-body:     26rpx;    // 13px 正文
+$wx-fs-desc:     24rpx;    // 12px 描述
+$wx-fs-cap:      22rpx;    // 11px 辅助
+$wx-fs-tab:      20rpx;    // 10px Tab 标签
+
+/* 阴影 */
+$wx-shadow-card: 0 12rpx 36rpx rgba(0.02, 0.09, 0.16, 0.06);
+$wx-shadow-pill: 0 16rpx 48rpx rgba(0.02, 0.09, 0.16, 0.10);

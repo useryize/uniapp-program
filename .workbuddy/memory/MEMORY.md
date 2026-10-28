@@ -2,7 +2,7 @@
 
 ## 项目概况
 
-- **E:/github/uniapp-program**：uni-app 小程序项目，含「商城」与「壁纸」两个业务模块。
+- **E:/github/uniapp-program**：uni-app 小程序项目，含「商城」「壁纸」「天气」三个业务模块。
 - 商城模块文档位于 `pages/mall/docs/`：
   - `PRD-商城-v1.1-架构版.md`（业务规则源）
   - `交互规格说明书-商城M1-M2.md`（页面流 × 交互规则 × 验收标准）
@@ -21,11 +21,43 @@
 |---|---|---|
 | 商城 | Y2K 粗野主义，酸黄撞色 | `#0A0A0A` |
 | 壁纸 | 轻白瀑布流 | `#FFFFFF` |
+| 天气 | 暖白画布 + 深蓝渐变英雄区 + 玻璃拟态 | `#F5F7FA` |
 | **入口页** | **深色高级感，柔和渐变光晕** | **`#0A0D13`** |
 
 入口页色板：靛蓝 `#3D5AFF` / 紫罗兰 `#7C4DFF` / 暖杏 `#FFA45C` 光晕，卡片面 `#171C27`，
 文字四级 `#FFFFFF` / `#8C93A0` / `#6E7684` / `#4A515E`。子项目标识色：商城 `#FFD500`、壁纸 `#7FA8FF`。
 圆角主卡 12px / 网格项 10px / 标签 6px；字体 Noto Sans SC + Inter。
+
+## 天气查询系统（2026-10-28，设计 + 编码均已完成）
+
+- 设计稿 Ardot：`https://ardot.tencent.com/file/741184924195659`
+  - 8 个页面（375×812）+ 3 块设计系统板（天气图标库 / 导航组件 / 规范总览）
+  - 天气图标库共 **11 个 reusable 组件**：晴/多云/阴/雨/小雨/雪/雾/霾/夜/雷暴/冻雨（WMO 码全覆盖）
+- 文档：`pages/weather/docs/`
+  - `UI设计规范.md`（色彩/字阶/圆角/组件规格/uni-app 实现要点/接口 JSON 建议）
+  - `接口选型方案.md`（免费接口实测对比 + 缓存策略 + WMO→图标映射表）
+  - `接入说明.md`（运行方式 + 目录结构 + 已知限制）
+  - `微信域名配置.md`（后台直达地址 + 域名清单 + 备案口径 + 报错速查）
+- 视觉：主色 `#014DB2`，深蓝渐变 `#014DB2→#001645`，语义色 绿 `#10B981` / 橙 `#F59E0B` / 红 `#EF4444`；
+  画布 `#F5F7FA`，主温度 88px Inter Light；底部胶囊导航 62px / 圆角 36px，激活项填主色
+- 字体分工（沿用商城约定）：Inter 管数字与英文，Noto Sans SC 管中文
+
+**代码位置**：`pages/weather/`
+- 8 个页面：home/index · city/search · city/manage · detail/hourly · detail/trend · detail/air · detail/indices · explore/radar
+- `api/` 分层（对齐商城约定）：http / weather(适配器) / radar / city / index(统一出口)
+- `utils/`：wmo(WMO码映射) · units(风级·AQI·时间) · indices(8项生活指数自算)
+- `components/`：weather-tabbar · weather-nav · weather-chart(canvas 折线图)
+- `data/cities.js`：367 城静态库（adcode+坐标+拼音），**存为 .js 而非 .json**（小程序端 JSON import 行为不一致）
+- `static/weather/icons/`：30 个 PNG（11 天气 + 11 深底变体 + 8 指数），**用 PNG 而非内联 SVG**（小程序 image 对 SVG 支持不稳）
+- 入口：首页 `pages/index/index.vue` 的 `APPS` 数组已追加天气项（**扩展约定：只追加一项，布局零改动**）
+
+**接口选型（2026-10-28 实测）**
+- 推荐组合：**Open-Meteo**（免 Key，1万次/天，16天预报+空气质量）+ **RainViewer**（雷达瓦片，免 Key）+ **本地城市库**
+- 缺口与对策：Open-Meteo **无生活指数** → 8 项已自算（`utils/indices.js`）；Open-Meteo **中文地理编码有歧义**（"杭州"会返回四川甘孜）→ 已用本地城市库；RainViewer `nowcast` 实测为空 → 已做降级提示
+- ⚠️ **商业授权是硬门槛**：Open-Meteo/RainViewer 免费层均不允许商用，上线运营需换和风/彩云
+- ⚠️ **CO 单位口径**：国标限值 4 mg/m³，接口返回 μg/m³，限值表须用 4000，否则永远显示「超标」
+
+**构建**：`npm run build:h5` / `npm run build:mp-weixin`（`cross-env UNI_INPUT_DIR=.` 必须，uni CLI 在加载 vite 配置前就解析源码目录）
 
 ## 服装电商交互逻辑（调研沉淀，2026-10-22）
 

@@ -128,6 +128,73 @@
         "navigationBarTitleText": "壁纸精选",
         "enablePullDownRefresh": false
       }
+    },
+    // 天气
+    {
+      "path": "pages/weather/home/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": true,
+        "backgroundColor": "#014DB2",
+        "backgroundTextStyle": "light"
+      }
+    },
+    {
+      "path": "pages/weather/city/search",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/city/manage",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/detail/hourly",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/detail/trend",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/detail/air",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/detail/indices",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
+    },
+    {
+      "path": "pages/weather/explore/radar",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#F5F7FA",
+        "backgroundColor": "#F5F7FA"
+      }
     }
   ],
   "globalStyle": {
