@@ -166,6 +166,21 @@ const APPS = [
     cover: '',
     coverGradient: 'linear-gradient(160deg, #014DB2 0%, #00317A 55%, #001645 100%)',
     url: '/pages/weather/home/index'
+  },
+  {
+    id: 'music',
+    name: '独立音乐',
+    desc: '曲风专题 · 每日推荐 · 时间轴评论',
+    tag: '每日更新',
+    meta: '30 首日推',
+    color: '#00E0B8',
+    iconBg: 'rgba(0, 224, 184, 0.16)',
+    iconBorder: 'rgba(0, 224, 184, 0.34)',
+    tagBg: 'rgba(0, 224, 184, 0.14)',
+    glow: 'rgba(0, 224, 184, 0.22)',
+    cover: '',
+    coverGradient: 'linear-gradient(160deg, #0A3B36 0%, #2F2A6B 55%, #0A0A0C 100%)',
+    url: '/pages/music/home/index'
   }
 ]
 

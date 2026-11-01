@@ -1,0 +1,49 @@
+/**
+ * @file 音乐模块设计令牌（深夜黑胶）
+ *
+ * 与设计稿 pages/music/design/README.md §四 一一对应。
+ * 只放变量，不产出任何 CSS 规则，由使用方 @import '.../tokens.scss'。
+ */
+
+/* 色彩 */
+$m-bg:            #0A0A0C; // 画布底
+$m-surface:       #151519; // 卡片面
+$m-surface-hover: #1D1D23; // 悬浮 / 分段选中
+$m-primary:       #00E0B8; // 荧光青，播放与选中
+$m-accent:        #FF5A36; // 橙红，收藏与正在播放
+$m-text-1:        #FFFFFF;
+$m-text-2:        #A8A8B3;
+$m-text-3:        #6E6E7A;
+$m-text-4:        #42424C;
+
+/* 描边统一用白色透明度，不用实色灰 */
+$m-line-weak:   rgba(255, 255, 255, 0.06);
+$m-line:        rgba(255, 255, 255, 0.10);
+$m-line-strong: rgba(255, 255, 255, 0.18);
+$m-primary-08:  rgba(0, 224, 184, 0.08);
+$m-primary-20:  rgba(0, 224, 184, 0.20);
+$m-primary-40:  rgba(0, 224, 184, 0.40);
+
+/* 圆角 */
+$m-radius-cover: 16rpx * 2; // 播放器大封面 16px
+$m-radius-card:  14rpx * 2; // 卡片 / Banner / MiniBar 14px
+$m-radius-cover-s: 12rpx * 2;
+$m-radius-row:   8rpx * 2;
+$m-radius-pill:  999rpx;
+
+/* 间距（与设计稿一致，px 视觉值） */
+$m-gap-xs: 4rpx * 2;
+$m-gap-s:  8rpx * 2;
+$m-gap-m:  12rpx * 2;
+$m-gap-l:  16rpx * 2;
+$m-gap-xl: 24rpx * 2;
+
+/* 高度 */
+$m-tabbar-h:   96rpx;  // 48px
+$m-minibar-h:  116rpx; // 58px
+$m-row-h:      104rpx; // 52px
+$m-row-h-lg:   112rpx; // 56px
+
+/* 字体族：数字与英文用 Inter，中文用 Noto Sans SC */
+$m-font-num: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+$m-font-cn:  'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;

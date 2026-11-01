@@ -195,6 +195,80 @@
         "navigationBarBackgroundColor": "#F5F7FA",
         "backgroundColor": "#F5F7FA"
       }
+    },
+    // 音乐（深夜黑胶）
+    {
+      "path": "pages/music/home/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh": false,
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/chart/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/library/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/daily/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/player/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/playlist/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/playlists/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/search/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
+    },
+    {
+      "path": "pages/music/artist/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#0A0A0C"
+      }
     }
   ],
   "globalStyle": {
