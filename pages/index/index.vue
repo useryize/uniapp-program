@@ -12,7 +12,7 @@
     <view class="glow glow-warm" />
 
     <!-- 状态栏占位 -->
-    <view class="status-bar" />
+    <view class="status-bar" :style="{ height: headerInset }" />
 
     <!-- 顶部品牌栏 -->
     <view class="brand-bar">
@@ -113,6 +113,10 @@
 </template>
 
 <script setup>
+import { getEntryHeaderInset } from '@/utils/entry-header.js'
+
+const headerInset = getEntryHeaderInset()
+
 /**
  * 子项目入口配置
  * 新增一个子项目 = 在此数组追加一项（id 唯一），布局自动适配
@@ -224,7 +228,7 @@ const onProfile = () => {
 
 /* 状态栏 */
 .status-bar {
-  height: 88rpx;
+  flex-shrink: 0;
 }
 
 /* 顶部品牌栏 */

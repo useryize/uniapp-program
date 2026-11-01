@@ -9,7 +9,7 @@
     <view class="glow glow-indigo" />
     <view class="glow glow-violet" />
 
-    <view class="status-bar" />
+    <view class="status-bar" :style="{ height: headerInset }" />
 
     <!-- 顶部栏 -->
     <view class="nav-bar">
@@ -63,6 +63,10 @@
 </template>
 
 <script setup>
+import { getEntryHeaderInset } from '@/utils/entry-header.js'
+
+const headerInset = getEntryHeaderInset()
+
 const APPS = [
   {
     id: 'mall',
@@ -171,7 +175,7 @@ const onAdd = () => {
 }
 
 .status-bar {
-  height: 88rpx;
+  flex-shrink: 0;
 }
 
 .nav-bar {
