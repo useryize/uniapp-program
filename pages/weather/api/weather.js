@@ -124,12 +124,12 @@ function airUrl(lat, lng) {
  */
 function currentHourIndex(times) {
   if (!times || !times.length) return 0
-  const now = new Date()
-  const nowHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours())
+  // 预报请求固定为 Asia/Shanghai，按同一时区比较小时，避免设备时区导致图标错位。
+  const nowHour = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 13)
   for (let i = 0; i < times.length; i += 1) {
-    if (new Date(times[i]) >= nowHour) return i
+    if (times[i].slice(0, 13) >= nowHour) return i
   }
-  return 0
+  return times.length - 1
 }
 
 /**

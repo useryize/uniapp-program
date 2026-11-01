@@ -30,13 +30,14 @@ export const WMO_MAP = {
   73: { text: '中雪', icon: 'snow' },
   75: { text: '大雪', icon: 'snow' },
   77: { text: '雪粒', icon: 'snow' },
-  80: { text: '小阵雨', icon: 'rain' },
+  80: { text: '小阵雨', icon: 'lightRain' },
   81: { text: '阵雨', icon: 'rain' },
   82: { text: '强阵雨', icon: 'rain' },
   85: { text: '小阵雪', icon: 'snow' },
   86: { text: '大阵雪', icon: 'snow' },
   95: { text: '雷阵雨', icon: 'thunder' },
   96: { text: '雷阵雨伴冰雹', icon: 'thunder' },
+  97: { text: '强雷阵雨', icon: 'thunder' },
   99: { text: '强雷阵雨伴冰雹', icon: 'thunder' }
 }
 
