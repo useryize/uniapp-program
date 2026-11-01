@@ -6,7 +6,7 @@
       <view class="city-bar" :style="{ paddingRight: header.homeRightInset }">
         <view class="city-left" @click="onSwitchCity">
           <view class="ico-pin" />
-          <text class="city-name">{{ city.short || city.name }}</text>
+          <text class="city-name">{{ cityLabel }}</text>
           <view class="ico-chevron" />
         </view>
         <view class="city-right">
@@ -114,6 +114,7 @@ import { getWeatherHeaderLayout } from '../utils/header.js'
 const header = getWeatherHeaderLayout()
 
 const city = ref({})
+const citySource = ref('loading')
 const current = ref({})
 const hourly = ref([])
 const daily = ref([])
@@ -123,6 +124,11 @@ const error = ref('')
 
 const round = (v) => (v == null ? '--' : Math.round(v))
 const iconUrl = (icon) => `/static/weather/icons/${icon || 'sunny'}.png`
+const cityLabel = computed(() => {
+  if (citySource.value === 'loading') return '定位中…'
+  const name = city.value.short || city.value.name || ''
+  return citySource.value === 'fallback' ? `${name} · 定位不可用` : name
+})
 
 const hourlyPreview = computed(() => hourly.value.slice(0, 8))
 const dailyPreview = computed(() =>
@@ -145,18 +151,25 @@ const metrics = computed(() => {
 })
 
 /** 加载数据 */
+let loadId = 0
 async function load() {
+  const id = ++loadId
   error.value = ''
   try {
-    const target = weatherApi.getCurrentCity()
+    const result = await weatherApi.getHomeCity()
+    if (id !== loadId) return
+    const target = result.city
     city.value = target
+    citySource.value = result.source
     const data = await weatherApi.getWeather(target)
+    if (id !== loadId) return
     current.value = data.current
     hourly.value = data.hourly
     daily.value = data.daily
     airQuality.value = data.airQuality
     tips.value = data.tips
   } catch (e) {
+    if (id !== loadId) return
     error.value = e && e.msg ? e.msg : '加载失败，请稍后重试'
   }
 }

@@ -110,6 +110,30 @@ export function getCityByAdcode(adcode) {
   return CITIES.find((c) => String(c.adcode) === String(adcode)) || null
 }
 
+/** 用城市中心点匹配定位坐标；境外或距离城市过远时不猜测城市。 */
+export function getNearestCity(latitude, longitude) {
+  loadCities()
+  const lat = Number(latitude)
+  const lng = Number(longitude)
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+
+  const rad = Math.PI / 180
+  let nearest = null
+  let nearestDistance = Infinity
+  for (const city of CITIES) {
+    const dLat = (city.lat - lat) * rad
+    const dLng = (city.lng - lng) * rad
+    const a = Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat * rad) * Math.cos(city.lat * rad) * Math.sin(dLng / 2) ** 2
+    const distance = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    if (distance < nearestDistance) {
+      nearest = city
+      nearestDistance = distance
+    }
+  }
+  return nearestDistance <= 300 ? nearest : null
+}
+
 /**
  * 热门城市（按直辖市 + 省会 + 一线城市）
  * 设计稿 02 页「热门城市」区块用

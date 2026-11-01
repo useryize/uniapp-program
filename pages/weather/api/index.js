@@ -13,6 +13,7 @@ import {
   loadCities,
   searchCities,
   getCityByAdcode,
+  getNearestCity,
   getHotCities,
   getCitiesByProvince
 } from './city'
@@ -20,6 +21,53 @@ import {
 /** 已添加城市与当前城市的本地存储键 */
 const STORAGE_CITIES = 'wx_city_list'
 const STORAGE_CURRENT = 'wx_current_city'
+const STORAGE_CITY_SOURCE = 'wx_city_source'
+
+function getCitySource() {
+  try {
+    const source = uni.getStorageSync(STORAGE_CITY_SOURCE)
+    if (source) return source
+    // 升级前保存的城市来自手动选择，继续尊重原来的选择。
+    return uni.getStorageSync(STORAGE_CURRENT) ? 'manual' : 'auto'
+  } catch (e) {
+    return 'auto'
+  }
+}
+
+function saveCity(city, source) {
+  try {
+    uni.setStorageSync(STORAGE_CURRENT, JSON.stringify(city))
+    uni.setStorageSync(STORAGE_CITY_SOURCE, source)
+  } catch (e) {
+    // 存储失败时本次展示仍使用已定位的城市
+  }
+}
+
+/** 获取定位城市，失败时保留已选城市或默认城市。 */
+export async function getHomeCity({ forceLocation = false } = {}) {
+  if (!forceLocation && getCitySource() === 'manual') {
+    return { city: getCurrentCity(), source: 'manual' }
+  }
+
+  try {
+    const position = await new Promise((resolve, reject) => {
+      uni.getLocation({ type: 'wgs84', success: resolve, fail: reject })
+    })
+    const located = getNearestCity(position.latitude, position.longitude)
+    if (located) {
+      if (!forceLocation && getCitySource() === 'manual') {
+        return { city: getCurrentCity(), source: 'manual' }
+      }
+      saveCity(located, 'auto')
+      return { city: located, source: 'location' }
+    }
+  } catch (e) {
+    // 定位被拒绝或暂时不可用时使用上次城市
+  }
+
+  const city = getCurrentCity()
+  return { city, source: getCitySource() === 'manual' ? 'manual' : 'fallback' }
+}
 
 /**
  * 读取已添加城市列表
@@ -80,11 +128,7 @@ export function getCurrentCity() {
  * @param {Object} city 城市对象
  */
 export function setCurrentCity(city) {
-  try {
-    uni.setStorageSync(STORAGE_CURRENT, JSON.stringify(city))
-  } catch (e) {
-    // 忽略存储失败
-  }
+  saveCity(city, 'manual')
 }
 
 /**
@@ -225,6 +269,7 @@ export function initCityDb() {
 export default {
   // 城市
   getCurrentCity,
+  getHomeCity,
   setCurrentCity,
   getSavedCities,
   saveSavedCities,

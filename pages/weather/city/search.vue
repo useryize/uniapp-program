@@ -162,11 +162,14 @@ function onSelect(city) {
   })
 }
 
-function onLocate() {
-  weatherApi.setCurrentCity(currentCity.value)
-  uni.navigateBack({
-    fail: () => uni.redirectTo({ url: '/pages/weather/home/index' })
-  })
+async function onLocate() {
+  const result = await weatherApi.getHomeCity({ forceLocation: true })
+  if (result.source !== 'location') {
+    uni.showToast({ title: '定位不可用，请手动选择城市', icon: 'none' })
+    return
+  }
+  currentCity.value = result.city
+  uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages/weather/home/index' }) })
 }
 
 hot.value = weatherApi.hotCities(12)

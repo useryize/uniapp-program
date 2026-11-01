@@ -56,7 +56,12 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "permission" : {},
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "用于展示当前位置的天气"
+            }
+        },
+        "requiredPrivateInfos" : ["getLocation"],
         "secureNetwork" : {
             "enable" : false
         }

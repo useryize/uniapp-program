@@ -39,7 +39,19 @@ const items = [
 
 const onTap = (item) => {
   if (item.key === props.current) return
-  uni.redirectTo({ url: item.url })
+
+  const pages = getCurrentPages()
+  const target = item.url.slice(1)
+  // 已打开过的页面直接回到原页面，避免反复切换时堆叠页面。
+  for (let i = pages.length - 2; i >= 0; i--) {
+    if (pages[i].route === target) {
+      uni.navigateBack({ delta: pages.length - 1 - i })
+      return
+    }
+  }
+
+  // 新页面入栈，顶部返回按钮才能回到刚才的天气页面。
+  uni.navigateTo({ url: item.url })
 }
 </script>
 
