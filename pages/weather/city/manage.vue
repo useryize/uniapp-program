@@ -6,7 +6,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- 当前城市卡 -->
       <view class="cur-card" @click="goSearch">
         <view class="cur-icon"><view class="ico-locate" /></view>
@@ -75,6 +75,9 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const list = ref([])
 const currentCity = ref({})
@@ -204,10 +207,6 @@ onShow(() => {
 .nav-action {
   font-size: 30rpx;
   color: $wx-blue;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 /* 当前城市卡 */

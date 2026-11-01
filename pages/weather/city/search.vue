@@ -17,7 +17,7 @@
       <text v-if="keyword" class="search-clear" @click="clear">清空</text>
     </view>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 130rpx)` }">
       <!-- 定位城市 -->
       <view v-if="!keyword" class="section">
         <view class="locate-card" @click="onLocate">
@@ -98,6 +98,9 @@
 import { ref } from 'vue'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const keyword = ref('')
 const results = ref([])
@@ -224,10 +227,6 @@ loadHistory()
 .search-clear {
   font-size: $wx-fs-desc;
   color: $wx-text-3;
-}
-
-.page-scroll {
-  height: calc(100vh - 200rpx);
 }
 
 .section {

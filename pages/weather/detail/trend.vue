@@ -13,7 +13,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- 曲线图 -->
       <view class="card chart-card">
         <text class="chart-title">{{ metric === 'temp' ? '未来 15 天最高 / 最低气温' : '未来 15 天降水概率' }}</text>
@@ -78,7 +78,10 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
 import WeatherChart from '../components/weather-chart.vue'
+
+const header = getWeatherHeaderLayout()
 
 const daily = ref([])
 const metric = ref('temp')
@@ -154,10 +157,6 @@ onLoad(async () => {
 .unit-text--on {
   color: $wx-text-1;
   font-weight: 500;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 .card {

@@ -6,7 +6,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- 指数网格 -->
       <view class="index-grid">
         <view v-for="idx in indices" :key="idx.key" class="index-card">
@@ -39,6 +39,9 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const city = ref({})
 const indices = ref([])
@@ -80,10 +83,6 @@ onLoad(async () => {
 .nav-city {
   font-size: 26rpx;
   color: $wx-text-3;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 .index-grid {

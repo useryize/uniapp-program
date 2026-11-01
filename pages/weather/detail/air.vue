@@ -6,7 +6,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- AQI 主卡 -->
       <view class="aqi-card">
         <view class="aqi-ring">
@@ -61,6 +61,9 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const city = ref({})
 const air = ref({ level: '—', color: '#9AA5B4', aqi: null, items: [] })
@@ -88,10 +91,6 @@ onLoad(async () => {
 .nav-city {
   font-size: 26rpx;
   color: $wx-text-3;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 /* AQI 主卡 */

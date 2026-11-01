@@ -1,11 +1,13 @@
 <template>
-  <view class="wx-nav">
-    <view class="nav-left" @click="onBack">
-      <view class="nav-back" />
-    </view>
-    <text class="nav-title">{{ title }}</text>
-    <view class="nav-right">
-      <slot name="right" />
+  <view class="wx-nav" :style="{ paddingTop: header.top }">
+    <view class="nav-row" :style="{ paddingRight: header.rightInset }">
+      <view class="nav-left" @click="onBack">
+        <view class="nav-back" />
+      </view>
+      <text class="nav-title">{{ title }}</text>
+      <view class="nav-right">
+        <slot name="right" />
+      </view>
     </view>
   </view>
 </template>
@@ -13,8 +15,11 @@
 <script setup>
 /**
  * 二级页导航栏（返回 + 标题 + 右侧插槽）
- * 状态栏高度由页面根节点处理，此处只做标题栏
+ * 在状态栏下与微信胶囊同排显示导航操作
  */
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 defineProps({
   title: { type: String, default: '' },
   /** 返回时是否返回上一页（false 则用默认兜底） */
@@ -35,11 +40,15 @@ const onBack = () => {
 @import '../styles/tokens.scss';
 
 .wx-nav {
+  box-sizing: content-box;
+  background: $wx-bg;
+}
+
+.nav-row {
   display: flex;
   align-items: center;
   height: 88rpx;
   padding: 0 $wx-page-pad;
-  background: $wx-bg;
 }
 
 .nav-left {
@@ -61,16 +70,19 @@ const onBack = () => {
 
 .nav-title {
   flex: 1;
-  text-align: center;
+  min-width: 0;
+  text-align: left;
   font-size: $wx-fs-nav;
   font-weight: 600;
   color: $wx-text-1;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .nav-right {
-  min-width: 60rpx;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  flex-shrink: 0;
 }
 </style>

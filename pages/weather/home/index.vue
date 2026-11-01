@@ -1,17 +1,18 @@
 <template>
   <view class="wx-home">
     <!-- Hero：深蓝渐变 -->
-    <view class="hero">
+    <view class="hero" :style="{ paddingTop: header.top }">
       <!-- 城市栏 -->
-      <view class="city-bar">
+      <view class="city-bar" :style="{ paddingRight: header.homeRightInset }">
         <view class="city-left" @click="onSwitchCity">
           <view class="ico-pin" />
           <text class="city-name">{{ city.short || city.name }}</text>
           <view class="ico-chevron" />
         </view>
         <view class="city-right">
-          <view class="ico-search" @click="onSearch" />
-          <view class="ico-more" @click="onMore" />
+          <view class="search-btn" @click="onSearch">
+            <view class="ico-search" />
+          </view>
         </view>
       </view>
 
@@ -108,6 +109,9 @@ import { ref, computed } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherTabbar from '../components/weather-tabbar.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const city = ref({})
 const current = ref({})
@@ -159,7 +163,6 @@ async function load() {
 
 const onSwitchCity = () => uni.navigateTo({ url: '/pages/weather/city/manage' })
 const onSearch = () => uni.navigateTo({ url: '/pages/weather/city/search' })
-const onMore = () => uni.showToast({ title: '设置功能开发中', icon: 'none' })
 const goHourly = () => uni.navigateTo({ url: '/pages/weather/detail/hourly' })
 const goTrend = () => uni.navigateTo({ url: '/pages/weather/detail/trend' })
 const goAir = () => uni.navigateTo({ url: '/pages/weather/detail/air' })
@@ -229,13 +232,23 @@ onPullDownRefresh(async () => {
 .city-right {
   display: flex;
   align-items: center;
-  gap: 32rpx;
+}
+
+.search-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ico-search {
-  width: 34rpx;
-  height: 34rpx;
-  border: 4rpx solid #FFFFFF;
+  width: 24rpx;
+  height: 24rpx;
+  border: 3rpx solid #FFFFFF;
   border-radius: 50%;
   position: relative;
 }
@@ -243,31 +256,13 @@ onPullDownRefresh(async () => {
 .ico-search::after {
   content: '';
   position: absolute;
-  right: -12rpx;
-  bottom: -8rpx;
-  width: 14rpx;
-  height: 4rpx;
+  right: -9rpx;
+  bottom: -6rpx;
+  width: 10rpx;
+  height: 3rpx;
   background: #FFFFFF;
   transform: rotate(45deg);
   border-radius: 2rpx;
-}
-
-.ico-more {
-  width: 36rpx;
-  height: 8rpx;
-  position: relative;
-}
-
-.ico-more::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 8rpx;
-  height: 8rpx;
-  border-radius: 50%;
-  background: #FFFFFF;
-  box-shadow: 14rpx 0 0 #FFFFFF, 28rpx 0 0 #FFFFFF;
 }
 
 /* 主温度 */

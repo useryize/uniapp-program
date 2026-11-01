@@ -6,7 +6,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- 雷达地图 -->
       <view class="map-box">
         <!-- 底图：网格示意 -->
@@ -110,6 +110,9 @@ import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import { relativeTime } from '../utils/units'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
+
+const header = getWeatherHeaderLayout()
 
 const city = ref({})
 const frames = ref([])
@@ -214,10 +217,6 @@ onLoad(async () => {
 .nav-city {
   font-size: 26rpx;
   color: $wx-text-3;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 /* 地图 */

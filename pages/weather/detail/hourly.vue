@@ -8,7 +8,7 @@
       </template>
     </weather-nav>
 
-    <scroll-view class="page-scroll" scroll-y>
+    <scroll-view class="page-scroll" scroll-y :style="{ height: `calc(100vh - ${header.totalHeight} - 32rpx)` }">
       <!-- 温度曲线 -->
       <view class="card chart-card">
         <view class="card-head">
@@ -72,7 +72,10 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
+import { getWeatherHeaderLayout } from '../utils/header.js'
 import WeatherChart from '../components/weather-chart.vue'
+
+const header = getWeatherHeaderLayout()
 
 const hourly = ref([])
 const dayLabel = ref('今天')
@@ -117,10 +120,6 @@ onLoad(async () => {
   font-size: $wx-fs-desc;
   color: $wx-blue;
   font-weight: 500;
-}
-
-.page-scroll {
-  height: calc(100vh - 180rpx);
 }
 
 .card {
