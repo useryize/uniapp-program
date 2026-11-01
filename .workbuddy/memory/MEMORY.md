@@ -2,7 +2,7 @@
 
 ## 项目概况
 
-- **E:/github/uniapp-program**：uni-app 小程序项目，含「商城」「壁纸」「天气」三个业务模块。
+- **E:/github/uniapp-program**：uni-app 小程序项目，含「商城」「壁纸」「天气」「音乐」四个业务模块。
 - 商城模块文档位于 `pages/mall/docs/`：
   - `PRD-商城-v1.1-架构版.md`（业务规则源）
   - `交互规格说明书-商城M1-M2.md`（页面流 × 交互规则 × 验收标准）
@@ -22,6 +22,7 @@
 | 商城 | Y2K 粗野主义，酸黄撞色 | `#0A0A0A` |
 | 壁纸 | 轻白瀑布流 | `#FFFFFF` |
 | 天气 | 暖白画布 + 深蓝渐变英雄区 + 玻璃拟态 | `#F5F7FA` |
+| 音乐 | 深夜黑胶，荧光青强调 | `#0A0A0C` |
 | **入口页** | **深色高级感，柔和渐变光晕** | **`#0A0D13`** |
 
 入口页色板：靛蓝 `#3D5AFF` / 紫罗兰 `#7C4DFF` / 暖杏 `#FFA45C` 光晕，卡片面 `#171C27`，
@@ -58,6 +59,35 @@
 - ⚠️ **CO 单位口径**：国标限值 4 mg/m³，接口返回 μg/m³，限值表须用 4000，否则永远显示「超标」
 
 **构建**：`npm run build:h5` / `npm run build:mp-weixin`（`cross-env UNI_INPUT_DIR=.` 必须，uni CLI 在加载 vite 配置前就解析源码目录）
+
+## 音乐播放模块（2026-11-01，设计 + 编码均已完成）★ 全项目唯一 TS 模块
+
+- **定位**：独立音乐发现，不是网易云复刻。数据源选 **Audius**（实测唯一能播完整歌、免 Key、免备案域名的免费源）
+- **技术栈**：TypeScript + uni-app + Vue3（`<script setup lang="ts">` + strict）。其余模块仍是 JS
+- 设计稿 Ardot：`https://ardot.tencent.com/file/742773368672262`（9 屏 375×812 + 设计系统板）
+- 文档：`pages/music/docs/`
+  - `交互规格说明书-音乐.md` v1.3 —— 业务规则源（状态机 / 缓存 / 异常 / 验收）
+  - `域名与备案.md` —— 接口清单 + 中转方案 + 报错速查
+  - `../design/README.md` —— 设计交付索引（色板 / 字阶 / 组件尺寸 / 画布坐标）
+- **9 页**：home 发现 · daily 每日推荐 · player 播放器 · playlist 歌单详情 · playlists 歌单广场 · chart 榜单 · search 搜索 · artist 艺人 · library 我的音乐
+- **代码**：`api/`（http · normalizer · source/audius · index 统一出口+TTL 缓存）· `store/player.ts` 单例 · `utils/`（format · profile 本地画像 · daily 确定性抽样）· `components/` 10 个 · `api/types.ts` 类型单一事实来源
+
+### 五个必记的坑
+
+1. **`genre=All` 返回 0 条** —— 「全部」必须省略该参数，不能传 `All`
+2. **封面图域名不可穷举** —— 实测 5 首歌落在 6 个第三方节点（`figment.io` / `audiusindex.org` / `open-audio-validator.com` …），每首不同且会变。downloadFile 白名单配不完，真机可能白封面，只能自建图片代理
+3. **音频 302 链**：`stream` → 302 `creatornode.audius.co` → 307 → 200。签名带时间戳**不可缓存**；中转时**不可跟随 302**（否则整首歌下载到服务端内存）
+4. **微信胶囊安全区**：375 宽下 `x∈[278,375]`、`y∈[48,80]`，所有顶栏 `paddingRight` 让出。真机必须用 `wx.getMenuButtonBoundingClientRect()` 算，状态栏用 `wx.getWindowInfo().statusBarHeight`（安卓 24~48 不等，写死 44 必错位）
+5. **音频上下文双实现**：小程序 `getBackgroundAudioManager`（`src` 赋值即播；暂停继续只能 `play()`；切歌先 `stop()`）；H5 `innerAudioContext`（需显式 `play()`）。`manifest.json` 必须有 `requiredBackgroundModes: ["audio"]`
+
+### 域名结论
+
+小程序后台只需配 **`https://api.audius.co`**（request 合法域名）；`creatornode.audius.co` 可选；封面无解除非走中转。天气那套「直配源站域名」的做法**不可套用**到音乐。
+
+### 构建与验证
+
+`npm run typecheck`（0 错误）· `build:h5` · `build:mp-weixin` 均通过。
+⚠️ `tsc` **不检查 `.vue`**（未装 vue-tsc），页面内类型错误不会被捕获，只保证可编译。
 
 ## 服装电商交互逻辑（调研沉淀，2026-10-22）
 

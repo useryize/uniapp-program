@@ -59,15 +59,15 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 
 import MusicTabBar from '../components/music-tab-bar.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { initPlayer, playQueue } from '../store/player.js'
-import { getFavs, getRecent, toggleFav, recordPlay } from '../utils/profile.js'
+import { initPlayer, playQueue } from '../store/player'
+import { getFavs, getRecent, toggleFav, recordPlay } from '../utils/profile'
 
 const tabs = [
   { id: 'favs', label: '收藏' },

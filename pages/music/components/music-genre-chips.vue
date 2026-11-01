@@ -17,7 +17,7 @@
   </scroll-view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   genres: { type: Array, default: () => [] },
   /** 当前选中的曲风 id，空串代表「全部」 */

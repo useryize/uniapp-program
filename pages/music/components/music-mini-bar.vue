@@ -31,9 +31,9 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { playerState, toggle } from '../store/player.js'
+import { playerState, toggle } from '../store/player'
 
 const track = computed(() => playerState.track)
 const playing = computed(() => playerState.status === 'playing')

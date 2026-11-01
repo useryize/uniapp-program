@@ -47,7 +47,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -56,9 +56,9 @@ import MusicGenreChips from '../components/music-genre-chips.vue'
 import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { fetchPlaylists } from '../api/index.js'
-import { PLAZA_GENRES, TIMES } from '../data/genres.js'
-import { initPlayer } from '../store/player.js'
+import { fetchPlaylists } from '../api/index'
+import { PLAZA_GENRES, TIMES } from '../data/genres'
+import { initPlayer } from '../store/player'
 
 const loading = ref(true)
 const genre = ref('')

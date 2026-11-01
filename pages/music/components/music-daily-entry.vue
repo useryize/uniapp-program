@@ -17,7 +17,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   day: { type: String, default: '' },
   month: { type: String, default: '' },

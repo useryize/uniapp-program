@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noImplicitAny": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "useDefineForClassFields": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "types": ["@dcloudio/types"],
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": [
+    "pages/music/**/*.ts",
+    "pages/music/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", "unpackage", "uni_modules"]
+}

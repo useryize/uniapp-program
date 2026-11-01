@@ -18,9 +18,9 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, getCurrentInstance, onMounted } from 'vue'
-import { formatDuration } from '../utils/format.js'
+import { formatDuration } from '../utils/format'
 
 const props = defineProps({
   /** 当前秒 */

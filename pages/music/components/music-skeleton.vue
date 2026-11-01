@@ -23,7 +23,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   /** grid | list */
   type: { type: String, default: 'list' },

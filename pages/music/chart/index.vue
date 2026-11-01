@@ -73,7 +73,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -83,10 +83,10 @@ import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicTrackRow from '../components/music-track-row.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { fetchTrending } from '../api/index.js'
-import { GENRES, TIMES } from '../data/genres.js'
-import { initPlayer, playQueue, playNext, addToQueue } from '../store/player.js'
-import { formatPlayCount, timeAgo } from '../utils/format.js'
+import { fetchTrending } from '../api/index'
+import { GENRES, TIMES } from '../data/genres'
+import { initPlayer, playQueue, playNext, addToQueue } from '../store/player'
+import { formatPlayCount, timeAgo } from '../utils/format'
 
 const loading = ref(true)
 const time = ref('week')

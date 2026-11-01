@@ -3,15 +3,15 @@
  */
 
 /** 秒 → m:ss */
-export function formatDuration(sec) {
+export function formatDuration(sec: number): string {
   const s = Math.max(0, Math.floor(Number(sec) || 0))
   const m = Math.floor(s / 60)
   const r = s % 60
   return `${m}:${r < 10 ? '0' : ''}${r}`
 }
 
-/** 秒 → h:mm:ss（歌单总时长） */
-export function formatTotalDuration(sec) {
+/** 秒 → x 小时 y 分（歌单总时长） */
+export function formatTotalDuration(sec: number): string {
   const s = Math.max(0, Math.floor(Number(sec) || 0))
   const h = Math.floor(s / 3600)
   const m = Math.floor((s % 3600) / 60)
@@ -23,7 +23,7 @@ export function formatTotalDuration(sec) {
  * 播放量 → 1.9k / 2.4 万
  * Audius 的 play_count 是六位数级别，中文语境用「万」更顺
  */
-export function formatPlayCount(n) {
+export function formatPlayCount(n: number): string {
   const v = Number(n) || 0
   if (v >= 10000) {
     const w = v / 10000
@@ -33,15 +33,15 @@ export function formatPlayCount(n) {
   return String(v)
 }
 
-/** 关注者数量：1.2 万位关注者 */
-export function formatFollowerCount(n) {
+/** 关注者数量 */
+export function formatFollowerCount(n: number): string {
   const v = Number(n) || 0
   if (v >= 10000) return `${(v / 10000).toFixed(1).replace(/\.0$/, '')} 万位关注者`
   return `${v} 位关注者`
 }
 
 /** Date → YYYY-MM-DD（每日推荐的 seed 依赖它，必须本地时区） */
-export function dateKey(d = new Date()) {
+export function dateKey(d: Date = new Date()): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
@@ -49,18 +49,19 @@ export function dateKey(d = new Date()) {
 }
 
 /** 日号：01 */
-export function dayNo(d = new Date()) {
+export function dayNo(d: Date = new Date()): string {
   return String(d.getDate()).padStart(2, '0')
 }
 
-/** 月份英文缩写：NOV */
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-export function monthAbbr(d = new Date()) {
+
+/** 月份英文缩写：NOV */
+export function monthAbbr(d: Date = new Date()): string {
   return MONTHS[d.getMonth()]
 }
 
 /** 相对时间：10 分钟前更新 */
-export function timeAgo(ts) {
+export function timeAgo(ts: number): string {
   const diff = Math.max(0, Date.now() - Number(ts || 0))
   const min = Math.floor(diff / 60000)
   if (min < 1) return '刚刚更新'
@@ -71,7 +72,7 @@ export function timeAgo(ts) {
 }
 
 /** 文本截断（曲名过长时） */
-export function ellipsis(str, max = 24) {
+export function ellipsis(str: string, max = 24): string {
   const s = String(str || '')
   return s.length > max ? `${s.slice(0, max)}…` : s
 }

@@ -57,7 +57,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -66,10 +66,10 @@ import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicTrackRow from '../components/music-track-row.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { buildDaily } from '../utils/daily.js'
-import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player.js'
-import { genreLabel } from '../data/genres.js'
-import { dateKey } from '../utils/format.js'
+import { buildDaily } from '../utils/daily'
+import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player'
+import { genreLabel } from '../data/genres'
+import { dateKey } from '../utils/format'
 
 const loading = ref(true)
 const refreshing = ref(false)

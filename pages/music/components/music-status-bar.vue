@@ -3,7 +3,7 @@
   <view class="m-status-bar" :style="{ height: statusBarHeight + 'px' }" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
 const statusBarHeight = ref(44)

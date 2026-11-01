@@ -86,7 +86,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -97,12 +97,12 @@ import MusicGenreChips from '../components/music-genre-chips.vue'
 import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { fetchTrending, fetchPlaylists, clearCache } from '../api/index.js'
-import { GENRES, genreLabel as gl } from '../data/genres.js'
-import { buildDaily } from '../utils/daily.js'
-import { initPlayer, playQueue } from '../store/player.js'
-import { topGenres } from '../utils/profile.js'
-import { dayNo, monthAbbr, formatPlayCount } from '../utils/format.js'
+import { fetchTrending, fetchPlaylists, clearCache } from '../api/index'
+import { GENRES, genreLabel as gl } from '../data/genres'
+import { buildDaily } from '../utils/daily'
+import { initPlayer, playQueue } from '../store/player'
+import { topGenres } from '../utils/profile'
+import { dayNo, monthAbbr, formatPlayCount } from '../utils/format'
 
 const loading = ref(true)
 const refreshing = ref(false)

@@ -53,7 +53,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -62,9 +62,9 @@ import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicTrackRow from '../components/music-track-row.vue'
 import MusicMiniBar from '../components/music-mini-bar.vue'
 
-import { fetchArtist, fetchArtistTracks } from '../api/index.js'
-import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player.js'
-import { formatFollowerCount } from '../utils/format.js'
+import { fetchArtist, fetchArtistTracks } from '../api/index'
+import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player'
+import { formatFollowerCount } from '../utils/format'
 
 const loading = ref(true)
 const artist = ref(null)

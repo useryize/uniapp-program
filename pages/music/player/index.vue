@@ -109,7 +109,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -128,10 +128,10 @@ import {
   addToQueue,
   playNext,
   playQueue
-} from '../store/player.js'
-import { fetchComments } from '../api/index.js'
-import { isFav, toggleFav, recordPlay } from '../utils/profile.js'
-import { formatDuration } from '../utils/format.js'
+} from '../store/player'
+import { fetchComments } from '../api/index'
+import { isFav, toggleFav, recordPlay } from '../utils/profile'
+import { formatDuration } from '../utils/format'
 
 const safeRight = ref(100)
 const discMode = ref(false)

@@ -137,7 +137,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
@@ -145,9 +145,9 @@ import MusicStatusBar from '../components/music-status-bar.vue'
 import MusicSkeleton from '../components/music-skeleton.vue'
 import MusicTrackRow from '../components/music-track-row.vue'
 
-import { searchAll } from '../api/index.js'
-import { GENRES } from '../data/genres.js'
-import { initPlayer, playQueue, playNext, addToQueue } from '../store/player.js'
+import { searchAll } from '../api/index'
+import { GENRES } from '../data/genres'
+import { initPlayer, playQueue, playNext, addToQueue } from '../store/player'
 
 const STORAGE_Q = 'm_search_history'
 

@@ -5,6 +5,8 @@
  * 曲风计分带 7 天半衰：隔得久的口味权重会自然降低。
  */
 
+import type { Profile, Track, TrackSnapshot } from '../api/types'
+
 const KEY_PROFILE = 'm_profile'
 const KEY_FAVS = 'm_favs'
 const KEY_RECENT = 'm_recent'
@@ -14,20 +16,20 @@ const RECENT_LIMIT = 100
 const FAV_LIMIT = 500
 
 /** 生成设备随机种子：同一天不同设备看到不同推荐（规格 §8.2.1） */
-function makeSeed() {
+function makeSeed(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
 }
 
-function read(key, fallback) {
+function read<T>(key: string, fallback: T): T {
   try {
-    const v = uni.getStorageSync(key)
+    const v = uni.getStorageSync(key) as T | ''
     return v === '' || v === undefined || v === null ? fallback : v
   } catch (e) {
     return fallback
   }
 }
 
-function write(key, value) {
+function write<T>(key: string, value: T): void {
   try {
     uni.setStorageSync(key, value)
   } catch (e) {
@@ -36,19 +38,16 @@ function write(key, value) {
 }
 
 /** 读取画像，缺失时初始化 */
-export function getProfile() {
-  const p = read(KEY_PROFILE, null)
+export function getProfile(): Profile {
+  const p = read<Profile | null>(KEY_PROFILE, null)
   if (p && p.deviceSeed) return p
-  const fresh = { deviceSeed: makeSeed(), genreScores: {}, artistPlays: {} }
+  const fresh: Profile = { deviceSeed: makeSeed(), genreScores: {}, artistPlays: {} }
   write(KEY_PROFILE, fresh)
   return fresh
 }
 
-/**
- * 记录一次播放：曲风加分 + 艺人计数
- * @param {{genre?:string, artistId?:string, artistName?:string}} track
- */
-export function recordPlay(track) {
+/** 记录一次播放：曲风加分 + 艺人计数 */
+export function recordPlay(track: Track | null): void {
   if (!track) return
   const p = getProfile()
   const now = Date.now()
@@ -62,14 +61,13 @@ export function recordPlay(track) {
   }
 
   if (track.artistId) {
-    const key = track.artistId
-    p.artistPlays[key] = (p.artistPlays[key] || 0) + 1
+    p.artistPlays[track.artistId] = (p.artistPlays[track.artistId] || 0) + 1
   }
 
   write(KEY_PROFILE, p)
 
   // 最近播放（最多 100 条，按时间倒序，同曲去重置顶）
-  const recent = read(KEY_RECENT, [])
+  const recent = read<TrackSnapshot[]>(KEY_RECENT, [])
   const filtered = recent.filter((t) => t.id !== track.id)
   filtered.unshift({
     id: track.id,
@@ -85,7 +83,7 @@ export function recordPlay(track) {
 }
 
 /** 按权重排序取前 N 个曲风 */
-export function topGenres(n = 3) {
+export function topGenres(n = 3): string[] {
   const p = getProfile()
   return Object.keys(p.genreScores)
     .map((g) => ({ genre: g, score: p.genreScores[g].score || 0 }))
@@ -94,25 +92,25 @@ export function topGenres(n = 3) {
     .map((x) => x.genre)
 }
 
-/** 最近 7 天听过的曲目 id（用于从每日推荐里剔除） */
-export function recentTrackIds(days = 7) {
-  const recent = read(KEY_RECENT, [])
-  // 最近播放列表没有逐条时间戳，用「最近 N 条」近似最近 N 天
-  return recent.slice(0, 60).map((t) => t.id).slice(0, days * 8)
+/** 最近听过的曲目 id（用于从每日推荐里剔除） */
+export function recentTrackIds(): string[] {
+  const recent = read<TrackSnapshot[]>(KEY_RECENT, [])
+  // 最近播放没有逐条时间戳，用「最近 60 条」近似最近 7 天
+  return recent.slice(0, 60).map((t) => t.id)
 }
 
 /** 收藏列表 */
-export function getFavs() {
-  return read(KEY_FAVS, [])
+export function getFavs(): TrackSnapshot[] {
+  return read<TrackSnapshot[]>(KEY_FAVS, [])
 }
 
 /** 是否已收藏 */
-export function isFav(trackId) {
+export function isFav(trackId: string): boolean {
   return getFavs().some((t) => t.id === trackId)
 }
 
 /** 切换收藏，返回切换后的状态 */
-export function toggleFav(track) {
+export function toggleFav(track: Track | TrackSnapshot | null): boolean {
   if (!track) return false
   const favs = getFavs()
   const i = favs.findIndex((t) => t.id === track.id)
@@ -139,17 +137,17 @@ export function toggleFav(track) {
 }
 
 /** 最近播放列表 */
-export function getRecent() {
-  return read(KEY_RECENT, [])
+export function getRecent(): TrackSnapshot[] {
+  return read<TrackSnapshot[]>(KEY_RECENT, [])
 }
 
 /** 清空最近播放 */
-export function clearRecent() {
+export function clearRecent(): void {
   write(KEY_RECENT, [])
 }
 
 /** 艺人在最近播放里出现过的次数（理由文案用） */
-export function artistPlayCount(artistId) {
+export function artistPlayCount(artistId: string): number {
   if (!artistId) return 0
   const p = getProfile()
   return p.artistPlays[artistId] || 0

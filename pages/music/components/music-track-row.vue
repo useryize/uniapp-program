@@ -38,9 +38,9 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { formatDuration } from '../utils/format.js'
+import { formatDuration } from '../utils/format'
 
 const props = defineProps({
   track: { type: Object, required: true },
