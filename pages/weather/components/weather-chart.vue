@@ -33,10 +33,10 @@
 
 <script setup>
 /**
- * 折线图（canvas 绘制，跨端稳定）
+ * 折线图（使用 uni-app CanvasContext）
  * 支持双序列（气温 / 降水概率）、渐变面积、触摸选中点
  */
-import { ref, computed, onMounted, watch, getCurrentInstance } from 'vue'
+import { ref, shallowRef, computed, onMounted, watch, getCurrentInstance } from 'vue'
 
 const props = defineProps({
   /** 主序列：[{ label, value }] */
@@ -64,7 +64,9 @@ const props = defineProps({
 })
 
 const cid = `chart-${Math.random().toString(36).slice(2, 9)}`
-const ctx = ref(null)
+// 原生绘图上下文不能交给 Vue 深层代理。
+const ctx = shallowRef(null)
+const instance = getCurrentInstance()
 const activeIndex = ref(-1)
 const tipLeft = ref(0)
 
@@ -211,52 +213,14 @@ function render() {
 
   if (props.showSecond) drawSeries(props.points2, props.color2, true, false)
   drawSeries(props.points, props.color, false, true)
-}
-
-/** 取画布实例 */
-function getCtx() {
-  const inst = getCurrentInstance()
-  const query = inst && inst.proxy ? inst.proxy : null
-  if (!query) return null
-  // 兼容新版（getContext）与旧版（createCanvasContext）
-  if (uni.createSelectorQuery) {
-    uni
-      .createSelectorQuery()
-      .in(query)
-      .select(`#${cid}`)
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        const node = res && res[0] && res[0].node
-        if (node) {
-          ctx.value = node.getContext('2d')
-          render()
-        }
-      })
-  }
-  return null
+  ctx.value.draw()
 }
 
 onMounted(() => {
   setTimeout(() => {
-    const inst = getCurrentInstance()
-    const query = inst && inst.proxy ? inst.proxy : null
-    uni
-      .createSelectorQuery()
-      .in(query)
-      .select(`#${cid}`)
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        const node = res && res[0] && res[0].node
-        if (node) {
-          ctx.value = node.getContext('2d')
-          render()
-        } else {
-          // 兜底：旧版 API
-          ctx.value = uni.createCanvasContext(cid, query)
-          render()
-        }
-      })
-  }, 60)
+    ctx.value = uni.createCanvasContext(cid, instance?.proxy)
+    render()
+  }, 0)
 })
 
 watch(
