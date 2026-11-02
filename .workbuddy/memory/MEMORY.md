@@ -87,7 +87,7 @@
 ### 构建与验证
 
 `npm run typecheck`（0 错误）· `build:h5` · `build:mp-weixin` 均通过。
-⚠️ `tsc` **不检查 `.vue`**（未装 vue-tsc），页面内类型错误不会被捕获，只保证可编译。
+2026-11-02 起 `npm run typecheck` 使用 `vue-tsc`，覆盖音乐模块的 `.ts` 与 `.vue`；页面内类型错误已修复。
 
 ## 服装电商交互逻辑（调研沉淀，2026-10-22）
 

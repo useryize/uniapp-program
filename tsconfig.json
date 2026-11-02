@@ -21,6 +21,7 @@
   },
   "include": [
     "pages/music/**/*.ts",
+    "pages/music/**/*.vue",
     "pages/music/**/*.d.ts"
   ],
   "exclude": ["node_modules", "dist", "unpackage", "uni_modules"]

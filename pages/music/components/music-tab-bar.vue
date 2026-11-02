@@ -55,7 +55,7 @@ onMounted(() => {
   }
 })
 
-function go(item) {
+function go(item: { id: string; url: string }) {
   if (item.id === props.active) return
   // 一级页之间切换用 reLaunch，保证导航栈干净（不留上一页）
   uni.reLaunch({ url: item.url })

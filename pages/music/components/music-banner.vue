@@ -48,18 +48,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { BannerItem } from '../api/types'
 
-defineProps({
-  /** [{ type, title, reason, cover, action }] */
-  items: { type: Array, default: () => [] },
-  autoplay: { type: Boolean, default: true }
+withDefaults(defineProps<{ items?: BannerItem[]; autoplay?: boolean }>(), {
+  items: () => [],
+  autoplay: true
 })
 
-defineEmits(['tap'])
+defineEmits<{ tap: [item: BannerItem] }>()
 
 const current = ref(0)
 
-function onChange(e) {
+function onChange(e: { detail: { current: number } }) {
   current.value = e.detail.current
 }
 </script>

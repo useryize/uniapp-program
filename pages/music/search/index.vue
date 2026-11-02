@@ -148,20 +148,23 @@ import MusicTrackRow from '../components/music-track-row.vue'
 import { searchAll } from '../api/index'
 import { GENRES } from '../data/genres'
 import { initPlayer, playQueue, playNext, addToQueue } from '../store/player'
+import type { SearchResult, Track } from '../api/types'
+
+type SearchTab = keyof SearchResult
 
 const STORAGE_Q = 'm_search_history'
 
 const keyword = ref('')
-const tab = ref('tracks')
+const tab = ref<SearchTab>('tracks')
 const searching = ref(false)
-const results = ref({ tracks: [], playlists: [], artists: [] })
-const history = ref([])
+const results = ref<SearchResult>({ tracks: [], playlists: [], artists: [] })
+const history = ref<string[]>([])
 const safeRight = ref(100)
 const autoFocus = ref(true)
 
-let timer = null
+let timer: ReturnType<typeof setTimeout> | null = null
 
-const tabs = [
+const tabs: { id: SearchTab; label: string }[] = [
   { id: 'tracks', label: '歌曲' },
   { id: 'playlists', label: '歌单' },
   { id: 'artists', label: '艺人' }
@@ -211,7 +214,7 @@ function onInput() {
   timer = setTimeout(() => runSearch(q), 300)
 }
 
-async function runSearch(q) {
+async function runSearch(q: string) {
   try {
     results.value = await searchAll(q)
   } catch (e) {
@@ -230,12 +233,12 @@ function onConfirm() {
   saveHistory(q)
 }
 
-function pickKeyword(word) {
+function pickKeyword(word: string) {
   keyword.value = word
   onConfirm()
 }
 
-function saveHistory(q) {
+function saveHistory(q: string) {
   const list = history.value.filter((x) => x !== q)
   list.unshift(q)
   history.value = list.slice(0, 8)
@@ -264,11 +267,11 @@ function onCancel() {
   else uni.reLaunch({ url: '/pages/music/home/index' })
 }
 
-function onPlayTrack(track, index) {
+function onPlayTrack(track: Track, index: number) {
   playQueue(results.value.tracks, index)
 }
 
-function onMore(track) {
+function onMore(track: Track) {
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表'],
     success: ({ tapIndex }) => {
@@ -278,11 +281,11 @@ function onMore(track) {
   })
 }
 
-function goPlaylist(id) {
+function goPlaylist(id: string) {
   uni.navigateTo({ url: `/pages/music/playlist/index?id=${id}` })
 }
 
-function goArtist(id) {
+function goArtist(id: string) {
   uni.navigateTo({ url: `/pages/music/artist/index?id=${id}` })
 }
 </script>

@@ -65,10 +65,11 @@ import MusicMiniBar from '../components/music-mini-bar.vue'
 import { fetchArtist, fetchArtistTracks } from '../api/index'
 import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player'
 import { formatFollowerCount } from '../utils/format'
+import type { Artist, Track } from '../api/types'
 
 const loading = ref(true)
-const artist = ref(null)
-const tracks = ref([])
+const artist = ref<Artist | null>(null)
+const tracks = ref<Track[]>([])
 
 const statText = computed(() => {
   if (!artist.value) return ''
@@ -97,11 +98,11 @@ onLoad(async (options) => {
   }
 })
 
-function isCurrent(t) {
-  return playerState.track && playerState.track.id === t.id
+function isCurrent(t: Track): boolean {
+  return playerState.track?.id === t.id
 }
 
-function onPlay(track, index) {
+function onPlay(track: Track, index: number) {
   playQueue(tracks.value, index)
 }
 
@@ -118,7 +119,7 @@ function onFollow() {
   uni.showToast({ title: '登录功能开发中', icon: 'none', duration: 1500 })
 }
 
-function onMore(track) {
+function onMore(track: Track) {
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表'],
     success: ({ tapIndex }) => {

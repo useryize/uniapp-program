@@ -103,13 +103,14 @@ import { buildDaily } from '../utils/daily'
 import { initPlayer, playQueue } from '../store/player'
 import { topGenres } from '../utils/profile'
 import { dayNo, monthAbbr, formatPlayCount } from '../utils/format'
+import type { BannerItem, DailyResult, Playlist, Track } from '../api/types'
 
 const loading = ref(true)
 const refreshing = ref(false)
 const genre = ref('')
-const featured = ref([])
-const playlists = ref([])
-const banners = ref([])
+const featured = ref<Track[]>([])
+const playlists = ref<Playlist[]>([])
+const banners = ref<BannerItem[]>([])
 
 const daily = reactive({
   day: dayNo(),
@@ -119,8 +120,8 @@ const daily = reactive({
 })
 
 /** 全局榜单（不受曲风胶囊影响，Banner 与每日推荐都基于它） */
-let globalTracks = []
-let dailyCache = null
+let globalTracks: Track[] = []
+let dailyCache: DailyResult | null = null
 
 onLoad(async () => {
   initPlayer()
@@ -151,7 +152,7 @@ async function loadAll() {
 async function buildBannerData() {
   const tops = topGenres(1)
   const topGenre = tops[0] || 'Electronic'
-  const list = []
+  const list: BannerItem[] = []
 
   const first = globalTracks[0]
   if (first) {
@@ -183,7 +184,7 @@ async function buildBannerData() {
         title: topTrack.title,
         reason: `因为你常听 ${gl(topGenre)}`,
         cover: topTrack.cover,
-        action: { kind: 'genre', tracks: null, genre: topGenre }
+        action: { kind: 'genre', genre: topGenre }
       })
     }
   } catch (e) {
@@ -219,12 +220,12 @@ async function prepareDaily() {
   }
 }
 
-function onGenreChange(g) {
+function onGenreChange(g: string) {
   // 只刷新主推区与歌单，不整页重载、不动滚动位置（规格 §8.1）
   loadGenreSection(g)
 }
 
-async function loadGenreSection(g) {
+async function loadGenreSection(g: string) {
   try {
     const tracks = await fetchTrending({ time: 'week', genre: g, limit: 20 })
     featured.value = tracks.slice(0, 5)
@@ -244,17 +245,17 @@ async function onRefresh() {
 
 /* ---------------- 交互 ---------------- */
 
-function playText(t) {
+function playText(t: Track) {
   return `${formatPlayCount(t.playCount)}次播放 · ${gl(t.genre) || '精选'}`
 }
 
-function playFeatured(i) {
+function playFeatured(i: number) {
   // 整体入队，从点的这首开始（不是单曲入队）
   playQueue(featured.value, i)
 }
 
-async function onBannerTap(item) {
-  const a = item.action || {}
+async function onBannerTap(item: BannerItem) {
+  const a = item.action
   if (a.kind === 'playlist') {
     goPlaylist(a.id)
     return
@@ -292,7 +293,7 @@ function goDaily() {
   uni.navigateTo({ url: '/pages/music/daily/index' })
 }
 
-function goPlaylist(id) {
+function goPlaylist(id: string) {
   uni.navigateTo({ url: `/pages/music/playlist/index?id=${id}` })
 }
 

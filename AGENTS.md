@@ -39,7 +39,7 @@ pages/<module>/
 ```bash
 npm run build:h5          # H5
 npm run build:mp-weixin   # 小程序，产物在 dist/build/mp-weixin
-npm run typecheck         # 类型检查（目前仅覆盖 pages/music 的 .ts）
+npm run typecheck         # 类型检查（覆盖 pages/music 的 .ts 与 .vue）
 ```
 
 `cross-env UNI_INPUT_DIR=.` 是必需的 —— uni CLI 在加载 vite 配置前就解析源码目录。

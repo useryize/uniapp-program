@@ -52,32 +52,33 @@ const bubbleText = computed(() => {
 
 onMounted(() => {
   // 测量轨道尺寸，触点 → 百分比需要
+  if (!instance?.proxy) return
   const query = uni.createSelectorQuery().in(instance.proxy)
   query
     .select('.m-progress__track')
     .boundingClientRect((rect) => {
-      if (rect) {
-        barWidth.value = rect.width
-        barLeft.value = rect.left
+      if (rect && !Array.isArray(rect)) {
+        barWidth.value = rect.width ?? 0
+        barLeft.value = rect.left ?? 0
       }
     })
     .exec()
 })
 
-function posToPct(clientX) {
+function posToPct(clientX: number) {
   if (!barWidth.value) return 0
   const x = clientX - barLeft.value
   return Math.min(100, Math.max(0, (x / barWidth.value) * 100))
 }
 
-function onStart(e) {
+function onStart(e: TouchEvent) {
   if (!props.duration) return
   dragging.value = true
   const touch = e.touches && e.touches[0]
   if (touch) dragPct.value = posToPct(touch.clientX)
 }
 
-function onMove(e) {
+function onMove(e: TouchEvent) {
   if (!dragging.value) return
   const touch = e.touches && e.touches[0]
   if (touch) dragPct.value = posToPct(touch.clientX)

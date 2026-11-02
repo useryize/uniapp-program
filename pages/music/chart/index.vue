@@ -87,11 +87,13 @@ import { fetchTrending } from '../api/index'
 import { GENRES, TIMES } from '../data/genres'
 import { initPlayer, playQueue, playNext, addToQueue } from '../store/player'
 import { formatPlayCount, timeAgo } from '../utils/format'
+import type { Track } from '../api/types'
+import type { TimeOption } from '../data/genres'
 
 const loading = ref(true)
-const time = ref('week')
+const time = ref<TimeOption['id']>('week')
 const genre = ref('')
-const tracks = ref([])
+const tracks = ref<Track[]>([])
 const updatedAt = ref(Date.now())
 
 const top3 = computed(() => tracks.value.slice(0, 3))
@@ -116,7 +118,7 @@ async function load() {
   }
 }
 
-function onTimeChange(id) {
+function onTimeChange(id: TimeOption['id']) {
   if (id === time.value) return
   time.value = id
   // 切时间/曲风重置滚动到顶部（规格 §8.5）
@@ -127,20 +129,20 @@ function onGenreChange() {
   load()
 }
 
-function pad(n) {
+function pad(n: number) {
   return String(n).padStart(2, '0')
 }
 
-function playText(t) {
+function playText(t: Track) {
   return `${formatPlayCount(t.playCount)}`
 }
 
-function playAt(i) {
+function playAt(i: number) {
   // 整榜入队，从该首播放
   playQueue(tracks.value, i)
 }
 
-function onMore(track) {
+function onMore(track: Track) {
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表'],
     success: ({ tapIndex }) => {

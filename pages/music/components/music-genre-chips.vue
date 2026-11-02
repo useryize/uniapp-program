@@ -18,15 +18,20 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-  genres: { type: Array, default: () => [] },
+import type { GenreOption } from '../api/types'
+
+const props = withDefaults(defineProps<{
+  genres?: GenreOption[]
   /** 当前选中的曲风 id，空串代表「全部」 */
-  modelValue: { type: String, default: '' }
+  modelValue?: string
+}>(), {
+  genres: () => [],
+  modelValue: ''
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{ 'update:modelValue': [id: string]; change: [id: string] }>()
 
-function onTap(g) {
+function onTap(g: GenreOption) {
   if (g.id === props.modelValue) return
   emit('update:modelValue', g.id)
   emit('change', g.id)

@@ -59,10 +59,11 @@ import MusicMiniBar from '../components/music-mini-bar.vue'
 import { fetchPlaylists } from '../api/index'
 import { PLAZA_GENRES, TIMES } from '../data/genres'
 import { initPlayer } from '../store/player'
+import type { Playlist } from '../api/types'
 
 const loading = ref(true)
 const genre = ref('')
-const list = ref([])
+const list = ref<Playlist[]>([])
 /** 换一批用的时间维度轮换（规格 §8.9：不做无限滚动） */
 const timeIndex = ref(0)
 
@@ -99,7 +100,7 @@ function resetGenre() {
   load()
 }
 
-function goPlaylist(id) {
+function goPlaylist(id: string) {
   uni.navigateTo({ url: `/pages/music/playlist/index?id=${id}` })
 }
 </script>

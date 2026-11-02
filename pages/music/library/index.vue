@@ -68,6 +68,7 @@ import MusicMiniBar from '../components/music-mini-bar.vue'
 
 import { initPlayer, playQueue } from '../store/player'
 import { getFavs, getRecent, toggleFav, recordPlay } from '../utils/profile'
+import type { Track, TrackSnapshot } from '../api/types'
 
 const tabs = [
   { id: 'favs', label: '收藏' },
@@ -75,8 +76,8 @@ const tabs = [
 ]
 
 const current = ref('favs')
-const favs = ref([])
-const recent = ref([])
+const favs = ref<TrackSnapshot[]>([])
+const recent = ref<TrackSnapshot[]>([])
 
 const list = computed(() => (current.value === 'favs' ? favs.value : recent.value))
 
@@ -92,8 +93,9 @@ onShow(() => {
 
 watch(current, refresh)
 
-function onPlay(i) {
+function onPlay(i: number) {
   const track = list.value[i]
+  if (!track) return
 
   // 已下架的曲目：提示移除，不进入播放（规格 §8.8）
   if (track.streamable === false) {
@@ -110,11 +112,19 @@ function onPlay(i) {
   }
 
   // 队列用整份列表，这样下一首仍是列表里的下一首
-  playQueue(list.value, i)
-  recordPlay(track)
+  const queue: Track[] = list.value.map((item) => ({
+    ...item,
+    artistId: '',
+    artistAvatar: '',
+    coverSmall: item.cover,
+    streamable: item.streamable !== false,
+    isGated: false
+  }))
+  playQueue(queue, i)
+  recordPlay(queue[i])
 }
 
-function onUnfav(track) {
+function onUnfav(track: TrackSnapshot) {
   toggleFav(track)
   refresh()
 }

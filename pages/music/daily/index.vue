@@ -70,10 +70,11 @@ import { buildDaily } from '../utils/daily'
 import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player'
 import { genreLabel } from '../data/genres'
 import { dateKey } from '../utils/format'
+import type { RecommendedTrack, Track } from '../api/types'
 
 const loading = ref(true)
 const refreshing = ref(false)
-const tracks = ref([])
+const tracks = ref<RecommendedTrack[]>([])
 const isNewUser = ref(false)
 const topGenre = ref('')
 const dateStr = ref(dateKey())
@@ -121,11 +122,11 @@ function onRefresh() {
   }, 400)
 }
 
-function isCurrent(t) {
-  return playerState.track && playerState.track.id === t.id
+function isCurrent(t: Track): boolean {
+  return playerState.track?.id === t.id
 }
 
-function onPlay(track, index) {
+function onPlay(track: Track, index: number) {
   // 整 30 首入队，从该首开始
   playQueue(tracks.value, index)
 }
@@ -135,7 +136,7 @@ function playAll() {
   playQueue(tracks.value, 0)
 }
 
-function onMore(track) {
+function onMore(track: Track) {
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表'],
     success: ({ tapIndex }) => {

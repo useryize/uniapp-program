@@ -132,11 +132,12 @@ import {
 import { fetchComments } from '../api/index'
 import { isFav, toggleFav, recordPlay } from '../utils/profile'
 import { formatDuration } from '../utils/format'
+import type { DanmuBubble, TrackComment } from '../api/types'
 
 const safeRight = ref(100)
 const discMode = ref(false)
-const comments = ref([])
-const bubbles = ref([])
+const comments = ref<TrackComment[]>([])
+const bubbles = ref<DanmuBubble[]>([])
 const faved = ref(false)
 
 const track = computed(() => playerState.track)
@@ -179,7 +180,7 @@ async function loadComments() {
 
 /* ---------------- 弹幕 ---------------- */
 
-const shownIds = new Set()
+const shownIds = new Set<string>()
 let lastSec = -1
 
 watch(
@@ -206,7 +207,7 @@ watch(
 )
 
 /** 提前 1.5 秒触发，同屏最多 3 条（规格 §7.2） */
-function emitDueComments(sec) {
+function emitDueComments(sec: number) {
   const due = comments.value.filter(
     (c) => !shownIds.has(c.id) && c.timestamp > sec - 0.5 && c.timestamp <= sec + 1.5
   )
@@ -216,7 +217,7 @@ function emitDueComments(sec) {
     if (bubbles.value.length >= 3) return
     shownIds.add(c.id)
     const key = `${c.id}_${Date.now()}`
-    const side = bubbles.value.length % 2 === 0 ? 'left' : 'right'
+    const side: DanmuBubble['side'] = bubbles.value.length % 2 === 0 ? 'left' : 'right'
     bubbles.value.push({ key, id: c.id, text: c.text, timeText: formatDuration(c.timestamp), side })
 
     const timer = setTimeout(() => {
@@ -226,11 +227,11 @@ function emitDueComments(sec) {
   })
 }
 
-const timers = []
+const timers: ReturnType<typeof setTimeout>[] = []
 onUnmounted(() => timers.forEach((t) => clearTimeout(t)))
 
 /** 点弹幕：暂停并定位到该条评论的时间点（规格 §7.3） */
-function jumpToComment(b) {
+function jumpToComment(b: DanmuBubble) {
   const target = comments.value.find((c) => c.id === b.id)
   if (!target) return
   pause()
@@ -261,7 +262,7 @@ function onNext() {
   next()
 }
 
-function onSeek(sec) {
+function onSeek(sec: number) {
   seek(sec)
 }
 
@@ -286,14 +287,15 @@ function goArtist() {
 }
 
 function onMore() {
-  if (!track.value) return
+  const selectedTrack = track.value
+  if (!selectedTrack) return
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表', '复制曲目 ID'],
     success: ({ tapIndex }) => {
-      if (tapIndex === 0) playNext(track.value)
-      if (tapIndex === 1) addToQueue(track.value)
+      if (tapIndex === 0) playNext(selectedTrack)
+      if (tapIndex === 1) addToQueue(selectedTrack)
       if (tapIndex === 2) {
-        uni.setClipboardData({ data: track.value.id })
+        uni.setClipboardData({ data: selectedTrack.id })
       }
     }
   })

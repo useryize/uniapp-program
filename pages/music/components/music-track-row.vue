@@ -41,16 +41,24 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { formatDuration } from '../utils/format'
+import type { Track, RecommendedTrack } from '../api/types'
 
-const props = defineProps({
-  track: { type: Object, required: true },
-  index: { type: Number, default: 0 },
-  showIndex: { type: Boolean, default: false },
-  showDuration: { type: Boolean, default: true },
-  active: { type: Boolean, default: false }
+type DisplayTrack = Track & Partial<Pick<RecommendedTrack, 'reason' | 'personalized'>>
+
+const props = withDefaults(defineProps<{
+  track: DisplayTrack
+  index?: number
+  showIndex?: boolean
+  showDuration?: boolean
+  active?: boolean
+}>(), {
+  index: 0,
+  showIndex: false,
+  showDuration: true,
+  active: false
 })
 
-defineEmits(['tap', 'more'])
+defineEmits<{ tap: [track: Track, index: number]; more: [track: Track, index: number] }>()
 
 const activeColor = '#00E0B8'
 

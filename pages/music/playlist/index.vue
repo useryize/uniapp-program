@@ -70,10 +70,11 @@ import { fetchPlaylistDetail, fetchPlaylistTracks } from '../api/index'
 import { playerState, initPlayer, playQueue, playNext, addToQueue } from '../store/player'
 import { isFav, toggleFav } from '../utils/profile'
 import { formatTotalDuration } from '../utils/format'
+import type { Playlist, Track } from '../api/types'
 
 const loading = ref(true)
-const playlist = ref(null)
-const tracks = ref([])
+const playlist = ref<Playlist | null>(null)
+const tracks = ref<Track[]>([])
 const faved = ref(false)
 
 const metaText = computed(() => {
@@ -106,11 +107,11 @@ onLoad(async (options) => {
   }
 })
 
-function isCurrent(t) {
-  return playerState.track && playerState.track.id === t.id
+function isCurrent(t: Track): boolean {
+  return playerState.track?.id === t.id
 }
 
-function onPlay(track, index) {
+function onPlay(track: Track, index: number) {
   // 队列仍是整个列表，这样下一首是列表里的下一首（规格 §8.4）
   playQueue(tracks.value, index)
 }
@@ -132,7 +133,7 @@ function onFav() {
   })
 }
 
-function onMore(track) {
+function onMore(track: Track) {
   uni.showActionSheet({
     itemList: ['下一首播放', '加入播放列表'],
     success: ({ tapIndex }) => {
