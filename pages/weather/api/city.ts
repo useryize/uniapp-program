@@ -5,7 +5,7 @@
  * 故采用 DataV 行政区划中心点构建的本地静态库（367 个地级市 + 直辖市），
  * 运行时零网络请求，搜索支持中文名 / 拼音首字母 / 全拼。
  *
- * 数据文件：data/cities.json（52KB，构建期由 scripts 生成）
+ * 数据文件：data/cities.ts（城市静态库）
  */
 
 let CITIES = []
@@ -14,9 +14,9 @@ let INDEX = null
 /**
  * 城市数据（构建期由 scripts/ 生成，编译时内联进产物）
  * 用静态 import 而非 require —— 小程序端 require 运行时不参与打包；
- * 存为 .js 而非 .json —— JSON import 在小程序端与 Node ESM 行为不一致
+ * 存为 .ts 而非 .json —— JSON import 在小程序端与 Node ESM 行为不一致
  */
-import { CITY_DATA } from '../data/cities.js'
+import { CITY_DATA } from '../data/cities'
 
 /**
  * 加载城市库（首次调用时建索引）

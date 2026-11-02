@@ -9,6 +9,8 @@
 /** 默认超时 12s（小程序端网络波动较大） */
 const DEFAULT_TIMEOUT = 12000
 
+type WeatherRequestError = Error & { code?: number; msg?: string }
+
 /**
  * 发起 GET 请求
  * @param {string} url 完整 URL
@@ -19,7 +21,7 @@ const DEFAULT_TIMEOUT = 12000
  * @throws {Error} 携带 code / msg
  */
 export function get(url, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
     let attempt = 0
 
     const run = () => {
@@ -32,7 +34,7 @@ export function get(url, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
           if (res.statusCode === 200 && res.data) {
             resolve(res.data)
           } else {
-            const err = new Error(`HTTP ${res.statusCode}`)
+            const err = new Error(`HTTP ${res.statusCode}`) as WeatherRequestError
             err.code = res.statusCode
             err.msg = `请求失败（${res.statusCode}）`
             if (attempt < retries) {
@@ -44,7 +46,7 @@ export function get(url, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
           }
         },
         fail: (err) => {
-          const e = new Error(err.errMsg || '网络异常')
+          const e = new Error(err.errMsg || '网络异常') as WeatherRequestError
           e.code = -1
           e.msg = err.errMsg || '网络异常，请检查网络设置'
           if (attempt < retries) {

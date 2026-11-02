@@ -15,7 +15,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({ current: { type: String, required: true } })
 
 const items = [

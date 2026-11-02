@@ -79,10 +79,10 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
-import { goodsApi } from '../api/index.js'
+import { goodsApi } from '../api/index'
 import GoodsCard from '../components/goods-card.vue'
 import MallTabbar from '../components/mall-tabbar.vue'
 
@@ -159,7 +159,7 @@ async function loadGoods(reset = false) {
   loading.value = true
   try {
     // 二级选中时按二级类目过滤，否则按一级（含其二级）过滤
-    const params = { page: 1, pageSize: 20 }
+    const params: { page: number; pageSize: number; categoryId?: number } = { page: 1, pageSize: 20 }
     if (subId.value) params.categoryId = subId.value
     else if (currentId.value) params.categoryId = currentId.value
 

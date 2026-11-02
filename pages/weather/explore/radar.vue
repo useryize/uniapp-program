@@ -99,7 +99,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 降水雷达（设计稿 08）
  * 数据源：RainViewer 免费公开 API（免 Key，10 分钟一帧）
@@ -110,11 +110,12 @@ import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import { relativeTime } from '../utils/units'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
 
 const header = getWeatherHeaderLayout()
 
-const city = ref({})
+const city = ref<Partial<City>>({})
 const frames = ref([])
 const tiles = ref([])
 const frameIndex = ref(0)

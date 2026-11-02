@@ -88,12 +88,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 订单列表页逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { orderApi } from '../api/index.js'
-import { fen2yuan, orderStatusText } from '../utils/format.js'
+import { orderApi } from '../api/index'
+import { fen2yuan, orderStatusText } from '../utils/format'
 
 /** 状态 tab 配置（CANCELED 不设独立 tab，在"全部"中可见） */
 const tabs = [

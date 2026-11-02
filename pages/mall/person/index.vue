@@ -73,12 +73,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 个人中心逻辑（Vue3 setup） */
 import { ref, reactive, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import MallTabbar from '../components/mall-tabbar.vue'
-import { sizeApi, dropApi } from '../api/index.js'
+import { sizeApi, dropApi } from '../api/index'
 
 const isLogin = ref(false)
 const userInfo = reactive({

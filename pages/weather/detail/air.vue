@@ -53,7 +53,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 空气质量（设计稿 06）
  */
@@ -61,12 +61,15 @@ import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
+
+type AirQuality = Awaited<ReturnType<typeof weatherApi.getWeather>>['airQuality']
 
 const header = getWeatherHeaderLayout()
 
-const city = ref({})
-const air = ref({ level: '—', color: '#9AA5B4', aqi: null, items: [] })
+const city = ref<Partial<City>>({})
+const air = ref<Partial<AirQuality>>({ level: '—', color: '#9AA5B4', aqi: null, items: [] })
 
 onLoad(async () => {
   try {

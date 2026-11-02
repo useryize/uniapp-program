@@ -24,7 +24,7 @@
     </swiper-item>
   </swiper>
 </template>
-<script setup>
+<script setup lang="ts">
 import { request } from "@/utils/request";
 import { onMounted, ref } from "vue";
 const bannerList = ref([]);

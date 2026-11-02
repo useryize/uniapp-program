@@ -32,9 +32,9 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { fen2yuan } from '../utils/format.js'
+import { fen2yuan } from '../utils/format'
 
 const props = defineProps({
   goods: { type: Object, required: true },

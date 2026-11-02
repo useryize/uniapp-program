@@ -103,12 +103,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 搜索页逻辑（Vue3 setup） */
 import { ref } from 'vue'
 import { onPullDownRefresh, onReachBottom, onUnload } from '@dcloudio/uni-app'
-import { goodsApi } from '../api/index.js'
-import { fen2yuan } from '../utils/format.js'
+import { goodsApi } from '../api/index'
+import { fen2yuan } from '../utils/format'
 
 const HISTORY_KEY = 'mall_search_history'
 const HISTORY_MAX = 10

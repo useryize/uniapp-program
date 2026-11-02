@@ -23,7 +23,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { request } from "@/utils/request";
 const list = ref([]);

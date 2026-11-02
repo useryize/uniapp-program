@@ -211,7 +211,16 @@ function calcTravel(precipProb, windMax, diff) {
  * @param {number} p.windMax 最大风速 km/h
  * @returns {Array<{key:string,name:string,level:string,color:string,advice:string}>}
  */
-export function calcIndices(p = {}) {
+export function calcIndices(p: {
+  feels?: number
+  high?: number
+  low?: number
+  humidity?: number
+  precipSum?: number
+  precipProb?: number
+  uvMax?: number
+  windMax?: number
+} = {}) {
   const {
     feels = 20,
     high = 25,

@@ -16,9 +16,9 @@ const drop = read('pages/mall/drop/index.vue')
 const sizePicker = read('pages/mall/components/size-picker.vue')
 const index = read('pages/mall/index.vue')
 const person = read('pages/mall/person/index.vue')
-const db = read('pages/mall/mock/db.js')
-const goodsHandler = read('pages/mall/mock/handlers/goods.js')
-const sizeHandler = read('pages/mall/mock/handlers/size.js')
+const db = read('pages/mall/mock/db.ts')
+const goodsHandler = read('pages/mall/mock/handlers/goods.ts')
+const sizeHandler = read('pages/mall/mock/handlers/size.ts')
 
 const rules = [
   {

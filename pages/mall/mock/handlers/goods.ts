@@ -2,7 +2,7 @@
  * @file 商品域 mock 处理器
  *
  * 通道命名规范：`domain.action`，
- * 与 api/index.js 中的 url 一一对应；新增接口 api 与 handler 同步加。
+ * 与 api/index.ts 中的 url 一一对应；新增接口 api 与 handler 同步加。
  */
 
 import { db, CATEGORIES } from '../db'

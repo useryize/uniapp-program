@@ -140,12 +140,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 购物车页逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { cartApi, goodsApi } from '../api/index.js'
-import { fen2yuan } from '../utils/format.js'
+import { cartApi, goodsApi } from '../api/index'
+import { fen2yuan } from '../utils/format'
 import Stepper from '../components/stepper.vue'
 import SizePicker from '../components/size-picker.vue'
 import MallTabbar from '../components/mall-tabbar.vue'
@@ -180,7 +180,7 @@ const isAllChecked = computed(
 
 /**
  * 凑单提示：已选金额距离免邮门槛还差多少
- * 运费规则取服务端常量（config.js），前端只做提示不算钱
+ * 运费规则取服务端常量（config.ts），前端只做提示不算钱
  */
 const shipTip = computed(() => {
   if (!checkedAmount.value) return ''

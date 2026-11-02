@@ -7,7 +7,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Banner from "./components/Banner/index.vue";
 import Recommend from "./components/Recommend/index.vue";
 import Special from "./components/Special/index.vue";

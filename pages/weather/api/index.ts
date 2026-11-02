@@ -1,7 +1,7 @@
 /**
  * @file 天气模块接口层统一出口
  *
- * 架构规则（对齐 mall 模块 api/index.js）：
+ * 架构规则（对齐 mall 模块 api/index.ts）：
  * 1. 页面只 import 本文件，禁止直接 import http / weather / radar
  * 2. 统一解包：成功 resolve 纯数据，失败 reject { code, msg }
  * 3. 新增接口在此登记，页面不感知底层来源
@@ -50,7 +50,7 @@ export async function getHomeCity({ forceLocation = false } = {}) {
   }
 
   try {
-    const position = await new Promise((resolve, reject) => {
+    const position = await new Promise<{ latitude: number; longitude: number }>((resolve, reject) => {
       uni.getLocation({ type: 'wgs84', success: resolve, fail: reject })
     })
     const located = getNearestCity(position.latitude, position.longitude)

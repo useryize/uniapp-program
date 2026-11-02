@@ -64,10 +64,10 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { dropApi } from '../api/index.js'
+import { dropApi } from '../api/index'
 
 /** 当前 tab：all / soon / live / soldout */
 const tab = ref('all')

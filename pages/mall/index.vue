@@ -127,11 +127,11 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 商城首页数据逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
-import { goodsApi, cartApi, dropApi } from './api/index.js'
+import { goodsApi, cartApi, dropApi } from './api/index'
 import GoodsCard from './components/goods-card.vue'
 import MallTabbar from './components/mall-tabbar.vue'
 

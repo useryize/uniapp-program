@@ -6,7 +6,7 @@
 - 商城模块文档位于 `pages/mall/docs/`：
   - `PRD-商城-v1.1-架构版.md`（业务规则源）
   - `交互规格说明书-商城M1-M2.md`（页面流 × 交互规则 × 验收标准）
-- 路由清单见 `pages.json`；数据层统一走 `pages/mall/api/index.js` → mock 内存服务端（`pages/mall/mock/`）。
+- 路由清单见 `pages.json`；数据层统一走 `pages/mall/api/index.ts` → mock 内存服务端（`pages/mall/mock/`）。
 - **应用首页入口**（`pages/index/`）：子项目统一入口，2026-10-27 新增。
   - `index.vue` 默认态（大卡片）· `apps.vue` 扩展态（2 列网格）· `styles/tokens.scss` 共享令牌
   - `pages.json` 中 `pages/index/index` 置于首位 = 小程序启动页
@@ -48,22 +48,22 @@
 - `api/` 分层（对齐商城约定）：http / weather(适配器) / radar / city / index(统一出口)
 - `utils/`：wmo(WMO码映射) · units(风级·AQI·时间) · indices(8项生活指数自算)
 - `components/`：weather-tabbar · weather-nav · weather-chart(canvas 折线图)
-- `data/cities.js`：367 城静态库（adcode+坐标+拼音），**存为 .js 而非 .json**（小程序端 JSON import 行为不一致）
+- `data/cities.ts`：367 城静态库（adcode+坐标+拼音），**存为 TS 模块而非 .json**（小程序端 JSON import 行为不一致）
 - `static/weather/icons/`：30 个 PNG（11 天气 + 11 深底变体 + 8 指数），**用 PNG 而非内联 SVG**（小程序 image 对 SVG 支持不稳）
 - 入口：首页 `pages/index/index.vue` 的 `APPS` 数组已追加天气项（**扩展约定：只追加一项，布局零改动**）
 
 **接口选型（2026-10-28 实测）**
 - 推荐组合：**Open-Meteo**（免 Key，1万次/天，16天预报+空气质量）+ **RainViewer**（雷达瓦片，免 Key）+ **本地城市库**
-- 缺口与对策：Open-Meteo **无生活指数** → 8 项已自算（`utils/indices.js`）；Open-Meteo **中文地理编码有歧义**（"杭州"会返回四川甘孜）→ 已用本地城市库；RainViewer `nowcast` 实测为空 → 已做降级提示
+- 缺口与对策：Open-Meteo **无生活指数** → 8 项已自算（`utils/indices.ts`）；Open-Meteo **中文地理编码有歧义**（"杭州"会返回四川甘孜）→ 已用本地城市库；RainViewer `nowcast` 实测为空 → 已做降级提示
 - ⚠️ **商业授权是硬门槛**：Open-Meteo/RainViewer 免费层均不允许商用，上线运营需换和风/彩云
 - ⚠️ **CO 单位口径**：国标限值 4 mg/m³，接口返回 μg/m³，限值表须用 4000，否则永远显示「超标」
 
 **构建**：`npm run build:h5` / `npm run build:mp-weixin`（`cross-env UNI_INPUT_DIR=.` 必须，uni CLI 在加载 vite 配置前就解析源码目录）
 
-## 音乐播放模块（2026-11-01，设计 + 编码均已完成）★ 全项目唯一 TS 模块
+## 音乐播放模块（2026-11-01，设计 + 编码均已完成）★ 维持严格 TS 检查
 
 - **定位**：独立音乐发现，不是网易云复刻。数据源选 **Audius**（实测唯一能播完整歌、免 Key、免备案域名的免费源）
-- **技术栈**：TypeScript + uni-app + Vue3（`<script setup lang="ts">` + strict）。其余模块仍是 JS
+- **技术栈**：TypeScript + uni-app + Vue3（`<script setup lang="ts">` + strict）。2026-11-02 起其余业务模块也迁移到 TS。
 - 设计稿 Ardot：`https://ardot.tencent.com/file/742773368672262`（9 屏 375×812 + 设计系统板）
 - 文档：`pages/music/docs/`
   - `交互规格说明书-音乐.md` v1.3 —— 业务规则源（状态机 / 缓存 / 异常 / 验收）
@@ -87,7 +87,7 @@
 ### 构建与验证
 
 `npm run typecheck`（0 错误）· `build:h5` · `build:mp-weixin` 均通过。
-2026-11-02 起 `npm run typecheck` 使用 `vue-tsc`，覆盖音乐模块的 `.ts` 与 `.vue`；页面内类型错误已修复。
+2026-11-02 起 `npm run typecheck` 使用 `vue-tsc`，覆盖全项目的 `.ts` 与 `.vue`；音乐模块通过 `pages/music/tsconfig.json` 追加严格检查。
 
 ## 服装电商交互逻辑（调研沉淀，2026-10-22）
 
@@ -124,7 +124,7 @@
 - 金额一律整数「分」存储传输，展示层用 `fen2yuan()` 转元；**前端不计算金额，只展示服务端返回值**。
 - 订单状态机：`UNPAID → PAID → SHIPPED → FINISHED`，终态 `FINISHED` / `CANCELED` 不可逆。
 - 待付款超时 15 分钟；下单转锁定库存，支付转实扣，超时/取消释放。
-- 运费规则（待业务确认）：满 ¥99 免邮，否则 ¥8 —— 定义在 `pages/mall/config.js`。
+- 运费规则（待业务确认）：满 ¥99 免邮，否则 ¥8 —— 定义在 `pages/mall/config.ts`。
 - 幂等：提交类按钮点击后立即置 loading 防重；服务端错误码 40001/40004/40006 有固定文案。
 
 ## 设计稿（Ardot）

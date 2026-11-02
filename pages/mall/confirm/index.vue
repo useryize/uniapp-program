@@ -96,13 +96,13 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 结算页逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { cartApi, goodsApi, addressApi, orderApi } from '../api/index.js'
-import { fen2yuan, maskedPhone } from '../utils/format.js'
-import { MALL_CONFIG } from '../config.js'
+import { cartApi, goodsApi, addressApi, orderApi } from '../api/index'
+import { fen2yuan, maskedPhone } from '../utils/format'
+import { MALL_CONFIG } from '../config'
 
 /** 结算明细（展示用：skuId/quantity/title/spec/price/color/cover） */
 const items = ref([])

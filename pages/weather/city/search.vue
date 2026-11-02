@@ -91,14 +91,15 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 城市搜索（设计稿 02）
  */
 import { ref } from 'vue'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
 
 const header = getWeatherHeaderLayout()
 
@@ -106,7 +107,7 @@ const keyword = ref('')
 const results = ref([])
 const hot = ref([])
 const history = ref([])
-const currentCity = ref({})
+const currentCity = ref<Partial<City>>({})
 
 const HISTORY_KEY = 'wx_search_history'
 

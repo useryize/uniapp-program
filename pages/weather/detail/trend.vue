@@ -70,7 +70,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 15天趋势（设计稿 05）
  */
@@ -78,7 +78,7 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
 import WeatherChart from '../components/weather-chart.vue'
 
 const header = getWeatherHeaderLayout()

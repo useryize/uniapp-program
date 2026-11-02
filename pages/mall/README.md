@@ -7,22 +7,22 @@
 ```
 pages/mall/
 ├── index.vue                 商城首页（列表+分页+快捷加购）
-├── config.js                 模块配置：mock 开关 / 接口地址 / 业务常量
+├── config.ts                 模块配置：mock 开关 / 接口地址 / 业务常量
 ├── README.md                 本文件
 ├── docs/                     商城全部文档（PRD、评审意见、交互规格说明书）
 ├── api/                      接口层 —— 页面取数唯一入口
-│   ├── index.js              统一出口：goodsApi / cartApi / orderApi / addressApi
-│   └── http.js               真实请求封装（USE_MOCK=false 时启用）
+│   ├── index.ts              统一出口：goodsApi / cartApi / orderApi / addressApi
+│   └── http.ts               真实请求封装（USE_MOCK=false 时启用）
 ├── components/
 │   └── goods-card.vue        商品卡公共组件（首页/搜索复用）
 ├── mock/                     mock 层 —— 按 PRD 规则实现的「内存版服务端」
-│   ├── index.js              引擎：延迟 / 统一响应 / 通道分发
-│   ├── db.js                 内存数据库（商品/SKU/购物车/订单/地址）
+│   ├── index.ts              引擎：延迟 / 统一响应 / 通道分发
+│   ├── db.ts                 内存数据库（商品/SKU/购物车/订单/地址）
 │   └── handlers/             处理器（channel = domain.action）
-│       ├── goods.js          商品列表 / 详情（支持 id 或 skuId 反查）
-│       ├── cart.js           购物车增删改勾选
-│       ├── order.js          计价/锁库存/支付回调/发货/确认收货/取消
-│       └── address.js        地址增删改 / 设默认
+│       ├── goods.ts          商品列表 / 详情（支持 id 或 skuId 反查）
+│       ├── cart.ts           购物车增删改勾选
+│       ├── order.ts          计价/锁库存/支付回调/发货/确认收货/取消
+│       └── address.ts        地址增删改 / 设默认
 ├── detail/index.vue          商品详情（SKU 弹层联动 / 加购 / 直购）
 ├── person/index.vue          个人中心（订单 / 尺码档案 / 发售提醒）
 ├── cart/index.vue            购物车（勾选/改量/失效区/结算栏）
@@ -32,7 +32,7 @@ pages/mall/
 ├── order/detail.vue          订单详情（时间轴 / 快照 / 金额明细）
 ├── search/index.vue          搜索（防抖 300ms / 本地历史 10 条）
 └── utils/
-    └── format.js             金额分转元 / 手机号脱敏 / 状态与时间格式化
+    └── format.ts             金额分转元 / 手机号脱敏 / 状态与时间格式化
 ```
 
 ## 核心设计：mock = 内存版服务端
@@ -51,13 +51,13 @@ mock 层**不是假数据回显**，而是按 PRD v1.1 业务规则实现的内�
 
 ## 切换真实接口（三步）
 
-1. **改开关与地址**：`config.js`
+1. **改开关与地址**：`config.ts`
    ```js
    USE_MOCK: false,
    BASE_URL: 'https://你的后端域名',
    ```
 2. **小程序后台**：把 `BASE_URL` 域名加入 request 合法域名（支付回调域名需 ICP 备案，见 PRD 技术审核 T4）。
-3. **后端实现**：按 `api/index.js` 中每个方法的 `url` 与参数实现接口，响应结构统一为：
+3. **后端实现**：按 `api/index.ts` 中每个方法的 `url` 与参数实现接口，响应结构统一为：
    ```json
    { "code": 0, "data": {}, "msg": "ok" }
    ```
@@ -65,9 +65,9 @@ mock 层**不是假数据回显**，而是按 PRD v1.1 业务规则实现的内�
 
 ## 新增接口规范（三处同步）
 
-1. `mock/handlers/<domain>.js`：加 handler，channel 命名 `domain.action`
-2. `api/index.js`：加方法，绑定 `channel` 与真实 `url`
-3. 页面只 `import { xxxApi } from '../api/index.js'`，**禁止**直接引用 mock
+1. `mock/handlers/<domain>.ts`：加 handler，channel 命名 `domain.action`
+2. `api/index.ts`：加方法，绑定 `channel` 与真实 `url`
+3. 页面只 `import { xxxApi } from '../api/index'`，**禁止**直接引用 mock
 
 ## 编码约定
 

@@ -28,7 +28,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onReachBottom, onLoad, onPullDownRefresh } from "@dcloudio/uni-app";
 import { request } from "@/utils/request";
 import WallpaperTabbar from "../components/wallpaper-tabbar.vue";
@@ -109,7 +109,7 @@ const onImageLoad = (index, columnIndex) => {
 onReachBottom(() => {
   if (!loading.value) {
     page.value++;
-    init();
+    init(false);
   }
 });
 
@@ -122,7 +122,7 @@ onPullDownRefresh(() => {
 
 // 组件挂载时初始化数据
 onMounted(() => {
-  init();
+  init(false);
 });
 </script>
 

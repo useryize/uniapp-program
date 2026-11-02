@@ -5,7 +5,17 @@ const BASE_URL = SYSTEM_INFO.uniPlatform === 'web' ? '' : HOST;
 const Authorization = "JKDmKuqZkQlCK8SG9RVgp0JSn8LLb12MQULnraxzkJVwGqil7oyQ1Ot4"
 
 
-export function request(config = {}) {
+export interface PexelsPhoto {
+    id: number
+    src: { large: string; [size: string]: string }
+    [key: string]: unknown
+}
+
+export interface PexelsResponse {
+    photos: PexelsPhoto[]
+}
+
+export function request(config: { url: string; data?: Record<string, string>; method?: UniApp.RequestOptions['method']; header?: Record<string, string> }) {
     let {
         url,
         data = {},
@@ -15,7 +25,7 @@ export function request(config = {}) {
 
     url = BASE_URL + url
 
-    return new Promise((resolve, reject) => {
+    return new Promise<PexelsResponse>((resolve, reject) => {
         uni.request({
             url,
             data,
@@ -25,7 +35,7 @@ export function request(config = {}) {
             },
             success: res => {
                 if (res.statusCode === 200) {
-                    resolve(res.data)
+                    resolve(res.data as unknown as PexelsResponse)
                 } else {
                     uni.showModal({
                         title: "错误提示",

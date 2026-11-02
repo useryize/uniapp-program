@@ -20,7 +20,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 底部胶囊导航
  * 对应设计稿：高度 62px / 圆角 36px / 1px 描边 / 激活项填主色

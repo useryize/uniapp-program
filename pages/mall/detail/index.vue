@@ -173,16 +173,17 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { goodsApi, cartApi, sizeApi } from '../api/index.js'
-import { fen2yuan } from '../utils/format.js'
+import { goodsApi, cartApi, sizeApi } from '../api/index'
+import { fen2yuan } from '../utils/format'
 import SizePicker from '../components/size-picker.vue'
 import Stepper from '../components/stepper.vue'
+import type { GoodsDetail } from '../api/types'
 
 /** 商品详情（含 skuList / colors / sizes / sizeChart） */
-const goods = ref({})
+const goods = ref<Partial<GoodsDetail>>({})
 /** 规格面板开关 */
 const skuPopupShow = ref(false)
 /** 面板模式：cart 加购 / buy 直购 */
@@ -196,7 +197,7 @@ const quantity = ref(1)
 /** 提交防重 */
 const submitting = ref(false)
 /** 用户尺码档案（用于推荐文案） */
-const profile = ref({ height: 175, weight: 68 })
+const profile = ref<{ height: number; weight: number; recommendSize?: string }>({ height: 175, weight: 68 })
 
 /** 图集 */
 const images = computed(() => goods.value.images || [])

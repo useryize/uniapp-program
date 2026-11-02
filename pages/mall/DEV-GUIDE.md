@@ -27,11 +27,11 @@ pages/mall/
 │   ├── stepper.vue        数量步进器（新增）
 │   └── section-head.vue   区块标题（新增）
 ├── mock/
-│   ├── db.js              数据源（重做：颜色×尺码双维 SKU / 尺码表 / 发售日历 / 尺码档案）
+│   ├── db.ts              数据源（重做：颜色×尺码双维 SKU / 尺码表 / 发售日历 / 尺码档案）
 │   └── handlers/
-│       ├── size.js        尺码域（新增：推荐 / 尺码表 / 档案读写）
-│       └── drop.js        发售域（新增：列表 / 订阅）
-└── api/index.js           接口出口（新增 sizeApi / dropApi / cartApi.updateSku）
+│       ├── size.ts        尺码域（新增：推荐 / 尺码表 / 档案读写）
+│       └── drop.ts        发售域（新增：列表 / 订阅）
+└── api/index.ts           接口出口（新增 sizeApi / dropApi / cartApi.updateSku）
 
 static/
 └── mall/                  商品图 7 张（12M → 813K 压缩）
@@ -64,7 +64,7 @@ $rz-border-w: 4rpx; $rz-radius: 0;     $rz-page-pad: 32rpx;
 
 ## 三、数据层扩展（保持 `api → mock` 分层不变）
 
-新增两个域，页面仍只 import `api/index.js`：
+新增两个域，页面仍只 import `api/index.ts`：
 
 ```js
 sizeApi.recommend({ height, weight, fit })  // → { size, reason, chart, range }
@@ -105,7 +105,7 @@ cartApi.updateSku({ id, skuId, quantity })  // 购物车改规格
 | 5 关闭再打开回显已选 | `size-picker` 的 `watch(() => [props.colorId, props.size])` |
 | 6 购物车改规格 + 凑单提示 | `cart` `.ship-tip` + `cartApi.updateSku` |
 | 7 限量款三态 | `drop` 三态渲染 + `db.drops` 三态种子数据 |
-| 8 尺码档案持久化 | `mock/handlers/size.js` `size.profile.*`，跨商品复用 |
+| 8 尺码档案持久化 | `mock/handlers/size.ts` `size.profile.*`，跨商品复用 |
 
 ---
 
@@ -121,7 +121,7 @@ node pages/mall/tools/audit-style.mjs         # 样式 token 审计  0 偏差
 node pages/mall/tools/check-routes.mjs        # 路由可达性      0 问题
 node pages/mall/tools/check-design-rules.mjs  # 设计稿规则覆盖  33/33
 node pages/mall/tools/check-vue.mjs           # SFC + SCSS 编译校验    17/17
-node --import ./pages/mall/tools/reg.mjs \
+node --experimental-strip-types --import ./pages/mall/tools/reg.mjs \
      pages/mall/tools/smoke-mock.mjs          # 数据层冒烟      19/19
 ```
 
@@ -129,7 +129,7 @@ node --import ./pages/mall/tools/reg.mjs \
 （项目源码用 vite 风格的无扩展名导入，Node 直跑 mock handler 时需要）。
 
 > ⚠️ **真机/模拟器效果仍需在 HBuilderX 或微信开发者工具中运行确认**。
-> 当前仓库的 `npm run build:h5` 使用普通 Vite，未配置 uni-app 插件，构建在解析 `main.js` 的 `./App` 时失败；需在 HBuilderX 或微信开发者工具中做运行时截图对比。
+> `npm run build:h5` 与 `npm run build:mp-weixin` 已通过；仍需在 HBuilderX 或微信开发者工具中做运行时截图对比。
 
 ---
 

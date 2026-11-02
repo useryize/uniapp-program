@@ -3,8 +3,8 @@
  *
  * 架构规则（对齐 docs/PRD-商城-v1.1-架构版.md §10 集成边界）：
  * 1. 页面只 import 本文件，禁止直接 import mock 或 http
- * 2. USE_MOCK = true  → 走 mock 内存服务（mock/index.js）
- *    USE_MOCK = false → 走真实接口（api/http.js）
+ * 2. USE_MOCK = true  → 走 mock 内存服务（mock/index.ts）
+ *    USE_MOCK = false → 走真实接口（api/http.ts）
  *    两者响应同构，页面拿到的都是解包后的纯 data，切换零改动
  * 3. channel（mock 通道）与 url（真实接口路径）一一对应，新增接口两处同步加
  * 4. 金额一律整数分；任何"价格/库存"类入参仅作展示参考，以服务端返回为准
@@ -22,7 +22,7 @@ import { mock } from '../mock'
  * @param {'GET'|'POST'|'PUT'|'DELETE'} [method]
  * @returns {Promise<Object>} 成功时 resolve 纯 data；失败 reject { code, msg }
  */
-function call(channel, url, params = {}, method = 'GET') {
+function call(channel: string, url: string, params: Record<string, unknown> = {}, method: NonNullable<UniApp.RequestOptions['method']> = 'GET') {
   const promise = MALL_CONFIG.USE_MOCK
     ? mock(channel, params)
     : http({ url, data: params, method })

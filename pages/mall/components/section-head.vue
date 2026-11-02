@@ -11,7 +11,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   /** 中文主标题 */
   title: { type: String, required: true },

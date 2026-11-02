@@ -112,8 +112,8 @@
   </view>
 </template>
 
-<script setup>
-import { getEntryHeaderInset } from '@/utils/entry-header.js'
+<script setup lang="ts">
+import { getEntryHeaderInset } from '@/utils/entry-header'
 
 const headerInset = getEntryHeaderInset()
 

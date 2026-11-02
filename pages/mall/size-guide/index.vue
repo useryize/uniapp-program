@@ -107,10 +107,10 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { sizeApi } from '../api/index.js'
+import { sizeApi } from '../api/index'
 
 /** 身高（字符串输入，转数字前不校验） */
 const height = ref('')

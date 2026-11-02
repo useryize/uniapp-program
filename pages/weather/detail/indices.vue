@@ -30,20 +30,21 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 生活指数（设计稿 07）
- * 数据来源：utils/indices.js 自算（Open-Meteo 免费层不提供生活指数）
+ * 数据来源：utils/indices.ts 自算（Open-Meteo 免费层不提供生活指数）
  */
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
 
 const header = getWeatherHeaderLayout()
 
-const city = ref({})
+const city = ref<Partial<City>>({})
 const indices = ref([])
 
 /** 8 项指数各自的图标 */

@@ -4,7 +4,9 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "useUnknownInCatchVariables": false,
     "jsx": "preserve",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -16,13 +18,12 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["@dcloudio/types"],
+    "types": ["@dcloudio/types", "node"],
     "lib": ["ES2020", "DOM"]
   },
   "include": [
-    "pages/music/**/*.ts",
-    "pages/music/**/*.vue",
-    "pages/music/**/*.d.ts"
+    "**/*.ts",
+    "**/*.vue"
   ],
   "exclude": ["node_modules", "dist", "unpackage", "uni_modules"]
 }

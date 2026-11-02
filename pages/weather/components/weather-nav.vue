@@ -12,12 +12,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 二级页导航栏（返回 + 标题 + 右侧插槽）
  * 在状态栏下与微信胶囊同排显示导航操作
  */
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
 
 const header = getWeatherHeaderLayout()
 defineProps({

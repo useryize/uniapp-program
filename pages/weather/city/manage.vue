@@ -67,7 +67,7 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 城市管理（设计稿 03）
  */
@@ -75,12 +75,13 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherNav from '../components/weather-nav.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
 
 const header = getWeatherHeaderLayout()
 
-const list = ref([])
-const currentCity = ref({})
+const list = ref<City[]>([])
+const currentCity = ref<Partial<City>>({})
 const currentBrief = ref('')
 const dragIndex = ref(-1)
 
@@ -89,17 +90,17 @@ async function load() {
   const saved = weatherApi.getSavedCities()
   // 首次进入时把当前城市并入列表，避免空列表
   const cur = weatherApi.getCurrentCity()
-  let list = saved
-  if (list.length && !list.some((c) => c.adcode === cur.adcode)) {
-    list = [cur, ...list]
-    weatherApi.saveSavedCities(list)
-  } else if (!list.length) {
-    list = [cur]
-    weatherApi.saveSavedCities(list)
+  let cityList: City[] = saved
+  if (cityList.length && !cityList.some((c) => c.adcode === cur.adcode)) {
+    cityList = [cur, ...cityList]
+    weatherApi.saveSavedCities(cityList)
+  } else if (!cityList.length) {
+    cityList = [cur]
+    weatherApi.saveSavedCities(cityList)
   }
-  list.value = list
+  list.value = cityList
   currentCity.value = cur
-  await Promise.all(list.map(async (c) => {
+  await Promise.all(cityList.map(async (c) => {
     try {
       const d = await weatherApi.getWeather(c)
       c.brief = `${d.current.condition} ${d.current.tempText}`

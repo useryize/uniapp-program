@@ -79,12 +79,12 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /** 支付结果页逻辑（Vue3 setup） */
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { orderApi } from '../api/index.js'
-import { fen2yuan, formatTime } from '../utils/format.js'
+import { orderApi } from '../api/index'
+import { fen2yuan, formatTime } from '../utils/format'
 
 /** 订单数据（以服务端状态为准渲染页面形态） */
 const order = ref(null)

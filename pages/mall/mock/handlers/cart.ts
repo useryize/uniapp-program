@@ -59,7 +59,7 @@ export default {
     const goods = db.goods.find((g) => g.id === goodsId)
     if (!goods || goods.status !== 1) throw { code: 40002, msg: '商品已下架' }
 
-    // 未指定 SKU 时自动选取第一个有库存的（库存模型见 db.js 头注释）
+    // 未指定 SKU 时自动选取第一个有库存的（库存模型见 db.ts 头注释）
     let sku = params.skuId
       ? db.skus.find((s) => s.id === Number(params.skuId))
       : db.skus.find((s) => s.goodsId === goodsId && s.stock > 0)

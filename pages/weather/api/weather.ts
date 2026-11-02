@@ -174,7 +174,7 @@ function dateDiff(a, b) {
   const da = new Date(a)
   const db = new Date(b)
   if (Number.isNaN(da.getTime()) || Number.isNaN(db.getTime())) return 0
-  return Math.round((da - db) / 86400000)
+  return Math.round((da.getTime() - db.getTime()) / 86400000)
 }
 
 /**

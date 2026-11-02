@@ -100,25 +100,28 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 首页 · 当前天气（设计稿 01）
- * 数据源：Open-Meteo，适配器输出见 api/weather.js
+ * 数据源：Open-Meteo，适配器输出见 api/weather.ts
  */
 import { ref, computed } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import weatherApi from '../api'
 import WeatherTabbar from '../components/weather-tabbar.vue'
-import { getWeatherHeaderLayout } from '../utils/header.js'
+import { getWeatherHeaderLayout } from '../utils/header'
+import type { City } from '../api/types'
+
+type WeatherData = Awaited<ReturnType<typeof weatherApi.getWeather>>
 
 const header = getWeatherHeaderLayout()
 
-const city = ref({})
+const city = ref<Partial<City>>({})
 const citySource = ref('loading')
-const current = ref({})
-const hourly = ref([])
-const daily = ref([])
-const airQuality = ref({})
+const current = ref<Partial<WeatherData['current']>>({})
+const hourly = ref<WeatherData['hourly']>([])
+const daily = ref<WeatherData['daily']>([])
+const airQuality = ref<Partial<WeatherData['airQuality']>>({})
 const tips = ref('')
 const error = ref('')
 

@@ -31,36 +31,42 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 /**
  * 折线图（使用 uni-app CanvasContext）
  * 支持双序列（气温 / 降水概率）、渐变面积、触摸选中点
  */
 import { ref, shallowRef, computed, onMounted, watch, getCurrentInstance } from 'vue'
 
-const props = defineProps({
-  /** 主序列：[{ label, value }] */
-  points: { type: Array, default: () => [] },
-  /** 次序列（虚线）：[{ label, value }] */
-  points2: { type: Array, default: () => [] },
-  /** 图表宽（rpx） */
-  width: { type: Number, default: 622 },
-  /** 图表高（rpx） */
-  height: { type: Number, default: 280 },
-  /** 主线颜色 */
-  color: { type: String, default: '#014DB2' },
-  /** 次线颜色 */
-  color2: { type: String, default: '#10B981' },
-  /** 单位后缀 */
-  unit: { type: String, default: '°' },
-  /** 次线单位后缀 */
-  unit2: { type: String, default: '%' },
-  /** 是否展示次线 */
-  showSecond: { type: Boolean, default: false },
-  /** 轴刻度最大数量 */
-  maxTicks: { type: Number, default: 6 },
-  /** 首个刻度的替代文案（如「现在」「今天」） */
-  firstLabel: { type: String, default: '' }
+interface ChartPoint {
+  label: string
+  value: number
+}
+
+const props = withDefaults(defineProps<{
+  points?: ChartPoint[]
+  points2?: ChartPoint[]
+  width?: number
+  height?: number
+  color?: string
+  color2?: string
+  unit?: string
+  unit2?: string
+  showSecond?: boolean
+  maxTicks?: number
+  firstLabel?: string
+}>(), {
+  points: () => [],
+  points2: () => [],
+  width: 622,
+  height: 280,
+  color: '#014DB2',
+  color2: '#10B981',
+  unit: '°',
+  unit2: '%',
+  showSecond: false,
+  maxTicks: 6,
+  firstLabel: ''
 })
 
 const cid = `chart-${Math.random().toString(36).slice(2, 9)}`
