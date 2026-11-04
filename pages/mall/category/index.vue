@@ -87,13 +87,13 @@ import GoodsCard from '../components/goods-card.vue'
 import MallTabbar from '../components/mall-tabbar.vue'
 
 /** 一级类目树 */
-const categories = ref([])
+const categories = ref<any[]>([])
 /** 当前一级类目 id */
 const currentId = ref(0)
 /** 当前二级类目 id（0 = 全部） */
 const subId = ref(0)
 /** 商品列表 */
-const goodsList = ref([])
+const goodsList = ref<any[]>([])
 /** 排序方式 */
 const sortKey = ref('default')
 /** 是否还有下一页 */
@@ -123,20 +123,20 @@ const tipText = computed(() => {
 })
 
 /** 切一级类目：重置二级筛选与分页 */
-function onSelectCategory(c) {
+function onSelectCategory(c: any) {
   currentId.value = c.id
   subId.value = 0
   loadGoods(true)
 }
 
 /** 切二级类目 */
-function onSelectSub(sub) {
+function onSelectSub(sub: any) {
   subId.value = sub.id
   loadGoods(true)
 }
 
 /** 切换排序（前端排序，服务端返回的是基准集） */
-function onSort(key) {
+function onSort(key: any) {
   if (sortKey.value === key) return
   sortKey.value = key
   const sorted = [...goodsList.value]
@@ -166,7 +166,7 @@ async function loadGoods(reset = false) {
     const data = await goodsApi.list(params)
     goodsList.value = data.list
     hasMore.value = data.hasMore
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   } finally {
     loading.value = false
@@ -179,7 +179,7 @@ function loadMore() {
   hasMore.value = false
 }
 
-function goDetail(goods) {
+function goDetail(goods: any) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 
@@ -194,7 +194,7 @@ function goSearch() {
 onLoad(async () => {
   try {
     categories.value = await goodsApi.categories()
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '类目加载失败', icon: 'none' })
   }
   loadGoods(true)

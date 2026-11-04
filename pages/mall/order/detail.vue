@@ -117,7 +117,7 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 import { orderApi } from '../api/index'
 import { fen2yuan, maskedPhone, formatTime, orderStatusText } from '../utils/format'
 
-const order = ref(null)
+const order = ref<any>(null)
 let orderNo = ''
 
 /** 时间轴节点：仅已发生的时间有值（服务端字段） */
@@ -131,7 +131,7 @@ const timeline = computed(() => order.value ? [
 /** 状态区副标题（按状态机给不同提示） */
 const statusTip = computed(() => {
   if (!order.value) return ''
-  const map = {
+  const map: Record<string, string> = {
     UNPAID: '请在 15 分钟内完成支付，超时订单将自动关闭',
     PAID: '商家正在备货，预计 48 小时内发出',
     SHIPPED: '包裹已在路上，注意查收',
@@ -144,12 +144,12 @@ const statusTip = computed(() => {
 async function loadOrder() {
   try {
     order.value = await orderApi.detail({ orderNo })
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '订单加载失败', icon: 'none' })
   }
 }
 
-onLoad((options) => { orderNo = options.orderNo || '' })
+onLoad((options) => { orderNo = options?.orderNo || '' })
 onShow(loadOrder)
 
 /** 复制订单号 */
@@ -171,7 +171,7 @@ function onCancel() {
         await orderApi.cancel({ orderNo })
         uni.showToast({ title: '已取消', icon: 'success' })
         loadOrder()
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '取消失败', icon: 'none' })
       }
     }
@@ -199,7 +199,7 @@ function onConfirm() {
         await orderApi.confirm({ orderNo })
         uni.showToast({ title: '已确认收货', icon: 'success' })
         loadOrder()
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
       }
     }

@@ -45,10 +45,10 @@ import type { City } from '../api/types'
 const header = getWeatherHeaderLayout()
 
 const city = ref<Partial<City>>({})
-const indices = ref([])
+const indices = ref<any[]>([])
 
 /** 8 项指数各自的图标 */
-const ICON_MAP = {
+const ICON_MAP: Record<string, string> = {
   dressing: 'dressing',
   uv: 'uv',
   carWash: 'carWash',
@@ -59,7 +59,7 @@ const ICON_MAP = {
   travel: 'travel'
 }
 
-const iconUrl = (key) => `/static/weather/icons/idx-${ICON_MAP[key] || 'dressing'}.png`
+const iconUrl = (key: any) => `/static/weather/icons/idx-${ICON_MAP[key] || 'dressing'}.png`
 
 onLoad(async () => {
   try {
@@ -67,7 +67,7 @@ onLoad(async () => {
     city.value = c
     const data = await weatherApi.getWeather(c)
     indices.value = data.indices
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 })

@@ -87,7 +87,7 @@
 ### 构建与验证
 
 `npm run typecheck`（0 错误）· `build:h5` · `build:mp-weixin` 均通过。
-2026-11-02 起 `npm run typecheck` 使用 `vue-tsc`，覆盖全项目的 `.ts` 与 `.vue`；音乐模块通过 `pages/music/tsconfig.json` 追加严格检查。
+2026-11-03 起 `npm run typecheck` 使用 `vue-tsc` 对全项目 `.ts` 与 `.vue` 执行严格检查（`noImplicitAny`、`strictNullChecks`、`useUnknownInCatchVariables` 均开启）。
 
 ## 服装电商交互逻辑（调研沉淀，2026-10-22）
 

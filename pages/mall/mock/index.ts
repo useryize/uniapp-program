@@ -39,20 +39,20 @@ const handlers = {
  *   - 成功：{ code: 0, data: handler返回值, msg: 'ok' }
  *   - 失败：reject { code: handler抛出的code或500, msg }
  */
-export function mock(channel, params): Promise<{ code: number; data: any; msg: string }> {
+export function mock(channel: any, params: any): Promise<{ code: number; data: any; msg: string }> {
   const [min, max] = MALL_CONFIG.MOCK_DELAY
   const delay = min + Math.floor(Math.random() * (max - min))
 
   return new Promise<{ code: number; data: any; msg: string }>((resolve, reject) => {
     setTimeout(() => {
-      const handler = handlers[channel]
+      const handler = (handlers as Record<string, (params: any) => any>)[channel]
       if (!handler) {
         reject({ code: 50001, msg: `[mock] 未实现的通道: ${channel}` })
         return
       }
       try {
         resolve({ code: 0, data: handler(params || {}), msg: 'ok' })
-      } catch (e) {
+      } catch (e: any) {
         // handler 通过 throw { code, msg } 表达业务错误（库存不足等）
         reject({ code: e.code || 500, msg: e.msg || '服务异常' })
       }

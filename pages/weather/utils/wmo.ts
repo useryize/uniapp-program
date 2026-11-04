@@ -9,7 +9,7 @@
  */
 
 /** WMO 码 → { text 中文, icon 图标键 } */
-export const WMO_MAP = {
+export const WMO_MAP: Record<number, { text: string; icon: string }> = {
   0: { text: '晴', icon: 'sunny' },
   1: { text: '大部晴朗', icon: 'sunny' },
   2: { text: '多云', icon: 'cloudy' },
@@ -47,7 +47,7 @@ export const WMO_MAP = {
  * @param {boolean} [isDay=true] 是否白天（夜间用 night 图标覆盖晴/多云）
  * @returns {{text:string, icon:string}}
  */
-export function resolveWmo(code, isDay = true) {
+export function resolveWmo(code: any, isDay = true) {
   const hit = WMO_MAP[code] || WMO_MAP[3]
   // 夜间：晴天与多云换用月夜图标，其余保持不变
   if (!isDay && (hit.icon === 'sunny' || hit.icon === 'cloudy')) {
@@ -62,7 +62,7 @@ export function resolveWmo(code, isDay = true) {
  * @param {number} pm25 PM2.5 μg/m³
  * @returns {boolean}
  */
-export function isHaze(humidity, pm25) {
+export function isHaze(humidity: any, pm25: any) {
   if (humidity == null || pm25 == null) return false
   // 高湿 + 低 PM + 弱风是霾的典型特征（区别于雾：雾是 100% 湿度）
   return humidity >= 75 && humidity < 95 && pm25 <= 75

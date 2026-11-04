@@ -108,13 +108,13 @@ const tabIndex = ref(0)
 const currentTab = computed(() => tabs[tabIndex.value].key)
 
 /** 列表数据（tab 切换时重置） */
-const orderList = ref([])
+const orderList = ref<any[]>([])
 const page = ref(0)
 const hasMore = ref(true)
 const loading = ref(false)
 
 const emptyText = computed(() => {
-  const map = {
+  const map: Record<string, string> = {
     ALL: '还没有订单', UNPAID: '没有待付款订单', PAID: '没有待发货订单',
     SHIPPED: '没有待收货订单', FINISHED: '没有已完成订单'
   }
@@ -122,8 +122,8 @@ const emptyText = computed(() => {
 })
 
 /** 订单商品总件数 */
-function totalQty(order) {
-  return order.items.reduce((n, i) => n + i.quantity, 0)
+function totalQty(order: any) {
+  return order.items.reduce((n: any, i: any) => n + i.quantity, 0)
 }
 
 /**
@@ -141,7 +141,7 @@ async function loadOrders(reset = false) {
     orderList.value = reset ? data.list : orderList.value.concat(data.list)
     page.value = next
     hasMore.value = data.hasMore
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '订单加载失败', icon: 'none' })
   } finally {
     loading.value = false
@@ -152,12 +152,12 @@ async function loadOrders(reset = false) {
 onShow(() => loadOrders(true))
 
 /** tab 切换：重置列表 */
-function onTabChange(index) {
+function onTabChange(index: any) {
   tabIndex.value = index
   loadOrders(true)
 }
 
-function onSwiperChange(e) {
+function onSwiperChange(e: any) {
   tabIndex.value = e.detail.current
   loadOrders(true)
 }
@@ -167,12 +167,12 @@ function onLoadMore() {
 }
 
 /** 去支付（待付款单回到支付结果页继续支付） */
-function goPay(order) {
+function goPay(order: any) {
   uni.navigateTo({ url: `/pages/mall/pay/result?orderNo=${order.orderNo}&from=order` })
 }
 
 /** 取消订单（二次确认；取消即释放锁定库存，PRD §7.2 规则 2） */
-function onCancel(order) {
+function onCancel(order: any) {
   uni.showModal({
     title: '提示',
     content: '确定取消该订单吗？',
@@ -182,7 +182,7 @@ function onCancel(order) {
         await orderApi.cancel({ orderNo: order.orderNo })
         uni.showToast({ title: '已取消', icon: 'success' })
         loadOrders(true)
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '取消失败', icon: 'none' })
       }
     }
@@ -190,7 +190,7 @@ function onCancel(order) {
 }
 
 /** 确认收货（SHIPPED -> FINISHED 终态，PRD §6.2） */
-function onConfirm(order) {
+function onConfirm(order: any) {
   uni.showModal({
     title: '提示',
     content: '确认已收到货吗？确认后订单完成。',
@@ -200,14 +200,14 @@ function onConfirm(order) {
         await orderApi.confirm({ orderNo: order.orderNo })
         uni.showToast({ title: '已确认收货', icon: 'success' })
         loadOrders(true)
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
       }
     }
   })
 }
 
-function goDetail(order) {
+function goDetail(order: any) {
   uni.navigateTo({ url: `/pages/mall/order/detail?orderNo=${order.orderNo}` })
 }
 </script>

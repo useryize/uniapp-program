@@ -37,7 +37,7 @@ const items = [
   { key: 'radar', label: '雷达', url: '/pages/weather/explore/radar' }
 ]
 
-const onTap = (item) => {
+const onTap = (item: any) => {
   if (item.key === props.current) return
 
   const pages = getCurrentPages()

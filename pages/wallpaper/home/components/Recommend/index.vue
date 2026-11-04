@@ -9,7 +9,7 @@
     </view>
   </view>
   <scroll-view class="scrollBox" scroll-x>
-    <view class="item" v-for="(item, index) in list" :key="item">
+    <view class="item" v-for="(item, index) in list" :key="item.id">
       <image :src="item?.src?.landscape" mode="heightFix" />
     </view>
   </scroll-view>
@@ -18,7 +18,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { request } from "@/utils/request";
-const list = ref([]);
+import type { PexelsPhoto } from "@/utils/request";
+const list = ref<PexelsPhoto[]>([]);
 const init = async () => {
   const res = await request({
     url: "/v1/search",

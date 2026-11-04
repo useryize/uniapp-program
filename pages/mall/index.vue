@@ -136,9 +136,9 @@ import GoodsCard from './components/goods-card.vue'
 import MallTabbar from './components/mall-tabbar.vue'
 
 /** 商品列表数据源 */
-const goodsList = ref([])
+const goodsList = ref<any[]>([])
 /** 秒杀商品（取列表前 3 条） */
-const flashList = ref([])
+const flashList = ref<any[]>([])
 /** 当前已加载页码（从 1 开始） */
 const page = ref(0)
 /** 是否还有下一页（由服务端分页返回，前端只消费） */
@@ -148,24 +148,24 @@ const loading = ref(false)
 /** 购物车件数（tabBar 角标） */
 const cartCount = ref(0)
 /** 发售日历摘要 */
-const dropInfo = ref(null)
+const dropInfo = ref<any>(null)
 
 // 首页展示图和短标题对应 Ardot Frame 2:1；商品 id、价格与跳转仍来自接口。
-const artGoods = {
+const artGoods: Record<number, { cover: string; title: string }> = {
   1: { cover: '/static/mall/ardot/hoodie.jpg', title: '落肩宽松连帽卫衣' },
   2: { cover: '/static/mall/ardot/tee.jpg', title: '重磅纯棉印花短袖' },
   3: { cover: '/static/mall/ardot/cargo-flash.jpg', title: '机能工装裤' },
   4: { cover: '/static/mall/ardot/denim.jpg', title: '水洗做旧牛仔外套' },
   5: { cover: '/static/mall/ardot/sneaker.jpg', title: '复古厚底运动鞋' }
 }
-const flashArt = {
+const flashArt: Record<number, string> = {
   1: '/static/mall/ardot/hoodie-flash.jpg',
   2: '/static/mall/ardot/tee-flash.jpg',
   3: '/static/mall/ardot/cargo-flash.jpg'
 }
-const flashTags = { 1: '-30%', 2: '-25%', 3: '-40%' }
-const recommendTags = { 1: 'HOT', 2: 'NEW', 4: 'LIMITED', 5: 'NEW' }
-function homeGoods(goods) {
+const flashTags: Record<number, string> = { 1: '-30%', 2: '-25%', 3: '-40%' }
+const recommendTags: Record<number, string> = { 1: 'HOT', 2: 'NEW', 4: 'LIMITED', 5: 'NEW' }
+function homeGoods(goods: any) {
   return { ...goods, ...(artGoods[goods.id] || {}) }
 }
 
@@ -196,12 +196,12 @@ async function loadGoods(reset = false) {
     const data = await goodsApi.list({ page: next, pageSize: 10 })
 
     const mapped = data.list.map(homeGoods)
-    const ordered = reset ? [1, 2, 4, 5].map((id) => mapped.find((g) => g.id === id)).filter(Boolean).concat(mapped.filter((g) => ![1, 2, 4, 5].includes(g.id))) : mapped
+    const ordered = reset ? [1, 2, 4, 5].map((id) => mapped.find((g: any) => g.id === id)).filter(Boolean).concat(mapped.filter((g: any) => ![1, 2, 4, 5].includes(g.id))) : mapped
     goodsList.value = reset ? ordered : goodsList.value.concat(ordered)
     page.value = next
     hasMore.value = data.hasMore
-    if (reset) flashList.value = data.list.slice(0, 3).map((g) => ({ ...homeGoods(g), cover: flashArt[g.id] || homeGoods(g).cover, title: g.id === 1 ? '落肩连帽卫衣' : g.id === 2 ? '重磅印花短袖' : homeGoods(g).title }))
-  } catch (e) {
+    if (reset) flashList.value = data.list.slice(0, 3).map((g: any) => ({ ...homeGoods(g), cover: flashArt[g.id] || homeGoods(g).cover, title: g.id === 1 ? '落肩连帽卫衣' : g.id === 2 ? '重磅印花短袖' : homeGoods(g).title }))
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   } finally {
     loading.value = false
@@ -213,18 +213,18 @@ async function loadGoods(reset = false) {
 async function loadDrops() {
   try {
     const list = await dropApi.list({})
-    const soon = list.find((d) => d.type === 'soon')
+    const soon = list.find((d: any) => d.type === 'soon')
     dropInfo.value = {
-      soon: list.filter((d) => d.type === 'soon').length,
+      soon: list.filter((d: any) => d.type === 'soon').length,
       date: soon ? formatDropDate(soon.startAt) : ''
     }
-  } catch (e) {
+  } catch (e: any) {
     // 发售日历为增强信息，失败不阻断首页
   }
 }
 
 /** 时间戳 -> 'M月D日' */
-function formatDropDate(ts) {
+function formatDropDate(ts: any) {
   const d = new Date(ts)
   return `${d.getMonth() + 1}月${d.getDate()}日`
 }
@@ -233,14 +233,14 @@ function formatDropDate(ts) {
 async function refreshCartCount() {
   try {
     const data = await cartApi.list()
-    cartCount.value = data.list.reduce((n, i) => n + i.quantity, 0)
-  } catch (e) {
+    cartCount.value = data.list.reduce((n: any, i: any) => n + i.quantity, 0)
+  } catch (e: any) {
     // 角标失败不阻断
   }
 }
 
 /** 进入商品详情 */
-function goDetail(goods) {
+function goDetail(goods: any) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 

@@ -67,7 +67,7 @@ const currentSize = ref(props.size)
 
 /** 当前颜色的 SKU 列表 */
 const colorSkus = computed(() =>
-  (props.goods.skuList || []).filter((s) => s.colorId === currentColorId.value)
+  (props.goods.skuList || []).filter((s: any) => s.colorId === currentColorId.value)
 )
 
 /** 当前商品的尺码列表 */
@@ -77,18 +77,18 @@ const sizes = computed(() => props.goods.sizes || [])
 const colors = computed(() => props.goods.colors || [])
 
 /** 某尺码在当前颜色下是否有货 */
-function isSizeAvailable(size) {
-  const sku = colorSkus.value.find((s) => s.size === size)
+function isSizeAvailable(size: any) {
+  const sku = colorSkus.value.find((s: any) => s.size === size)
   return !!(sku && sku.stock > 0)
 }
 
 /** 某颜色下是否有任意尺码有货 */
-function hasStockInColor(colorId) {
-  return (props.goods.skuList || []).some((s) => s.colorId === colorId && s.stock > 0)
+function hasStockInColor(colorId: any) {
+  return (props.goods.skuList || []).some((s: any) => s.colorId === colorId && s.stock > 0)
 }
 
 /** 选颜色：重置尺码（当前尺码在该颜色下无货时清空） */
-function onPickColor(c) {
+function onPickColor(c: any) {
   if (!hasStockInColor(c.id)) return
   currentColorId.value = c.id
   if (currentSize.value && !isSizeAvailable(currentSize.value)) {
@@ -98,7 +98,7 @@ function onPickColor(c) {
 }
 
 /** 选尺码：售罄不可选 */
-function onPickSize(size) {
+function onPickSize(size: any) {
   if (!isSizeAvailable(size)) return
   currentSize.value = size
   emitChange()
@@ -106,7 +106,7 @@ function onPickSize(size) {
 
 /** 向上抛当前选中的 SKU 信息 */
 function emitChange() {
-  const sku = colorSkus.value.find((s) => s.size === currentSize.value)
+  const sku = colorSkus.value.find((s: any) => s.size === currentSize.value)
   emit('change', {
     colorId: currentColorId.value,
     size: currentSize.value,

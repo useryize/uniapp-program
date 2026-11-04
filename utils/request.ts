@@ -7,6 +7,8 @@ const Authorization = "JKDmKuqZkQlCK8SG9RVgp0JSn8LLb12MQULnraxzkJVwGqil7oyQ1Ot4"
 
 export interface PexelsPhoto {
     id: number
+    index?: number
+    alt?: string
     src: { large: string; [size: string]: string }
     [key: string]: unknown
 }

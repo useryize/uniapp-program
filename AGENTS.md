@@ -21,7 +21,7 @@ pages/
 ├── mall/         商城
 ├── wallpaper/    壁纸
 ├── weather/      天气
-└── music/        音乐（维持独立的严格类型检查）
+└── music/        音乐
 ```
 
 每个子项目自包含：
@@ -39,7 +39,7 @@ pages/<module>/
 ```bash
 npm run build:h5          # H5
 npm run build:mp-weixin   # 小程序，产物在 dist/build/mp-weixin
-npm run typecheck         # 类型检查（全项目 .ts/.vue，并对音乐模块追加严格检查）
+npm run typecheck         # 全项目 .ts/.vue 严格类型检查
 ```
 
 `cross-env UNI_INPUT_DIR=.` 是必需的 —— uni CLI 在加载 vite 配置前就解析源码目录。

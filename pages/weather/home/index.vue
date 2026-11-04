@@ -125,8 +125,8 @@ const airQuality = ref<Partial<WeatherData['airQuality']>>({})
 const tips = ref('')
 const error = ref('')
 
-const round = (v) => (v == null ? '--' : Math.round(v))
-const iconUrl = (icon) => `/static/weather/icons/${icon || 'sunny'}.png`
+const round = (v: any) => (v == null ? '--' : Math.round(v))
+const iconUrl = (icon: any) => `/static/weather/icons/${icon || 'sunny'}.png`
 const cityLabel = computed(() => {
   if (citySource.value === 'loading') return '定位中…'
   const name = city.value.short || city.value.name || ''
@@ -135,7 +135,7 @@ const cityLabel = computed(() => {
 
 const hourlyPreview = computed(() => hourly.value.slice(0, 8))
 const dailyPreview = computed(() =>
-  daily.value.slice(0, 7).map((d, i) => ({ ...d, isToday: i === 0 }))
+  daily.value.slice(0, 7).map((d: any, i: any) => ({ ...d, isToday: i === 0 }))
 )
 
 const heroIcon = computed(() => {
@@ -171,7 +171,7 @@ async function load() {
     daily.value = data.daily
     airQuality.value = data.airQuality
     tips.value = data.tips
-  } catch (e) {
+  } catch (e: any) {
     if (id !== loadId) return
     error.value = e && e.msg ? e.msg : '加载失败，请稍后重试'
   }

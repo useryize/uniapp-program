@@ -104,7 +104,7 @@ async function load() {
     try {
       const d = await weatherApi.getWeather(c)
       c.brief = `${d.current.condition} ${d.current.tempText}`
-    } catch (e) {
+    } catch (e: any) {
       c.brief = ''
     }
   }))
@@ -112,7 +112,7 @@ async function load() {
   try {
     const d = await weatherApi.getWeather(cur)
     currentBrief.value = `${d.current.condition}　${d.current.tempText}　体感 ${d.current.feelsText}`
-  } catch (e) {
+  } catch (e: any) {
     currentBrief.value = ''
   }
 }
@@ -128,7 +128,7 @@ function onDone() {
 }
 
 /** 删除城市 */
-function onRemove(city) {
+function onRemove(city: any) {
   uni.showModal({
     title: '移除城市',
     content: `确定要移除「${city.name}」吗？`,
@@ -153,13 +153,13 @@ let dragStartY = 0
 let dragMoved = false
 
 /** 取触摸点相对列表顶部的偏移（px） */
-function touchOffsetY(e) {
+function touchOffsetY(e: any) {
   const t = e.touches && e.touches[0]
   if (!t) return 0
   return t.clientY
 }
 
-function onDragStart(i, e) {
+function onDragStart(i: any, e: any) {
   dragFrom = i
   dragIndex.value = i
   dragMoved = false
@@ -169,7 +169,7 @@ function onDragStart(i, e) {
   }
 }
 
-function onDragMove(e) {
+function onDragMove(e: any) {
   if (dragFrom < 0) return
   const y = touchOffsetY(e)
   if (!y) return

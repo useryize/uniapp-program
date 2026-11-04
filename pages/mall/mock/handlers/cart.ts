@@ -16,7 +16,7 @@ import { MALL_CONFIG } from '../../config'
  * @param {{id:string, goodsId:number, skuId:number, quantity:number, checked:boolean}} item
  * @returns {Object} 附加快照字段的购物车项
  */
-function attachGoods(item) {
+function attachGoods(item: any) {
   const goods = db.goods.find((g) => g.id === item.goodsId)
   const sku = db.skus.find((s) => s.id === item.skuId)
   return {
@@ -54,7 +54,7 @@ export default {
    * @returns {{cartCount: number}} 加购后购物车总件数（供 tabBar 角标）
    * @throws 40401 SKU 不存在 / 40002 商品已下架 / 40001 超出可售库存
    */
-  'cart.add'(params) {
+  'cart.add'(params: any) {
     const goodsId = Number(params.goodsId)
     const goods = db.goods.find((g) => g.id === goodsId)
     if (!goods || goods.status !== 1) throw { code: 40002, msg: '商品已下架' }
@@ -85,7 +85,7 @@ export default {
    * @param {{id:string, quantity:number}} params
    * @throws 40402 购物车项不存在 / 40001 超出可售库存
    */
-  'cart.updateQty'(params) {
+  'cart.updateQty'(params: any) {
     const item = db.cart.find((c) => c.id === params.id)
     if (!item) throw { code: 40402, msg: '购物车项不存在' }
 
@@ -106,7 +106,7 @@ export default {
    * @returns {Object}
    * @throws 40402 购物车项不存在 / 40401 SKU 不存在 / 40001 超出可售库存
    */
-  'cart.updateSku'(params) {
+  'cart.updateSku'(params: any) {
     const item = db.cart.find((c) => c.id === params.id)
     if (!item) throw { code: 40402, msg: '购物车项不存在' }
 
@@ -136,7 +136,7 @@ export default {
    * 单项勾选/取消勾选
    * @param {{id:string, checked:boolean}} params
    */
-  'cart.setChecked'(params) {
+  'cart.setChecked'(params: any) {
     const item = db.cart.find((c) => c.id === params.id)
     if (item) item.checked = !!params.checked
     return {}
@@ -146,7 +146,7 @@ export default {
    * 全选/取消全选
    * @param {{checked:boolean}} params
    */
-  'cart.checkAll'(params) {
+  'cart.checkAll'(params: any) {
     db.cart.forEach((c) => { c.checked = !!params.checked })
     return {}
   },
@@ -155,7 +155,7 @@ export default {
    * 删除购物车项（前端需二次确认后再调用，PRD §5.5）
    * @param {{ids:Array<string>}} params 购物车项 ID 数组
    */
-  'cart.remove'(params) {
+  'cart.remove'(params: any) {
     const ids = (params.ids || []).map(Number)
     db.cart = db.cart.filter((c) => !ids.includes(c.id))
     return {}

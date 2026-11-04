@@ -104,9 +104,9 @@ import type { City } from '../api/types'
 const header = getWeatherHeaderLayout()
 
 const keyword = ref('')
-const results = ref([])
-const hot = ref([])
-const history = ref([])
+const results = ref<any[]>([])
+const hot = ref<any[]>([])
+const history = ref<any[]>([])
 const currentCity = ref<Partial<City>>({})
 
 const HISTORY_KEY = 'wx_search_history'
@@ -117,19 +117,19 @@ function loadHistory() {
     const raw = uni.getStorageSync(HISTORY_KEY)
     const list = raw ? JSON.parse(raw) : []
     history.value = Array.isArray(list) ? list : []
-  } catch (e) {
+  } catch (e: any) {
     history.value = []
   }
 }
 
 /** 写入历史（去重，最多 10 条） */
-function pushHistory(city) {
+function pushHistory(city: any) {
   const list = history.value.filter((c) => c.adcode !== city.adcode)
   list.unshift(city)
   history.value = list.slice(0, 10)
   try {
     uni.setStorageSync(HISTORY_KEY, JSON.stringify(history.value))
-  } catch (e) {
+  } catch (e: any) {
     // 忽略存储失败
   }
 }
@@ -138,12 +138,12 @@ function clearHistory() {
   history.value = []
   try {
     uni.removeStorageSync(HISTORY_KEY)
-  } catch (e) {
+  } catch (e: any) {
     // 忽略
   }
 }
 
-function onInput(e) {
+function onInput(e: any) {
   const v = e.detail.value
   keyword.value = v
   results.value = v ? weatherApi.findCities(v, 30) : []
@@ -154,7 +154,7 @@ function clear() {
   results.value = []
 }
 
-function onSelect(city) {
+function onSelect(city: any) {
   pushHistory(city)
   // 加入已添加列表并设为当前城市
   weatherApi.addCity(city)

@@ -116,7 +116,7 @@ const DEBOUNCE_MS = 300
 
 /** 关键词与结果 */
 const keyword = ref('')
-const resultList = ref([])
+const resultList = ref<any[]>([])
 const total = ref(0)
 const page = ref(0)
 const hasMore = ref(true)
@@ -129,7 +129,7 @@ const history = ref(uni.getStorageSync(HISTORY_KEY) || [])
 /** 热词（mock 静态占位，真实环境服务端下发） */
 const hotWords = ['oversize 卫衣', 'STREET KING', '落肩连帽', '男女同款', '秋冬新品']
 
-let debounceTimer = null
+let debounceTimer: any = null
 
 /**
  * 输入防抖 300ms
@@ -153,7 +153,7 @@ function onSearch() {
  * 执行搜索
  * @param {number} next 页码
  */
-async function doSearch(next) {
+async function doSearch(next: any) {
   if (loading.value) return
   loading.value = true
   searched.value = true
@@ -163,7 +163,7 @@ async function doSearch(next) {
     total.value = data.total
     page.value = next
     hasMore.value = data.hasMore
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '搜索失败', icon: 'none' })
   } finally {
     loading.value = false
@@ -172,7 +172,7 @@ async function doSearch(next) {
 }
 
 /** 点击历史/热词 */
-function onHistoryTap(word) {
+function onHistoryTap(word: any) {
   keyword.value = word
   onSearch()
 }
@@ -189,8 +189,8 @@ function clearKeyword() {
 /**
  * 保存搜索历史（上限 10 条，去重后最新的在前）
  */
-function saveHistory(word) {
-  const next = [word, ...history.value.filter((w) => w !== word)].slice(0, HISTORY_MAX)
+function saveHistory(word: any) {
+  const next = [word, ...history.value.filter((w: any) => w !== word)].slice(0, HISTORY_MAX)
   history.value = next
   uni.setStorageSync(HISTORY_KEY, next)
 }
@@ -201,7 +201,7 @@ function onClearHistory() {
   uni.removeStorageSync(HISTORY_KEY)
 }
 
-function goDetail(goods) {
+function goDetail(goods: any) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${goods.id}` })
 }
 

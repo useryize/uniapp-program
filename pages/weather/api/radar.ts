@@ -45,7 +45,7 @@ export async function fetchRadarFrames() {
  * @param {number} [size=256] 瓦片尺寸
  * @returns {string}
  */
-export function tileUrl(host, path, lng, lat, zoom, size = 256) {
+export function tileUrl(host: any, path: any, lng: any, lat: any, zoom: any, size = 256) {
   const n = Math.pow(2, zoom)
   const x = Math.floor(((lng + 180) / 360) * n)
   const latRad = (lat * Math.PI) / 180
@@ -65,7 +65,7 @@ export function tileUrl(host, path, lng, lat, zoom, size = 256) {
  * @param {number} [radius=2] 半径（覆盖 2r+1 见方）
  * @returns {Array<{url:string, left:number, top:number}>} left/top 为相对中心的像素偏移
  */
-export function tileCluster(host, path, lng, lat, zoom, radius = 2) {
+export function tileCluster(host: any, path: any, lng: any, lat: any, zoom: any, radius = 2) {
   const size = 256
   const n = Math.pow(2, zoom)
   const cx = Math.floor(((lng + 180) / 360) * n)
@@ -97,7 +97,7 @@ export function tileCluster(host, path, lng, lat, zoom, radius = 2) {
  * @param {Object} radar fetchRadarFrames 的结果
  * @returns {boolean}
  */
-export function hasForecast(radar) {
+export function hasForecast(radar: any) {
   return !!(radar && radar.frames && radar.frames.length > 0)
 }
 
@@ -109,7 +109,7 @@ export async function probeRadar() {
   try {
     const data = await get(MANIFEST, { timeout: 8000, retries: 0 })
     return !!(data && data.host)
-  } catch (e) {
+  } catch (e: any) {
     return false
   }
 }

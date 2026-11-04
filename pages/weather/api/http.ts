@@ -20,7 +20,7 @@ type WeatherRequestError = Error & { code?: number; msg?: string }
  * @returns {Promise<any>} 解析后的 JSON
  * @throws {Error} 携带 code / msg
  */
-export function get(url, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
+export function get(url: any, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
   return new Promise<any>((resolve, reject) => {
     let attempt = 0
 
@@ -68,7 +68,7 @@ export function get(url, { timeout = DEFAULT_TIMEOUT, retries = 1 } = {}) {
  * @param {string} key 缓存键
  * @returns {any|null} 未命中返回 null
  */
-export function cacheGet(key) {
+export function cacheGet(key: any) {
   try {
     const raw = uni.getStorageSync(key)
     if (!raw) return null
@@ -79,7 +79,7 @@ export function cacheGet(key) {
       return null
     }
     return item.d
-  } catch (e) {
+  } catch (e: any) {
     return null
   }
 }
@@ -90,10 +90,10 @@ export function cacheGet(key) {
  * @param {any} data 数据
  * @param {number} ttl 有效期毫秒
  */
-export function cacheSet(key, data, ttl) {
+export function cacheSet(key: any, data: any, ttl: any) {
   try {
     uni.setStorageSync(key, JSON.stringify({ t: Date.now(), ttl, d: data }))
-  } catch (e) {
+  } catch (e: any) {
     // 存储失败不阻断主流程
   }
 }
@@ -106,7 +106,7 @@ export function cacheSet(key, data, ttl) {
  * @param {Object} [options] get() 的选项
  * @returns {Promise<any>}
  */
-export async function getCached(url, cacheKey, ttl, options = {}) {
+export async function getCached(url: any, cacheKey: any, ttl: any, options = {}) {
   const hit = cacheGet(cacheKey)
   if (hit !== null) return hit
   const data = await get(url, options)

@@ -10,7 +10,7 @@
 import { db, nextId } from '../db'
 
 /** 地址字段校验：新增/编辑共用 */
-function validate(addr) {
+function validate(addr: any) {
   if (!addr.receiver || !String(addr.receiver).trim()) throw { code: 40010, msg: '请填写收货人' }
   if (!/^1\d{10}$/.test(String(addr.phone || ''))) throw { code: 40010, msg: '手机号格式不正确' }
   if (!addr.region || !addr.detail) throw { code: 40010, msg: '请填写完整地址' }
@@ -31,7 +31,7 @@ export default {
    * @returns {{id: string}} 地址 ID（新增时返回新 ID）
    * @throws 40010 字段校验失败
    */
-  'address.save'(params) {
+  'address.save'(params: any) {
     validate(params)
 
     if (params.id) {
@@ -53,7 +53,7 @@ export default {
    * @param {{id:string}} params
    * @throws 40404 地址不存在
    */
-  'address.remove'(params) {
+  'address.remove'(params: any) {
     const before = db.addresses.length
     db.addresses = db.addresses.filter((a) => a.id !== params.id)
     if (db.addresses.length === before) throw { code: 40404, msg: '地址不存在' }
@@ -64,7 +64,7 @@ export default {
    * 设为默认地址
    * @param {{id:string}} params
    */
-  'address.setDefault'(params) {
+  'address.setDefault'(params: any) {
     const target = db.addresses.find((a) => a.id === params.id)
     if (!target) throw { code: 40404, msg: '地址不存在' }
     db.addresses.forEach((a) => { a.isDefault = a.id === params.id })

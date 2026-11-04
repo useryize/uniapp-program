@@ -4,19 +4,19 @@
  */
 
 /** 分 -> 元字符串：1250 -> '12.50' */
-export function fen2yuan(fen) {
+export function fen2yuan(fen: any) {
   const n = Number(fen || 0)
   return (n / 100).toFixed(2)
 }
 
 /** 手机号脱敏：13812348000 -> 138****8000 */
-export function maskedPhone(phone) {
+export function maskedPhone(phone: any) {
   if (!phone || phone.length < 7) return phone || ''
   return phone.slice(0, 3) + '****' + phone.slice(-4)
 }
 
 /** 订单状态 -> 中文文案（对齐 PRD §6.2 状态机） */
-export const ORDER_STATUS_TEXT = {
+export const ORDER_STATUS_TEXT: Record<string, string> = {
   UNPAID: '待付款',
   PAID: '待发货',
   SHIPPED: '待收货',
@@ -24,7 +24,7 @@ export const ORDER_STATUS_TEXT = {
   CANCELED: '已取消'
 }
 
-export function orderStatusText(status) {
+export function orderStatusText(status: any) {
   return ORDER_STATUS_TEXT[status] || status
 }
 
@@ -33,9 +33,9 @@ export function orderStatusText(status) {
  * @param {number|null} ts 毫秒时间戳，空值返回 ''
  * @returns {string}
  */
-export function formatTime(ts) {
+export function formatTime(ts: any) {
   if (!ts) return ''
   const d = new Date(ts)
-  const p = (n) => String(n).padStart(2, '0')
+  const p = (n: any) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
 }

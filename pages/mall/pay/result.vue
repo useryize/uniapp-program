@@ -87,7 +87,7 @@ import { orderApi } from '../api/index'
 import { fen2yuan, formatTime } from '../utils/format'
 
 /** 订单数据（以服务端状态为准渲染页面形态） */
-const order = ref(null)
+const order = ref<any>(null)
 /** 页面三态：pending / success / error */
 const viewState = ref('pending')
 /** 异常态文案（超时竞态走固定文案） */
@@ -109,7 +109,7 @@ const payTimeText = computed(() => (order.value && order.value.payTime ? formatT
  * 状态映射（PRD §6.2 状态机）：UNPAID→待支付；PAID/SHIPPED/FINISHED→成功；CANCELED→异常
  */
 onLoad(async (options) => {
-  orderNo = options.orderNo || ''
+  orderNo = options?.orderNo || ''
   await loadOrder()
 })
 
@@ -123,7 +123,7 @@ async function loadOrder() {
       viewState.value = 'error'
       errorTip.value = '订单已关闭'
     } else viewState.value = 'success'
-  } catch (e) {
+  } catch (e: any) {
     viewState.value = 'error'
     errorTip.value = e.msg || '订单加载失败'
   }
@@ -140,7 +140,7 @@ async function onMockPay() {
   try {
     await orderApi.mockPay({ orderNo })
     await loadOrder()
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 40006) {
       viewState.value = 'error'
       errorTip.value = '支付金额将自动原路退回\n如已完成扣款，1-3 个工作日到账'

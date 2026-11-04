@@ -31,11 +31,12 @@
 <script setup lang="ts">
 import { onReachBottom, onLoad, onPullDownRefresh } from "@dcloudio/uni-app";
 import { request } from "@/utils/request";
+import type { PexelsPhoto } from "@/utils/request";
 import WallpaperTabbar from "../components/wallpaper-tabbar.vue";
 import { onMounted, ref, computed } from "vue";
 
 // 状态管理
-const findList = ref([]);
+const findList = ref<PexelsPhoto[]>([]);
 const loading = ref(false);
 const page = ref(1);
 const loadedImages = ref(new Set());
@@ -45,7 +46,7 @@ const loadedImages = ref(new Set());
  * @returns {Array} 包含三列图片数据的数组
  */
 const columns = computed(() => {
-  const cols = [[], [], []];
+  const cols: PexelsPhoto[][] = [[], [], []];
   findList.value.forEach((item, index) => {
     cols[index % 3].push(item);
   });
@@ -56,7 +57,7 @@ const columns = computed(() => {
  * 初始化数据
  * 获取图片列表并更新状态
  */
-const init = async (type) => {
+const init = async (type: boolean) => {
   try {
     loading.value = true;
     const res = await request({
@@ -83,7 +84,7 @@ const init = async (type) => {
  * 预览图片
  * @param {Object} item 当前图片数据
  */
-const previewImage = (item) => {
+const previewImage = (item: PexelsPhoto) => {
   const urls = findList.value.map((photo) => photo.src.large);
   const currentIndex = findList.value.findIndex((photo) => photo.id === item.id);
   uni.previewImage({
@@ -97,7 +98,7 @@ const previewImage = (item) => {
  * @param {number} index 图片在当前列的索引
  * @param {number} columnIndex 列索引
  */
-const onImageLoad = (index, columnIndex) => {
+const onImageLoad = (index: number, columnIndex: number) => {
   loadedImages.value.add(`${columnIndex}-${index}`);
   console.log(`Image loaded in column ${columnIndex} at index ${index}`);
 };

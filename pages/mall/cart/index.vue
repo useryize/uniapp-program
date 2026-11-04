@@ -152,7 +152,7 @@ import MallTabbar from '../components/mall-tabbar.vue'
 import { MALL_CONFIG } from '../config'
 
 /** 购物车列表（服务端返回，含失效标记） */
-const cartList = ref([])
+const cartList = ref<any[]>([])
 /** 已选件数与合计（均为服务端计算口径，PRD §③） */
 const checkedCount = ref(0)
 const checkedAmount = ref(0)
@@ -161,9 +161,9 @@ const loading = ref(false)
 /* ---- 改规格面板状态 ---- */
 const specPopupShow = ref(false)
 /** 正在改规格的购物车项 */
-const specItem = ref(null)
+const specItem = ref<any>(null)
 /** 该项所属商品的完整信息（含 colors/sizes/skuList） */
-const specGoods = ref(null)
+const specGoods = ref<any>(null)
 const specColorId = ref(0)
 const specSize = ref('')
 const specQty = ref(1)
@@ -194,7 +194,7 @@ const shipTip = computed(() => {
 const specMaxStock = computed(() => {
   if (!specGoods.value) return 1
   const sku = (specGoods.value.skuList || []).find(
-    (s) => s.colorId === specColorId.value && s.size === specSize.value
+    (s: any) => s.colorId === specColorId.value && s.size === specSize.value
   )
   return sku ? sku.stock : 1
 })
@@ -212,7 +212,7 @@ async function loadCart() {
     cartList.value = data.list
     checkedCount.value = data.checkedCount
     checkedAmount.value = data.checkedAmount
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '购物车加载失败', icon: 'none' })
   } finally {
     loading.value = false
@@ -226,11 +226,11 @@ onShow(() => {
 /**
  * 勾选/取消单项
  */
-async function onToggle(item) {
+async function onToggle(item: any) {
   try {
     await cartApi.setChecked({ id: item.id, checked: !item.checked })
     await loadCart()
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
   }
 }
@@ -240,7 +240,7 @@ async function onCheckAll() {
   try {
     await cartApi.checkAll({ checked: !isAllChecked.value })
     await loadCart()
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
   }
 }
@@ -250,11 +250,11 @@ async function onCheckAll() {
  * @param {Object} item 购物车项
  * @param {number} v 目标数量
  */
-async function onQty(item, v) {
+async function onQty(item: any, v: any) {
   try {
     await cartApi.updateQty({ id: item.id, quantity: v })
     await loadCart()
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '修改失败', icon: 'none' })
     await loadCart() // 回滚到服务端口径
   }
@@ -263,7 +263,7 @@ async function onQty(item, v) {
 /**
  * 删除（二次确认后调用，PRD §5.5）
  */
-function onRemove(item) {
+function onRemove(item: any) {
   uni.showModal({
     title: '提示',
     content: '确定删除该商品吗？',
@@ -272,7 +272,7 @@ function onRemove(item) {
       try {
         await cartApi.remove({ ids: [item.id] })
         await loadCart()
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '删除失败', icon: 'none' })
       }
     }
@@ -290,7 +290,7 @@ function onClearInvalid() {
       try {
         await cartApi.remove({ ids })
         await loadCart()
-      } catch (e) {
+      } catch (e: any) {
         uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
       }
     }
@@ -301,18 +301,18 @@ function onClearInvalid() {
  * 打开改规格面板：拉该商品详情以获得完整的颜色/尺码维度
  * @param {Object} item 购物车项
  */
-async function openSpec(item) {
+async function openSpec(item: any) {
   try {
     const g = await goodsApi.detail({ id: item.goodsId })
     specItem.value = item
     specGoods.value = g
     // 回显当前已选规格
-    const cur = (g.skuList || []).find((s) => s.id === item.skuId)
+    const cur = (g.skuList || []).find((s: any) => s.id === item.skuId)
     specColorId.value = cur ? cur.colorId : g.colors[0].id
     specSize.value = cur ? cur.size : ''
     specQty.value = item.quantity
     specPopupShow.value = true
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '规格加载失败', icon: 'none' })
   }
 }
@@ -324,14 +324,14 @@ function closeSpec() {
 }
 
 /** 规格面板内的选择变化 */
-function onSpecChange(payload) {
+function onSpecChange(payload: any) {
   specColorId.value = payload.colorId
   specSize.value = payload.size
   specQty.value = 1
 }
 
 /** 规格面板内的数量变化 */
-function onSpecQty(v) {
+function onSpecQty(v: any) {
   specQty.value = v
 }
 
@@ -339,7 +339,7 @@ function onSpecQty(v) {
 async function onSaveSpec() {
   if (!canSaveSpec.value) return
   const sku = (specGoods.value.skuList || []).find(
-    (s) => s.colorId === specColorId.value && s.size === specSize.value
+    (s: any) => s.colorId === specColorId.value && s.size === specSize.value
   )
   if (!sku) {
     uni.showToast({ title: '请选择规格', icon: 'none' })
@@ -351,7 +351,7 @@ async function onSaveSpec() {
     closeSpec()
     await loadCart()
     uni.showToast({ title: '规格已修改', icon: 'success' })
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '修改失败', icon: 'none' })
   } finally {
     specSaving.value = false

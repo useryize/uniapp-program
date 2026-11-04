@@ -4,7 +4,7 @@
     <view class="text">More+</view>
   </view>
   <view class="specBox">
-    <view class="item" v-for="(item, index) in list" :key="item">
+    <view class="item" v-for="(item, index) in list" :key="item.id">
       <view class="image-container">
         <image 
           :src="item?.src?.landscape" 
@@ -26,10 +26,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { request } from "@/utils/request";
-const list = ref([]);
+import type { PexelsPhoto } from "@/utils/request";
+const list = ref<PexelsPhoto[]>([]);
 const loadedImages = ref(new Set());
 
-const onImageLoad = (index) => {
+const onImageLoad = (index: number) => {
   loadedImages.value.add(index);
 };
 

@@ -29,16 +29,16 @@ function getCitySource() {
     if (source) return source
     // 升级前保存的城市来自手动选择，继续尊重原来的选择。
     return uni.getStorageSync(STORAGE_CURRENT) ? 'manual' : 'auto'
-  } catch (e) {
+  } catch (e: any) {
     return 'auto'
   }
 }
 
-function saveCity(city, source) {
+function saveCity(city: any, source: any) {
   try {
     uni.setStorageSync(STORAGE_CURRENT, JSON.stringify(city))
     uni.setStorageSync(STORAGE_CITY_SOURCE, source)
-  } catch (e) {
+  } catch (e: any) {
     // 存储失败时本次展示仍使用已定位的城市
   }
 }
@@ -61,7 +61,7 @@ export async function getHomeCity({ forceLocation = false } = {}) {
       saveCity(located, 'auto')
       return { city: located, source: 'location' }
     }
-  } catch (e) {
+  } catch (e: any) {
     // 定位被拒绝或暂时不可用时使用上次城市
   }
 
@@ -79,7 +79,7 @@ export function getSavedCities() {
     if (!raw) return []
     const list = typeof raw === 'string' ? JSON.parse(raw) : raw
     return Array.isArray(list) ? list : []
-  } catch (e) {
+  } catch (e: any) {
     return []
   }
 }
@@ -88,10 +88,10 @@ export function getSavedCities() {
  * 保存已添加城市列表
  * @param {Array<Object>} list 城市列表
  */
-export function saveSavedCities(list) {
+export function saveSavedCities(list: any) {
   try {
     uni.setStorageSync(STORAGE_CITIES, JSON.stringify(list || []))
-  } catch (e) {
+  } catch (e: any) {
     // 忽略存储失败
   }
 }
@@ -107,7 +107,7 @@ export function getCurrentCity() {
       const c = typeof raw === 'string' ? JSON.parse(raw) : raw
       if (c && c.lat != null) return c
     }
-  } catch (e) {
+  } catch (e: any) {
     // 回落到默认城市
   }
   const fallback = getCityByAdcode('330100')
@@ -127,7 +127,7 @@ export function getCurrentCity() {
  * 设置当前城市
  * @param {Object} city 城市对象
  */
-export function setCurrentCity(city) {
+export function setCurrentCity(city: any) {
   saveCity(city, 'manual')
 }
 
@@ -136,7 +136,7 @@ export function setCurrentCity(city) {
  * @param {Object} city 城市对象
  * @returns {Array<Object>} 更新后的列表
  */
-export function addCity(city) {
+export function addCity(city: any) {
   const list = getSavedCities()
   // adcode 统一按字符串比较，兼容历史存储的数字类型
   if (!list.some((c) => String(c.adcode) === String(city.adcode))) {
@@ -152,7 +152,7 @@ export function addCity(city) {
  * @param {string|number} adcode 行政区划代码
  * @returns {Array<Object>} 更新后的列表
  */
-export function removeCity(adcode) {
+export function removeCity(adcode: any) {
   const list = getSavedCities().filter((c) => String(c.adcode) !== String(adcode))
   saveSavedCities(list)
   return list
@@ -164,7 +164,7 @@ export function removeCity(adcode) {
  * @param {number} to 目标下标
  * @returns {Array<Object>} 更新后的列表
  */
-export function moveCity(from, to) {
+export function moveCity(from: any, to: any) {
   const list = getSavedCities()
   if (from < 0 || from >= list.length) return list
   const [item] = list.splice(from, 1)
@@ -178,7 +178,7 @@ export function moveCity(from, to) {
  * @param {Object} city 城市对象
  * @returns {Promise<Object>} 设计稿约定的数据结构
  */
-export function getWeather(city) {
+export function getWeather(city: any) {
   return fetchWeather(city)
 }
 
@@ -200,14 +200,14 @@ export function getRadarFrames() {
  * @param {number} [radius] 半径
  * @returns {Array<{url:string,left:number,top:number}>}
  */
-export function getRadarTiles(host, path, lng, lat, zoom, radius) {
+export function getRadarTiles(host: any, path: any, lng: any, lat: any, zoom: any, radius: any) {
   return tileCluster(host, path, lng, lat, zoom, radius)
 }
 
 /**
  * 构造单张雷达瓦片 URL
  */
-export function getRadarTileUrl(host, path, lng, lat, zoom) {
+export function getRadarTileUrl(host: any, path: any, lng: any, lat: any, zoom: any) {
   return tileUrl(host, path, lng, lat, zoom)
 }
 
@@ -225,7 +225,7 @@ export function checkRadar() {
  * @param {number} [limit] 条数
  * @returns {Array<Object>}
  */
-export function findCities(keyword, limit) {
+export function findCities(keyword: any, limit: any) {
   return searchCities(keyword, limit)
 }
 
@@ -234,7 +234,7 @@ export function findCities(keyword, limit) {
  * @param {number} [limit] 条数
  * @returns {Array<Object>}
  */
-export function hotCities(limit) {
+export function hotCities(limit: any) {
   return getHotCities(limit)
 }
 
@@ -243,7 +243,7 @@ export function hotCities(limit) {
  * @param {string|number} adcode 代码
  * @returns {Object|null}
  */
-export function cityByAdcode(adcode) {
+export function cityByAdcode(adcode: any) {
   return getCityByAdcode(adcode)
 }
 
@@ -252,7 +252,7 @@ export function cityByAdcode(adcode) {
  * @param {string} province 省名
  * @returns {Array<Object>}
  */
-export function citiesOfProvince(province) {
+export function citiesOfProvince(province: any) {
   return getCitiesByProvince(province)
 }
 

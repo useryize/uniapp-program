@@ -12,7 +12,7 @@ import { db, CATEGORIES } from '../db'
  * @param {number} categoryId 类目 id
  * @returns {Array<number>} 类目 id 集合
  */
-function categoryScope(categoryId) {
+function categoryScope(categoryId: any) {
   const scope = [Number(categoryId)]
   const parent = CATEGORIES.find((c) => c.id === Number(categoryId))
   if (parent && parent.children) {
@@ -31,7 +31,7 @@ export default {
    * @returns {{list: Array<Object>, total: number, hasMore: boolean}}
    *   list 每项附带 minPrice（该商品最低 SKU 价，服务端计算，前端不可传价）
    */
-  'goods.list'(params) {
+  'goods.list'(params: any) {
     const { page = 1, pageSize = 10, categoryId, keyword } = params
 
     // 仅上架商品对用户可见；下架商品从公开入口移除（PRD §①规则 4）
@@ -67,7 +67,7 @@ export default {
    * @returns {Object} 商品全量字段 + skuList
    * @throws {code:40401, msg:'商品不存在或已下架'}
    */
-  'goods.detail'(params) {
+  'goods.detail'(params: any) {
     let goods
     if (params.skuId) {
       // 直购场景：由 SKU 反查所属商品

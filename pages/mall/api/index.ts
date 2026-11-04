@@ -36,10 +36,10 @@ function call(channel: string, url: string, params: Record<string, unknown> = {}
 /** 商品域（PRD 板块①②） */
 export const goodsApi = {
   /** 商品分页列表 @param {{page?:number, pageSize?:number, categoryId?:number, keyword?:string}} params */
-  list: (params) => call('goods.list', '/goods/list', params),
+  list: (params: any) => call('goods.list', '/goods/list', params),
 
   /** 商品详情（含 SKU 列表）@param {{id:number}} params */
-  detail: (params) => call('goods.detail', '/goods/detail', params),
+  detail: (params: any) => call('goods.detail', '/goods/detail', params),
 
   /** 类目树（分类页左侧栏 + 右侧过滤） */
   categories: () => call('goods.categories', '/goods/categories', {})
@@ -54,19 +54,19 @@ export const sizeApi = {
    * 尺码推荐 @param {{height:number, weight:number, fit?:'Y'|'A'|'B'}} params
    * @returns {Promise<{size:string, reason:string, chart:Object, range:string}>}
    */
-  recommend: (params) => call('size.recommend', '/size/recommend', params, 'POST'),
+  recommend: (params: any) => call('size.recommend', '/size/recommend', params, 'POST'),
 
   /**
    * 尺码表 @param {{goodsId?:number, height?:number, weight?:number}} params
    * @returns {Promise<{unit:string, rows:Array<Object>, recommendSize:string}>}
    */
-  chart: (params) => call('size.chart', '/size/chart', params),
+  chart: (params: any) => call('size.chart', '/size/chart', params),
 
   /** 读取用户尺码档案 */
   profile: () => call('size.profile.get', '/size/profile', {}),
 
   /** 保存用户尺码档案 @param {{height:number, weight:number, fit?:string}} params */
-  saveProfile: (params) => call('size.profile.save', '/size/profile', params, 'POST')
+  saveProfile: (params: any) => call('size.profile.save', '/size/profile', params, 'POST')
 }
 
 /**
@@ -74,10 +74,10 @@ export const sizeApi = {
  */
 export const dropApi = {
   /** 发售列表 @param {{type?:'soon'|'live'|'soldout'}} params */
-  list: (params) => call('drop.list', '/drop/list', params),
+  list: (params: any) => call('drop.list', '/drop/list', params),
 
   /** 订阅开售 / 到货提醒 @param {{goodsId:number}} params */
-  subscribe: (params) => call('drop.subscribe', '/drop/subscribe', params, 'POST')
+  subscribe: (params: any) => call('drop.subscribe', '/drop/subscribe', params, 'POST')
 }
 
 /** 购物车域（PRD 板块③） */
@@ -86,22 +86,22 @@ export const cartApi = {
   list: () => call('cart.list', '/cart/list', {}),
 
   /** 加购：{ goodsId, skuId?, quantity? }，skuId 缺省自动选有库存 SKU */
-  add: (params) => call('cart.add', '/cart/add', params, 'POST'),
+  add: (params: any) => call('cart.add', '/cart/add', params, 'POST'),
 
   /** 改数量：{ id, quantity }，上限为可售库存 */
-  updateQty: (params) => call('cart.updateQty', '/cart/qty', params, 'POST'),
+  updateQty: (params: any) => call('cart.updateQty', '/cart/qty', params, 'POST'),
 
   /** 改规格（换 SKU）：{ id, skuId, quantity? }，服装电商购物车内改尺码/颜色 */
-  updateSku: (params) => call('cart.updateSku', '/cart/sku', params, 'POST'),
+  updateSku: (params: any) => call('cart.updateSku', '/cart/sku', params, 'POST'),
 
   /** 单项勾选：{ id, checked } */
-  setChecked: (params) => call('cart.setChecked', '/cart/checked', params, 'POST'),
+  setChecked: (params: any) => call('cart.setChecked', '/cart/checked', params, 'POST'),
 
   /** 全选：{ checked } */
-  checkAll: (params) => call('cart.checkAll', '/cart/check-all', params, 'POST'),
+  checkAll: (params: any) => call('cart.checkAll', '/cart/check-all', params, 'POST'),
 
   /** 删除：{ ids: string[] }，前端需二次确认后调用 */
-  remove: (params) => call('cart.remove', '/cart/remove', params, 'POST')
+  remove: (params: any) => call('cart.remove', '/cart/remove', params, 'POST')
 }
 
 /** 订单域（PRD 板块④⑥） */
@@ -111,32 +111,32 @@ export const orderApi = {
    * 金额由服务端计算，入参中任何金额字段都会被忽略
    * @returns {{orderNo:string, payAmount:number, payExpireAt:number}}
    */
-  create: (params) => call('order.create', '/order/create', params, 'POST'),
+  create: (params: any) => call('order.create', '/order/create', params, 'POST'),
 
   /** 订单列表：{ status:'ALL'|'UNPAID'|'PAID'|'SHIPPED'|'FINISHED'|'CANCELED', page? } */
-  list: (params) => call('order.list', '/order/list', params),
+  list: (params: any) => call('order.list', '/order/list', params),
 
   /** 订单详情：{ orderNo } */
-  detail: (params) => call('order.detail', '/order/detail', params),
+  detail: (params: any) => call('order.detail', '/order/detail', params),
 
   /** 取消订单（仅待付款）：{ orderNo }，取消即释放锁定库存 */
-  cancel: (params) => call('order.cancel', '/order/cancel', params, 'POST'),
+  cancel: (params: any) => call('order.cancel', '/order/cancel', params, 'POST'),
 
   /**
    * 【mock 专用】模拟微信支付回调：{ orderNo }
    * USE_MOCK=false 后此通道废弃——真实支付走 uni.requestPayment，
    * 支付结果以服务端回调为唯一依据（PRD §7.3）
    */
-  mockPay: (params) => call('order.mockPay', '/order/mock-pay', params, 'POST'),
+  mockPay: (params: any) => call('order.mockPay', '/order/mock-pay', params, 'POST'),
 
   /**
    * 【mock 专用】模拟后台发货：{ orderNo }（PAID -> SHIPPED，含模拟物流单号）
    * 真实环境由管理后台发货接口替代（PRD 板块⑨）
    */
-  mockShip: (params) => call('order.mockShip', '/order/mock-ship', params, 'POST'),
+  mockShip: (params: any) => call('order.mockShip', '/order/mock-ship', params, 'POST'),
 
   /** 确认收货：{ orderNo }（SHIPPED -> FINISHED 终态，PRD §6.2） */
-  confirm: (params) => call('order.confirm', '/order/confirm', params, 'POST')
+  confirm: (params: any) => call('order.confirm', '/order/confirm', params, 'POST')
 }
 
 /** 收货地址域（PRD 板块⑦） */
@@ -145,11 +145,11 @@ export const addressApi = {
   list: () => call('address.list', '/address/list', {}),
 
   /** 新增/编辑：{ id?, receiver, phone, region, detail, isDefault? } */
-  save: (params) => call('address.save', '/address/save', params, 'POST'),
+  save: (params: any) => call('address.save', '/address/save', params, 'POST'),
 
   /** 删除：{ id } */
-  remove: (params) => call('address.remove', '/address/remove', params, 'POST'),
+  remove: (params: any) => call('address.remove', '/address/remove', params, 'POST'),
 
   /** 设默认：{ id } */
-  setDefault: (params) => call('address.setDefault', '/address/set-default', params, 'POST')
+  setDefault: (params: any) => call('address.setDefault', '/address/set-default', params, 'POST')
 }

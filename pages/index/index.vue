@@ -186,7 +186,7 @@ const APPS = [
 
 const apps = APPS
 
-const onEnter = (app) => {
+const onEnter = (app: typeof APPS[number]) => {
   uni.navigateTo({ url: app.url })
 }
 

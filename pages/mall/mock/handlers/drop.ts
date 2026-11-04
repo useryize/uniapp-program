@@ -18,7 +18,7 @@ export default {
    * @param {{type?:'soon'|'live'|'soldout'}} params 状态筛选，缺省返回全部
    * @returns {Array<Object>} 发售项（附商品封面、标题、价格、倒计时基准）
    */
-  'drop.list'(params) {
+  'drop.list'(params: any) {
     let list = db.drops
     if (params.type) list = list.filter((d) => d.type === params.type)
 
@@ -48,7 +48,7 @@ export default {
    * @param {{goodsId:number, type?:string}} params
    * @returns {{subscribed:boolean, goodsId:number}}
    */
-  'drop.subscribe'(params) {
+  'drop.subscribe'(params: any) {
     const goodsId = Number(params.goodsId)
     if (!db.goods.find((g) => g.id === goodsId)) throw { code: 40401, msg: '商品不存在' }
     return { subscribed: true, goodsId }

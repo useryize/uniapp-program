@@ -42,7 +42,7 @@ let seq = 1000
  * @param {string} prefix - 前缀：'NO'=订单号，'c'=购物车项，'a'=地址
  * @returns {string} 如 'NO1001'
  */
-export function nextId(prefix) {
+export function nextId(prefix: any) {
   return `${prefix}${++seq}`
 }
 
@@ -221,10 +221,10 @@ const goodsSeed = [
  * @param {Object} goods 商品 SPU
  * @returns {Array<Object>} SKU 列表
  */
-function buildSkus(goods) {
-  const list = []
-  goods.colors.forEach((c, ci) => {
-    goods.sizes.forEach((size, si) => {
+function buildSkus(goods: any) {
+  const list: any = []
+  goods.colors.forEach((c: any, ci: any) => {
+    goods.sizes.forEach((size: any, si: any) => {
       const seed = (goods.id * 97 + c.id * 13 + si * 7) % 20
       const isTailSize = si >= goods.sizes.length - 1
       const stock = isTailSize ? 0 : Math.max(3, seed)
@@ -255,9 +255,9 @@ export const db = {
   /** SKU：由 SPU × 颜色 × 尺码 派生 */
   skus: goodsSeed.flatMap(buildSkus),
 
-  cart: [],
+  cart: [] as Array<{ id: string; goodsId: number; skuId: number; quantity: number; checked: boolean }>,
 
-  orders: [],
+  orders: [] as any[],
 
   /** 预置地址（phone 按规范应密文存储，mock 阶段存明文+脱敏展示，见 PRD T5） */
   addresses: [

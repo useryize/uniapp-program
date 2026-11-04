@@ -83,10 +83,10 @@ import WeatherChart from '../components/weather-chart.vue'
 
 const header = getWeatherHeaderLayout()
 
-const daily = ref([])
+const daily = ref<any[]>([])
 const metric = ref('temp')
 
-const round = (v) => (v == null ? '--' : Math.round(v))
+const round = (v: any) => (v == null ? '--' : Math.round(v))
 
 const today = computed(() => daily.value[0] || null)
 
@@ -105,7 +105,7 @@ const lowPoints = computed(() =>
 const dayLength = computed(() => {
   const t = today.value
   if (!t || !t.sunrise || !t.sunset) return '—'
-  const toMin = (s) => {
+  const toMin = (s: any) => {
     const [h, m] = String(s).split(':').map(Number)
     return h * 60 + m
   }
@@ -119,7 +119,7 @@ onLoad(async () => {
     const city = weatherApi.getCurrentCity()
     const data = await weatherApi.getWeather(city)
     daily.value = data.daily
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 })

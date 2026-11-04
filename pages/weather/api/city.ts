@@ -8,8 +8,10 @@
  * 数据文件：data/cities.ts（城市静态库）
  */
 
-let CITIES = []
-let INDEX = null
+import type { City } from './types'
+
+let CITIES: City[] = []
+let INDEX: any = null
 
 /**
  * 城市数据（构建期由 scripts/ 生成，编译时内联进产物）
@@ -29,7 +31,7 @@ export function loadCities() {
     // 统一 adcode 为字符串 —— 数据源是数字，而存储/比较链路用字符串
     CITIES = raw.map((c) => ({ ...c, adcode: String(c.adcode) }))
     buildIndex()
-  } catch (e) {
+  } catch (e: any) {
     CITIES = []
   }
   return CITIES
@@ -54,16 +56,16 @@ function buildIndex() {
  * @param {number} [limit=20] 返回条数
  * @returns {Array<Object>} 匹配城市
  */
-export function searchCities(keyword, limit = 20) {
+export function searchCities(keyword: any, limit = 20) {
   loadCities()
   if (!keyword) return []
   const kw = String(keyword).trim().toLowerCase()
   if (!kw) return []
 
-  const result = []
+  const result: any = []
   const seen = new Set()
 
-  const push = (c) => {
+  const push = (c: any) => {
     if (!c || seen.has(c.adcode)) return
     seen.add(c.adcode)
     result.push(c)
@@ -80,8 +82,8 @@ export function searchCities(keyword, limit = 20) {
     if (
       c.short.startsWith(kw) ||
       c.name.startsWith(kw) ||
-      c.py.startsWith(kw) ||
-      c.pyFull.startsWith(kw)
+      (c.py || '').startsWith(kw) ||
+      (c.pyFull || '').startsWith(kw)
     ) {
       push(c)
     }
@@ -91,7 +93,7 @@ export function searchCities(keyword, limit = 20) {
   if (result.length < limit) {
     CITIES.forEach((c) => {
       if (result.length >= limit) return
-      if (c.short.includes(kw) || c.name.includes(kw) || c.pyFull.includes(kw)) {
+      if (c.short.includes(kw) || c.name.includes(kw) || (c.pyFull || '').includes(kw)) {
         push(c)
       }
     })
@@ -105,13 +107,13 @@ export function searchCities(keyword, limit = 20) {
  * @param {string|number} adcode 行政区划代码
  * @returns {Object|null}
  */
-export function getCityByAdcode(adcode) {
+export function getCityByAdcode(adcode: any) {
   loadCities()
   return CITIES.find((c) => String(c.adcode) === String(adcode)) || null
 }
 
 /** 用城市中心点匹配定位坐标；境外或距离城市过远时不猜测城市。 */
-export function getNearestCity(latitude, longitude) {
+export function getNearestCity(latitude: any, longitude: any) {
   loadCities()
   const lat = Number(latitude)
   const lng = Number(longitude)
@@ -156,7 +158,7 @@ const HOT_CODES = [
 export function getHotCities(limit = 12) {
   loadCities()
   // adcode 在数据源中为数字，此处统一转字符串比较
-  const list = HOT_CODES.map((code) =>
+  const list: any = HOT_CODES.map((code) =>
     CITIES.find((c) => String(c.adcode) === code)
   ).filter(Boolean)
   return list.slice(0, limit)
@@ -167,7 +169,7 @@ export function getHotCities(limit = 12) {
  * @param {string} province 省名
  * @returns {Array<Object>}
  */
-export function getCitiesByProvince(province) {
+export function getCitiesByProvince(province: any) {
   loadCities()
   return CITIES.filter((c) => c.province === province)
 }

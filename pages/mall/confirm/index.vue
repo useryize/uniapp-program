@@ -105,9 +105,9 @@ import { fen2yuan, maskedPhone } from '../utils/format'
 import { MALL_CONFIG } from '../config'
 
 /** 结算明细（展示用：skuId/quantity/title/spec/price/color/cover） */
-const items = ref([])
+const items = ref<any[]>([])
 /** 选中地址（默认地址，地址管理页后续交付） */
-const address = ref(null)
+const address = ref<any>(null)
 /** 订单备注 */
 const remark = ref('')
 /** 提交防重（PRD §7.4 幂等的前端配合项） */
@@ -115,7 +115,7 @@ const submitting = ref(false)
 /** 页面数据就绪标记 */
 const loaded = ref(false)
 /** 结算来源：cart=购物车 ids / buy=直购 */
-let source = { type: '', ids: [], skuId: 0, quantity: 1 }
+let source: { type: string; ids: string[]; skuId: number; quantity: number } = { type: '', ids: [], skuId: 0, quantity: 1 }
 
 /** 商品合计（服务端单价 × 数量派生，仅展示） */
 const goodsTotal = computed(() =>
@@ -132,21 +132,21 @@ const freightTip = computed(() => {
 /**
  * 页面加载：解析入口参数并装配数据
  */
-onLoad(async (options) => {
+onLoad(async (options = {}) => {
   try {
     if (options.ids) {
       // 入口 A：购物车去结算
       source = { type: 'cart', ids: options.ids.split(','), skuId: 0, quantity: 1 }
       const data = await cartApi.list()
       items.value = data.list
-        .filter((i) => source.ids.includes(i.id))
-        .map(({ skuId, goodsId, quantity, title, spec, price, color, cover }) =>
+        .filter((i: any) => source.ids.includes(i.id))
+        .map(({ skuId, goodsId, quantity, title, spec, price, color, cover }: any) =>
           ({ skuId, goodsId, quantity, title, spec, price, color, cover }))
     } else if (options.skuId) {
       // 入口 B：详情页立即购买（SKU 反查商品，仅展示；提交仍传 skuId+quantity）
       source = { type: 'buy', ids: [], skuId: Number(options.skuId), quantity: Number(options.quantity || 1) }
       const goods = await goodsApi.detail({ skuId: source.skuId })
-      const sku = goods.skuList.find((s) => s.id === source.skuId)
+      const sku = goods.skuList.find((s: any) => s.id === source.skuId)
       items.value = [{
         skuId: sku.id, goodsId: goods.id, quantity: source.quantity,
         title: goods.title, spec: sku.spec, price: sku.price, color: goods.color, cover: goods.cover
@@ -157,10 +157,10 @@ onLoad(async (options) => {
 
     // 默认地址（无默认取第一条）
     const addresses = await addressApi.list()
-    address.value = addresses.find((a) => a.isDefault) || addresses[0] || null
+    address.value = addresses.find((a: any) => a.isDefault) || addresses[0] || null
 
     loaded.value = true
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '页面加载失败', icon: 'none' })
     setTimeout(() => uni.navigateBack(), 1500)
   }
@@ -194,7 +194,7 @@ async function onSubmit() {
     uni.redirectTo({
       url: `/pages/mall/pay/result?orderNo=${result.orderNo}&from=create`
     })
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '提交失败', icon: 'none' })
   } finally {
     submitting.value = false

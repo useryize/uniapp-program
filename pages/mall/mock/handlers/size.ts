@@ -24,7 +24,7 @@ const FIT_OFFSET = { Y: -4, A: 0, B: 4 }
  * @param {number} height 身高 cm
  * @returns {Object|null} 命中的尺码行
  */
-function matchByHeight(rows, height) {
+function matchByHeight(rows: any, height: any) {
   let hit = null
   for (const row of rows) {
     if (height <= Number(row.height)) return row
@@ -41,7 +41,7 @@ function matchByHeight(rows, height) {
  * @returns {{size:string, reason:string, chart:Object, range:string}}
  * @throws 40008 身体数据不合法
  */
-function calcRecommend(height, weight, fit) {
+function calcRecommend(height: any, weight: any, fit: any) {
   if (!height || !weight || height < 100 || height > 220 || weight < 25 || weight > 200) {
     throw { code: 40008, msg: '请填写正确的身高体重' }
   }
@@ -54,8 +54,8 @@ function calcRecommend(height, weight, fit) {
 
   const reasons = [`身高 ${height}cm 落在 ${size} 码区间`]
   reasons.push(wInRange ? `体重 ${weight}kg 符合该码` : `体重 ${weight}kg 略偏${weight > wMax ? '大' : '小'}，建议参考胸围`)
-  if (FIT_OFFSET[fit]) {
-    reasons.push(FIT_OFFSET[fit] > 0 ? '偏胖体型已放宽 4cm 胸围' : '偏瘦体型已收紧 4cm 胸围')
+  if (FIT_OFFSET[fit as keyof typeof FIT_OFFSET]) {
+    reasons.push(FIT_OFFSET[fit as keyof typeof FIT_OFFSET] > 0 ? '偏胖体型已放宽 4cm 胸围' : '偏瘦体型已收紧 4cm 胸围')
   }
 
   return { size, reason: reasons.join('，'), chart, range: `${row.height}cm / ${row.weight}kg` }
@@ -68,7 +68,7 @@ export default {
    * @returns {{size:string, reason:string, chart:Object, range:string}}
    * @throws 40008 身体数据不合法
    */
-  'size.recommend'(params) {
+  'size.recommend'(params: any) {
     const fit = ['Y', 'A', 'B'].includes(params.fit) ? params.fit : 'A'
     return calcRecommend(Number(params.height), Number(params.weight), fit)
   },
@@ -78,7 +78,7 @@ export default {
    * @param {{goodsId?:number, height?:number, weight?:number, fit?:string}} params
    * @returns {{unit:string, rows:Array<Object>, recommendSize:string}}
    */
-  'size.chart'(params) {
+  'size.chart'(params: any) {
     const goods = params.goodsId ? db.goods.find((g) => g.id === Number(params.goodsId)) : db.goods[0]
     const chart = goods ? goods.sizeChart : db.goods[0].sizeChart
 
@@ -87,7 +87,7 @@ export default {
     if (params.height && params.weight) {
       try {
         recommendSize = calcRecommend(Number(params.height), Number(params.weight), params.fit || 'A').size
-      } catch (e) {
+      } catch (e: any) {
         recommendSize = ''
       }
     }
@@ -113,7 +113,7 @@ export default {
    * @returns {Object} 保存后的档案
    * @throws 40008 身体数据不合法
    */
-  'size.profile.save'(params) {
+  'size.profile.save'(params: any) {
     const height = Number(params.height)
     const weight = Number(params.weight)
     if (!height || !weight || height < 100 || height > 220 || weight < 25 || weight > 200) {

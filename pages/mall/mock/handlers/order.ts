@@ -22,8 +22,8 @@ import { MALL_CONFIG } from '../../config'
  * @returns {Array<Object>} 订单明细快照（含标题/规格/单价固化）
  * @throws 40401 SKU 不存在 / 40002 已下架 / 40001 库存不足
  */
-function buildOrderItems(items) {
-  return items.map(({ skuId, quantity }) => {
+function buildOrderItems(items: any) {
+  return items.map(({ skuId, quantity }: any) => {
     const sku = db.skus.find((s) => s.id === Number(skuId))
     if (!sku) throw { code: 40401, msg: 'SKU 不存在' }
 
@@ -59,7 +59,7 @@ function buildOrderItems(items) {
  * @param {number} totalAmount 商品合计（分）
  * @returns {number} 运费（分）
  */
-function calcFreight(totalAmount) {
+function calcFreight(totalAmount: any) {
   return totalAmount >= MALL_CONFIG.FREE_SHIPPING_THRESHOLD ? 0 : MALL_CONFIG.FREIGHT
 }
 
@@ -71,7 +71,7 @@ export default {
    * @returns {{orderNo: string, payAmount: number, payExpireAt: number}}
    * @throws 40003 结算商品为空 / 40004 未选地址 / 明细构建中的库存与下架错误
    */
-  'order.create'(params) {
+  'order.create'(params: any) {
     const items = params.items || []
     if (!items.length) throw { code: 40003, msg: '结算商品不能为空' }
 
@@ -81,7 +81,7 @@ export default {
     const orderItems = buildOrderItems(items)
 
     // 金额构成（PRD §9 设计要点 4）：商品小计 + 运费 - 优惠合计（V1 恒 0，结构必须预留）
-    const totalAmount = orderItems.reduce((n, i) => n + i.subtotal, 0)
+    const totalAmount = orderItems.reduce((n: any, i: any) => n + i.subtotal, 0)
     const freight = calcFreight(totalAmount)
     const discountAmount = 0
 
@@ -114,7 +114,7 @@ export default {
    *   status: 'ALL' 或 ORDER_STATUS 之一
    * @returns {{list: Array<Object>, hasMore: boolean}}
    */
-  'order.list'(params) {
+  'order.list'(params: any) {
     const { status = 'ALL', page = 1, pageSize = 10 } = params
     let list = db.orders
     if (status !== 'ALL') list = list.filter((o) => o.status === status)
@@ -128,7 +128,7 @@ export default {
    * @param {{orderNo:string}} params
    * @throws 40403 订单不存在
    */
-  'order.detail'(params) {
+  'order.detail'(params: any) {
     const order = db.orders.find((o) => o.orderNo === params.orderNo)
     if (!order) throw { code: 40403, msg: '订单不存在' }
     return order
@@ -140,13 +140,13 @@ export default {
    * @param {{orderNo:string}} params
    * @throws 40403 订单不存在 / 40005 当前状态不可取消
    */
-  'order.cancel'(params) {
+  'order.cancel'(params: any) {
     const order = db.orders.find((o) => o.orderNo === params.orderNo)
     if (!order) throw { code: 40403, msg: '订单不存在' }
     if (order.status !== ORDER_STATUS.UNPAID) throw { code: 40005, msg: '当前状态不可取消' }
 
     order.status = ORDER_STATUS.CANCELED
-    order.items.forEach((i) => {
+    order.items.forEach((i: any) => {
       const sku = db.skus.find((s) => s.id === i.skuId)
       if (sku) { sku.stock += i.quantity; sku.locked -= i.quantity }
     })
@@ -164,7 +164,7 @@ export default {
    * @param {{orderNo:string}} params
    * @throws 40403 订单不存在 / 40005 状态异常 / 40006 已超时（竞态场景）
    */
-  'order.mockPay'(params) {
+  'order.mockPay'(params: any) {
     const order = db.orders.find((o) => o.orderNo === params.orderNo)
     if (!order) throw { code: 40403, msg: '订单不存在' }
     if (order.status !== ORDER_STATUS.UNPAID) throw { code: 40005, msg: '订单状态异常' }
@@ -177,7 +177,7 @@ export default {
     order.status = ORDER_STATUS.PAID
     order.payTime = Date.now()
     // 支付成功：锁定库存转实扣（locked 清零，货权正式占用）
-    order.items.forEach((i) => {
+    order.items.forEach((i: any) => {
       const sku = db.skus.find((s) => s.id === i.skuId)
       if (sku) sku.locked -= i.quantity
     })
@@ -190,7 +190,7 @@ export default {
    * @param {{orderNo:string}} params
    * @throws 40403 订单不存在 / 40005 状态异常（仅已支付可发货，PRD §⑤规则 1）
    */
-  'order.mockShip'(params) {
+  'order.mockShip'(params: any) {
     const order = db.orders.find((o) => o.orderNo === params.orderNo)
     if (!order) throw { code: 40403, msg: '订单不存在' }
     if (order.status !== ORDER_STATUS.PAID) throw { code: 40005, msg: '仅已支付订单可发货' }
@@ -208,7 +208,7 @@ export default {
    * @param {{orderNo:string}} params
    * @throws 40403 订单不存在 / 40005 状态异常
    */
-  'order.confirm'(params) {
+  'order.confirm'(params: any) {
     const order = db.orders.find((o) => o.orderNo === params.orderNo)
     if (!order) throw { code: 40403, msg: '订单不存在' }
     if (order.status !== ORDER_STATUS.SHIPPED) throw { code: 40005, msg: '当前状态不可确认收货' }

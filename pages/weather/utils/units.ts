@@ -29,7 +29,7 @@ const BEAUFORT = [
  * @param {number} kmh 风速 km/h
  * @returns {{level:number, name:string, text:string}}
  */
-export function windScale(kmh) {
+export function windScale(kmh: any) {
   if (kmh == null) return { level: 0, name: '无风', text: '无风' }
   const ms = kmh / 3.6
   const hit = BEAUFORT.find((b) => ms <= b.max) || BEAUFORT[BEAUFORT.length - 1]
@@ -41,7 +41,7 @@ export function windScale(kmh) {
  * @param {number} deg 风向角度（0 = 北，顺时针）
  * @returns {string} 如「东南风」
  */
-export function windDirection(deg) {
+export function windDirection(deg: any) {
   if (deg == null) return '微风'
   const dirs = ['北', '东北', '东', '东南', '南', '西南', '西', '西北']
   // 八方位扇区：每个方位占 45°，以扇区中点为界（22.5 / 67.5 / 112.5 …）
@@ -55,7 +55,7 @@ export function windDirection(deg) {
  * @param {number} aqi AQI 数值
  * @returns {{level:string, color:string, advice:string}}
  */
-export function aqiLevel(aqi) {
+export function aqiLevel(aqi: any) {
   if (aqi == null) return { level: '—', color: '#9AA5B4', advice: '暂无数据' }
   if (aqi <= 50) {
     return { level: '优', color: '#10B981', advice: '空气质量令人满意，可正常户外活动' }
@@ -85,10 +85,10 @@ export function aqiLevel(aqi) {
  * @param {number} value 浓度 μg/m³
  * @returns {{level:string, color:string, ratio:number}} ratio 为 0–1 的进度比例
  */
-export function pollutantLevel(key, value) {
+export function pollutantLevel(key: any, value: any) {
   if (value == null) return { level: '—', color: '#9AA5B4', ratio: 0 }
   // 24 小时平均限值（μg/m³）；CO 单独标注其 mg/m³ 口径
-  const limits = {
+  const limits: Record<string, number> = {
     pm25: 35,
     pm10: 70,
     o3: 160,
@@ -120,7 +120,7 @@ export function pollutantLevel(key, value) {
  * @param {number} t 温度
  * @returns {string} 如「-3°」
  */
-export function formatTemp(t) {
+export function formatTemp(t: any) {
   if (t == null) return '--°'
   return `${Math.round(t)}°`
 }
@@ -131,7 +131,7 @@ export function formatTemp(t) {
  * @param {number} min 最低温
  * @returns {string} 如「26°/18°」
  */
-export function formatTempRange(max, min) {
+export function formatTempRange(max: any, min: any) {
   if (max == null || min == null) return '--/--°'
   return `${Math.round(max)}°/${Math.round(min)}°`
 }
@@ -141,7 +141,7 @@ export function formatTempRange(max, min) {
  * @param {number} ts Unix 时间戳（秒）
  * @returns {string}
  */
-export function relativeTime(ts) {
+export function relativeTime(ts: any) {
   if (!ts) return ''
   const diff = Math.round((ts * 1000 - Date.now()) / 60000)
   if (diff <= 0) return '现在'
@@ -156,7 +156,7 @@ export function relativeTime(ts) {
  * @param {string} iso ISO8601 时间串
  * @returns {string}
  */
-export function isoTime(iso) {
+export function isoTime(iso: any) {
   if (!iso) return ''
   const m = String(iso).match(/T(\d{2}):(\d{2})/)
   return m ? `${m[1]}:${m[2]}` : ''
@@ -167,7 +167,7 @@ export function isoTime(iso) {
  * @param {string} iso ISO8601 时间串
  * @returns {string}
  */
-export function isoDate(iso) {
+export function isoDate(iso: any) {
   if (!iso) return ''
   // 日期段在 T 之前：2026-10-28T14:30 → 取 10-28
   const m = String(iso).match(/^\d{4}-(\d{2})-(\d{2})/)
@@ -179,7 +179,7 @@ export function isoDate(iso) {
  * @param {string} iso ISO8601 日期串
  * @returns {string} 如「周三」
  */
-export function isoWeekday(iso) {
+export function isoWeekday(iso: any) {
   if (!iso) return ''
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''
@@ -191,7 +191,7 @@ export function isoWeekday(iso) {
  * @param {number} uv uv_index
  * @returns {{level:string, color:string, advice:string}}
  */
-export function uvLevel(uv) {
+export function uvLevel(uv: any) {
   if (uv == null) return { level: '—', color: '#9AA5B4', advice: '暂无数据' }
   if (uv < 3) return { level: '弱', color: '#10B981', advice: '紫外线较弱，午后外出无需特别防晒' }
   if (uv < 6) return { level: '中等', color: '#84CC16', advice: '外出建议涂抹防晒霜，戴遮阳帽' }

@@ -116,8 +116,8 @@ import type { City } from '../api/types'
 const header = getWeatherHeaderLayout()
 
 const city = ref<Partial<City>>({})
-const frames = ref([])
-const tiles = ref([])
+const frames = ref<any[]>([])
+const tiles = ref<any[]>([])
 const frameIndex = ref(0)
 const hasForecast = ref(false)
 const radarTip = ref('雷达数据加载中…')
@@ -138,7 +138,7 @@ const playRatio = computed(() => {
   return (frameIndex.value / Math.max(1, frames.value.length - 1)) * 100
 })
 
-const relTime = (ts) => relativeTime(ts)
+const relTime = (ts: any) => relativeTime(ts)
 
 /** 加载雷达 */
 async function loadRadar() {
@@ -159,14 +159,14 @@ async function loadRadar() {
     // 默认取最新一帧
     frameIndex.value = frames.value.length - 1
     applyFrame(frameIndex.value)
-  } catch (e) {
+  } catch (e: any) {
     tiles.value = []
     radarTip.value = e && e.msg ? e.msg : '雷达数据加载失败'
   }
 }
 
 /** 应用指定帧的瓦片 */
-function applyFrame(i) {
+function applyFrame(i: any) {
   const f = frames.value[i]
   if (!f) return
   const c = city.value
@@ -180,7 +180,7 @@ function applyFrame(i) {
   )
 }
 
-function onPickFrame(i) {
+function onPickFrame(i: any) {
   frameIndex.value = i
   applyFrame(i)
 }
@@ -201,7 +201,7 @@ onLoad(async () => {
     } else {
       adviceText.value = '未来 1 小时无明显降水，适合出行'
     }
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 })

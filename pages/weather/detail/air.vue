@@ -77,7 +77,7 @@ onLoad(async () => {
     city.value = c
     const data = await weatherApi.getWeather(c)
     air.value = data.airQuality
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 })

@@ -29,7 +29,7 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 
-function onChange(delta) {
+function onChange(delta: any) {
   const next = props.value + delta
   if (next < props.min || next > props.max) return
   emit('change', next)

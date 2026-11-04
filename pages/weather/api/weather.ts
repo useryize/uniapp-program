@@ -87,7 +87,7 @@ const AIR_VARS = [
  * @param {number} lng 经度
  * @returns {string}
  */
-function forecastUrl(lat, lng) {
+function forecastUrl(lat: any, lng: any) {
   const q = [
     `latitude=${lat}`,
     `longitude=${lng}`,
@@ -107,7 +107,7 @@ function forecastUrl(lat, lng) {
  * @param {number} lng 经度
  * @returns {string}
  */
-function airUrl(lat, lng) {
+function airUrl(lat: any, lng: any) {
   const q = [
     `latitude=${lat}`,
     `longitude=${lng}`,
@@ -122,7 +122,7 @@ function airUrl(lat, lng) {
  * @param {Array<string>} times ISO 时间数组
  * @returns {number}
  */
-function currentHourIndex(times) {
+function currentHourIndex(times: any) {
   if (!times || !times.length) return 0
   // 预报请求固定为 Asia/Shanghai，按同一时区比较小时，避免设备时区导致图标错位。
   const nowHour = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 13)
@@ -137,12 +137,12 @@ function currentHourIndex(times) {
  * @param {Object} hourly Open-Meteo hourly 对象
  * @returns {Array<Object>}
  */
-function buildHourly(hourly) {
+function buildHourly(hourly: any) {
   if (!hourly || !hourly.time) return []
   const start = currentHourIndex(hourly.time)
   const out = []
   // 安全取值：接口理论上返回等长数组，这里做防御性访问避免越界
-  const at = (arr, i) => (Array.isArray(arr) ? arr[i] : undefined)
+  const at = (arr: any, i: any) => (Array.isArray(arr) ? arr[i] : undefined)
   for (let i = start; i < Math.min(start + 24, hourly.time.length); i += 1) {
     // 昼夜用接口的 is_day（按真实日出日落计算），不用下标近似
     const isDay = at(hourly.is_day, i) !== 0
@@ -170,7 +170,7 @@ function buildHourly(hourly) {
  * @param {string} b 基准
  * @returns {number}
  */
-function dateDiff(a, b) {
+function dateDiff(a: any, b: any) {
   const da = new Date(a)
   const db = new Date(b)
   if (Number.isNaN(da.getTime()) || Number.isNaN(db.getTime())) return 0
@@ -182,10 +182,10 @@ function dateDiff(a, b) {
  * @param {Object} daily Open-Meteo daily 对象
  * @returns {Array<Object>}
  */
-function buildDaily(daily) {
+function buildDaily(daily: any) {
   if (!daily || !daily.time) return []
-  const at = (arr, i) => (Array.isArray(arr) ? arr[i] : undefined)
-  return daily.time.map((t, i) => {
+  const at = (arr: any, i: any) => (Array.isArray(arr) ? arr[i] : undefined)
+  return daily.time.map((t: any, i: any) => {
     const wmo = resolveWmo(at(daily.weather_code, i), true)
     return {
       date: isoDate(t),
@@ -212,7 +212,7 @@ function buildDaily(daily) {
  * @param {number} humidity 当前湿度（用于霾判定）
  * @returns {Object}
  */
-function buildAirQuality(air, humidity) {
+function buildAirQuality(air: any, humidity: any) {
   const c = air?.current || {}
   const pm25 = c.pm2_5 ?? null
   const aqi = c.us_aqi ?? null
@@ -247,7 +247,7 @@ function buildAirQuality(air, humidity) {
  * @param {Object} city 城市对象 { adcode, name, short, lng, lat }
  * @returns {Promise<Object>} 设计稿约定的数据结构
  */
-export async function fetchWeather(city) {
+export async function fetchWeather(city: any) {
   if (!city || city.lng == null || city.lat == null) {
     throw Object.assign(new Error('城市坐标缺失'), { code: -2, msg: '城市坐标缺失' })
   }
@@ -343,7 +343,7 @@ export async function fetchWeather(city) {
  * @param {Object} p 参数
  * @returns {string}
  */
-function buildTips({ wmo, temp, humidity, airQuality, precipProb, wind }) {
+function buildTips({ wmo, temp, humidity, airQuality, precipProb, wind }: any) {
   const parts = []
   if (precipProb >= 60) parts.push('降水概率较高，出门记得带伞')
   else if (precipProb >= 30) parts.push('可能有零星降水，建议随身带伞')

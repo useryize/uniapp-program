@@ -131,7 +131,7 @@ const onBack = () => {
   uni.navigateBack()
 }
 
-const onEnter = (app) => {
+const onEnter = (app: typeof APPS[number]) => {
   if (!app.url) {
     uni.showToast({ title: `${app.name} 即将上线`, icon: 'none' })
     return

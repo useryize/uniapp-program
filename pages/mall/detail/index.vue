@@ -15,7 +15,7 @@
       <swiper-item v-for="(img, i) in images" :key="i">
         <view class="gallery-cover" :style="{ backgroundColor: goods.color }">
           <image v-if="img" class="gallery-img" :src="img" mode="aspectFill" />
-          <text v-else class="gallery-fallback">{{ goods.title.slice(0, 1) }}</text>
+          <text v-else class="gallery-fallback">{{ goods.title?.slice(0, 1) }}</text>
         </view>
       </swiper-item>
     </swiper>
@@ -227,7 +227,7 @@ const selectedColorName = computed(() => {
 
 /** 是否全部尺码售罄（售罄保留展示但不可下单） */
 const allSoldOut = computed(() =>
-  (goods.value.skuList || []).length > 0 && goods.value.skuList.every((s) => s.stock === 0)
+  (goods.value.skuList || []).length > 0 && (goods.value.skuList || []).every((s) => s.stock === 0)
 )
 
 /** 当前规格最大可购数量 */
@@ -271,19 +271,19 @@ const recommendText = computed(() => {
 })
 
 /** 尺码选择变化回调 */
-function onSizeChange(payload) {
+function onSizeChange(payload: any) {
   colorId.value = payload.colorId
   selectedSize.value = payload.size
   quantity.value = 1
 }
 
 /** 数量变化 */
-function onQtyChange(v) {
+function onQtyChange(v: any) {
   quantity.value = v
 }
 
 /** 打开规格面板 */
-function openSku(m) {
+function openSku(m: any) {
   mode.value = m
   quantity.value = 1
   skuPopupShow.value = true
@@ -297,22 +297,23 @@ function closeSku() {
  * 面板确认：按 mode 分发到加购 / 直购
  * @param {'cart'|'buy'} m
  */
-async function onSkuConfirm(m) {
-  if (!canSubmit.value) return
+async function onSkuConfirm(m: any) {
+  const sku = selectedSku.value
+  if (!canSubmit.value || !sku) return
   submitting.value = true
   try {
     if (m === 'cart') {
-      await cartApi.add({ goodsId: goods.value.id, skuId: selectedSku.value.id, quantity: quantity.value })
+      await cartApi.add({ goodsId: goods.value.id, skuId: sku.id, quantity: quantity.value })
       uni.showToast({ title: '已加入购物车', icon: 'success' })
       closeSku()
     } else {
       // 直购：携带规格与数量进结算页，金额由结算页提交时服务端计算
       uni.navigateTo({
-        url: `/pages/mall/confirm/index?skuId=${selectedSku.value.id}&quantity=${quantity.value}`
+        url: `/pages/mall/confirm/index?skuId=${sku.id}&quantity=${quantity.value}`
       })
       closeSku()
     }
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '操作失败', icon: 'none' })
   } finally {
     submitting.value = false
@@ -331,16 +332,16 @@ function onService() {
   uni.showToast({ title: '客服将在 9:00-22:00 为你服务', icon: 'none' })
 }
 
-onLoad(async (options) => {
+onLoad(async (options = {}) => {
   try {
     const data = await goodsApi.detail({ id: options.id })
     goods.value = data
     // 默认选中第一个有库存的颜色 + 第一个有库存的尺码
-    const firstColor = (data.colors || []).find((c) =>
-      (data.skuList || []).some((s) => s.colorId === c.id && s.stock > 0)
+    const firstColor = (data.colors || []).find((c: any) =>
+      (data.skuList || []).some((s: any) => s.colorId === c.id && s.stock > 0)
     )
     colorId.value = firstColor ? firstColor.id : (data.colors[0] ? data.colors[0].id : 0)
-    const firstSize = (data.skuList || []).find((s) => s.colorId === colorId.value && s.stock > 0)
+    const firstSize = (data.skuList || []).find((s: any) => s.colorId === colorId.value && s.stock > 0)
     selectedSize.value = firstSize ? firstSize.size : ''
 
     // 读取用户尺码档案并请求推荐，用于详情页推荐条
@@ -348,10 +349,10 @@ onLoad(async (options) => {
       const p = await sizeApi.profile()
       const rec = await sizeApi.recommend({ height: p.height, weight: p.weight, fit: p.fit })
       profile.value = { ...p, recommendSize: rec.size }
-    } catch (e) {
+    } catch (e: any) {
       // 档案缺失不影响详情页
     }
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '商品加载失败', icon: 'none' })
     setTimeout(() => uni.navigateBack(), 1500)
   }

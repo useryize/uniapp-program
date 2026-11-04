@@ -119,9 +119,9 @@ const weight = ref('')
 /** 体型 Y/A/B */
 const fit = ref('A')
 /** 推荐结果 */
-const result = ref(null)
+const result = ref<any>(null)
 /** 尺码表 */
-const chart = reactive({ unit: 'cm', rows: [], recommendSize: '' })
+const chart = reactive<{ unit: string; rows: Array<{ size: string; height: string; weight: string; chest: string; recommend?: boolean }>; recommendSize: string }>({ unit: 'cm', rows: [], recommendSize: '' })
 /** 提交防重 */
 const submitting = ref(false)
 
@@ -161,7 +161,7 @@ async function onSubmit() {
       weight: Number(weight.value),
       fit: fit.value
     })
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '计算失败', icon: 'none' })
   } finally {
     submitting.value = false
@@ -188,13 +188,13 @@ onLoad(async () => {
     })
     chart.rows = c.rows
     chart.unit = c.unit
-  } catch (e) {
+  } catch (e: any) {
     // 档案读取失败不阻断，直接展示尺码表
     try {
       const c = await sizeApi.chart({})
       chart.rows = c.rows
       chart.unit = c.unit
-    } catch (e2) {
+    } catch (e2: any) {
       // ignore
     }
   }

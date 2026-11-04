@@ -19,7 +19,7 @@ import { uvLevel } from './units'
  * @param {number} diff 昼夜温差 ℃
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcDressing(feels, diff) {
+function calcDressing(feels: any, diff: any) {
   const t = feels
   let level
   let color
@@ -61,7 +61,7 @@ function calcDressing(feels, diff) {
  * @param {number} precipProb 24h 最大降水概率 %
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcCarWash(precipSum, precipProb) {
+function calcCarWash(precipSum: any, precipProb: any) {
   const rain = precipSum > 0.5 || precipProb >= 60
   const drizzle = precipSum > 0.1 || precipProb >= 30
   if (rain) {
@@ -80,7 +80,7 @@ function calcCarWash(precipSum, precipProb) {
  * @param {number} precipProb 降水概率 %
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcSport(feels, windMax, precipProb) {
+function calcSport(feels: any, windMax: any, precipProb: any) {
   const bad = precipProb >= 60
   const wind = windMax >= 38
   if (bad) {
@@ -108,7 +108,7 @@ function calcSport(feels, windMax, precipProb) {
  * @param {number} humidity 湿度 %
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcColdRisk(diff, windMax, humidity) {
+function calcColdRisk(diff: any, windMax: any, humidity: any) {
   let score = 0
   if (diff >= 12) score += 2
   else if (diff >= 8) score += 1
@@ -137,7 +137,7 @@ function calcColdRisk(diff, windMax, humidity) {
  * @param {number} windMax 最大风速 km/h
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcDrying(precipSum, uvMax, windMax) {
+function calcDrying(precipSum: any, uvMax: any, windMax: any) {
   if (precipSum > 1) {
     return { level: '不宜', color: '#EF4444', advice: '有降水，不宜户外晾晒' }
   }
@@ -160,7 +160,7 @@ function calcDrying(precipSum, uvMax, windMax) {
  * @param {number} windMax 最大风速 km/h
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcAllergy(humidity, diff, windMax) {
+function calcAllergy(humidity: any, diff: any, windMax: any) {
   let score = 0
   if (humidity <= 45) score += 2
   else if (humidity <= 60) score += 1
@@ -182,7 +182,7 @@ function calcAllergy(humidity, diff, windMax) {
  * @param {number} diff 昼夜温差 ℃
  * @returns {{level:string, color:string, advice:string}}
  */
-function calcTravel(precipProb, windMax, diff) {
+function calcTravel(precipProb: any, windMax: any, diff: any) {
   if (precipProb >= 70) {
     return { level: '较差', color: '#EF4444', advice: '降水概率高，出行请携带雨具' }
   }

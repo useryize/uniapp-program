@@ -71,13 +71,13 @@ const props = withDefaults(defineProps<{
 
 const cid = `chart-${Math.random().toString(36).slice(2, 9)}`
 // 原生绘图上下文不能交给 Vue 深层代理。
-const ctx = shallowRef(null)
+const ctx = shallowRef<ReturnType<typeof uni.createCanvasContext> | null>(null)
 const instance = getCurrentInstance()
 const activeIndex = ref(-1)
 const tipLeft = ref(0)
 
 /** rpx → px（用于 canvas 绘制） */
-const rpx2px = (v) => (v * uni.getSystemInfoSync().windowWidth) / 750
+const rpx2px = (v: any) => (v * uni.getSystemInfoSync().windowWidth) / 750
 
 /** 左右内边距（rpx）——与绘点逻辑保持一致 */
 const PAD_L = 8
@@ -131,8 +131,9 @@ const range = computed(() => {
  * @param {boolean} dashed 是否虚线
  * @param {boolean} area 是否填充面积
  */
-function drawSeries(series, stroke, dashed, area) {
-  if (!series.length) return
+function drawSeries(series: any, stroke: any, dashed: any, area: any) {
+  const canvas = ctx.value
+  if (!canvas || !series.length) return
   const w = rpx2px(props.width)
   const h = rpx2px(props.height)
   const padT = rpx2px(16)
@@ -144,7 +145,7 @@ function drawSeries(series, stroke, dashed, area) {
   const { min, max } = range.value
   const step = series.length > 1 ? innerW / (series.length - 1) : 0
 
-  const xy = series.map((p, i) => {
+  const xy = series.map((p: any, i: any) => {
     const x = padL + step * i
     const ratio = (p.value - min) / (max - min)
     const y = padT + innerH * (1 - ratio)
@@ -152,46 +153,46 @@ function drawSeries(series, stroke, dashed, area) {
   })
 
   if (area) {
-    const grad = ctx.value.createLinearGradient(0, padT, 0, h - padB)
+    const grad = canvas.createLinearGradient(0, padT, 0, h - padB)
     grad.addColorStop(0, hexToRgba(stroke, 0.14))
     grad.addColorStop(1, hexToRgba(stroke, 0.01))
-    ctx.value.beginPath()
-    ctx.value.moveTo(xy[0].x, h - padB)
-    xy.forEach((p) => ctx.value.lineTo(p.x, p.y))
-    ctx.value.lineTo(xy[xy.length - 1].x, h - padB)
-    ctx.value.closePath()
-    ctx.value.setFillStyle(grad)
-    ctx.value.fill()
+    canvas.beginPath()
+    canvas.moveTo(xy[0].x, h - padB)
+    xy.forEach((p: any) => canvas.lineTo(p.x, p.y))
+    canvas.lineTo(xy[xy.length - 1].x, h - padB)
+    canvas.closePath()
+    canvas.setFillStyle(grad)
+    canvas.fill()
   }
 
-  ctx.value.beginPath()
-  xy.forEach((p, i) => (i ? ctx.value.lineTo(p.x, p.y) : ctx.value.moveTo(p.x, p.y)))
-  ctx.value.setStrokeStyle(stroke)
-  ctx.value.setLineWidth(3)
-  if (dashed) ctx.value.setLineDash([6, 6])
-  else ctx.value.setLineDash([])
-  ctx.value.lineJoin = 'round'
-  ctx.value.lineCap = 'round'
-  ctx.value.stroke()
-  ctx.value.setLineDash([])
+  canvas.beginPath()
+  xy.forEach((p: any, i: any) => (i ? canvas.lineTo(p.x, p.y) : canvas.moveTo(p.x, p.y)))
+  canvas.setStrokeStyle(stroke)
+  canvas.setLineWidth(3)
+  if (dashed) canvas.setLineDash([6, 6], 0)
+  else canvas.setLineDash([], 0)
+  canvas.lineJoin = 'round'
+  canvas.lineCap = 'round'
+  canvas.stroke()
+  canvas.setLineDash([], 0)
 
   // 选中点高亮
   if (activeIndex.value >= 0 && activeIndex.value < xy.length) {
     const p = xy[activeIndex.value]
-    ctx.value.beginPath()
-    ctx.value.arc(p.x, p.y, 5, 0, Math.PI * 2)
-    ctx.value.setFillStyle(stroke)
-    ctx.value.fill()
-    ctx.value.beginPath()
-    ctx.value.arc(p.x, p.y, 8, 0, Math.PI * 2)
-    ctx.value.setStrokeStyle('#FFFFFF')
-    ctx.value.setLineWidth(3)
-    ctx.value.stroke()
+    canvas.beginPath()
+    canvas.arc(p.x, p.y, 5, 0, Math.PI * 2)
+    canvas.setFillStyle(stroke)
+    canvas.fill()
+    canvas.beginPath()
+    canvas.arc(p.x, p.y, 8, 0, Math.PI * 2)
+    canvas.setStrokeStyle('#FFFFFF')
+    canvas.setLineWidth(3)
+    canvas.stroke()
   }
 }
 
 /** 十六进制色 → rgba */
-function hexToRgba(hex, alpha) {
+function hexToRgba(hex: any, alpha: any) {
   const h = hex.replace('#', '')
   const r = parseInt(h.substring(0, 2), 16)
   const g = parseInt(h.substring(2, 4), 16)
@@ -238,7 +239,7 @@ watch(
 )
 
 /** 触摸 → 计算最近点 */
-function pick(e) {
+function pick(e: any) {
   const series = props.points
   if (!series.length) return
   const touch = e.touches && e.touches[0]
@@ -256,8 +257,8 @@ function pick(e) {
   render()
 }
 
-const onTouchStart = (e) => pick(e)
-const onTouchMove = (e) => pick(e)
+const onTouchStart = (e: any) => pick(e)
+const onTouchMove = (e: any) => pick(e)
 const onTouchEnd = () => {
   // 保留选中态，便于阅读
 }

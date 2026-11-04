@@ -5,7 +5,7 @@
   "main": "main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "typecheck": "vue-tsc --noEmit && vue-tsc --noEmit -p pages/music/tsconfig.json",
+    "typecheck": "vue-tsc --noEmit",
     "dev:h5": "cross-env UNI_INPUT_DIR=. uni",
     "build:h5": "cross-env UNI_INPUT_DIR=. uni build --platform h5",
     "dev:mp-weixin": "cross-env UNI_INPUT_DIR=. uni --platform mp-weixin",

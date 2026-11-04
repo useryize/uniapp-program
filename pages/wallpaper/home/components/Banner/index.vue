@@ -26,8 +26,9 @@
 </template>
 <script setup lang="ts">
 import { request } from "@/utils/request";
+import type { PexelsPhoto } from "@/utils/request";
 import { onMounted, ref } from "vue";
-const bannerList = ref([]);
+const bannerList = ref<PexelsPhoto[]>([]);
 const loadedImages = ref(new Set());
 
 const init = async () => {
@@ -44,7 +45,7 @@ const init = async () => {
   bannerList.value = res?.photos;
 };
 
-const previewImg = (index) => {
+const previewImg = (index: number) => {
   uni.previewImage({
     current: index,
     urls: bannerList.value.map((item) => item.src.landscape),
@@ -52,7 +53,7 @@ const previewImg = (index) => {
   console.error(bannerList.value.map((item) => item.src.landscape))
 };
 
-const onImageLoad = (index) => {
+const onImageLoad = (index: number) => {
   loadedImages.value.add(index);
 };
 

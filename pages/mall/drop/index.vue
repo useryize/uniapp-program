@@ -72,9 +72,9 @@ import { dropApi } from '../api/index'
 /** 当前 tab：all / soon / live / soldout */
 const tab = ref('all')
 /** 发售列表 */
-const list = ref([])
+const list = ref<any[]>([])
 /** 原始全量数据（tab 切换走本地过滤，避免重复请求） */
-const allList = ref([])
+const allList = ref<any[]>([])
 /** 倒计时刷新句柄 */
 let timer = null
 
@@ -88,27 +88,27 @@ const tabs = [
 const filtered = computed(() => (tab.value === 'all' ? allList.value : allList.value.filter((d) => d.type === tab.value)))
 
 /** 三态筛选：刷新本地列表 */
-function onTab(key) {
+function onTab(key: any) {
   tab.value = key
   list.value = filtered.value
 }
 
 /** 状态头左侧文案 */
-function tagText(d) {
+function tagText(d: any) {
   if (d.type === 'soon') return '倒计时'
   if (d.type === 'live') return '正在发售'
   return '已结束'
 }
 
 /** 状态头右侧：倒计时 / 剩余时间 / 结果 */
-function countText(d) {
+function countText(d: any) {
   if (d.type === 'soon') return countdown(d.startAt)
   if (d.type === 'live') return '剩余 ' + countdown(d.endAt)
   return d.limit === d.sold ? '3 秒售罄' : '已售罄'
 }
 
 /** 副标：时间 + 限量 */
-function subText(d) {
+function subText(d: any) {
   const date = formatDate(d.startAt)
   if (d.type === 'soon') return `${date} 开售  ·  限量 ${d.limit} 件`
   if (d.type === 'live') return `限量 ${d.limit} 件  ·  剩余 ${d.remain} 件`
@@ -116,7 +116,7 @@ function subText(d) {
 }
 
 /** 按钮文案 */
-function actionText(d) {
+function actionText(d: any) {
   if (d.type === 'soon') return '开售提醒'
   if (d.type === 'live') return '立即抢购'
   return '到货提醒'
@@ -127,19 +127,19 @@ function actionText(d) {
  * @param {number} target 目标时间戳
  * @returns {string}
  */
-function countdown(target) {
+function countdown(target: any) {
   const diff = target - Date.now()
   if (diff <= 0) return '已结束'
   const d = Math.floor(diff / 86400000)
   const h = Math.floor((diff % 86400000) / 3600000)
   const m = Math.floor((diff % 3600000) / 60000)
   const s = Math.floor((diff % 60000) / 1000)
-  const p = (n) => String(n).padStart(2, '0')
+  const p = (n: any) => String(n).padStart(2, '0')
   return d > 0 ? `${d}天 ${p(h)}:${p(m)}:${p(s)}` : `${p(h)}:${p(m)}:${p(s)}`
 }
 
 /** 时间戳 -> 'M-D' */
-function formatDate(ts) {
+function formatDate(ts: any) {
   const d = new Date(ts)
   return `${d.getMonth() + 1}-${d.getDate()}`
 }
@@ -150,13 +150,13 @@ async function loadDrops() {
     const data = await dropApi.list({})
     allList.value = data
     list.value = data
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 }
 
 /** 操作：订阅提醒 / 抢购 */
-function onAction(d) {
+function onAction(d: any) {
   if (d.type === 'live') {
     goDetail(d)
     return
@@ -172,7 +172,7 @@ function onAction(d) {
     })
 }
 
-function goDetail(d) {
+function goDetail(d: any) {
   uni.navigateTo({ url: `/pages/mall/detail/index?id=${d.goodsId}` })
 }
 

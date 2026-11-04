@@ -87,7 +87,7 @@ const userInfo = reactive({
 })
 
 /** 尺码档案（服务端返回，跨商品复用推荐结果） */
-const sizeProfile = ref(null)
+const sizeProfile = ref<any>(null)
 /** 发售提醒摘要 */
 const dropSummary = ref({ soon: 0 })
 
@@ -119,13 +119,13 @@ const dropSub = computed(() => {
 async function loadData() {
   try {
     sizeProfile.value = await sizeApi.profile()
-  } catch (e) {
+  } catch (e: any) {
     // 档案读取失败不阻断
   }
   try {
     const list = await dropApi.list({})
-    dropSummary.value = { soon: list.filter((d) => d.type === 'soon').length }
-  } catch (e) {
+    dropSummary.value = { soon: list.filter((d: any) => d.type === 'soon').length }
+  } catch (e: any) {
     // 增强信息，失败不阻断
   }
 }
@@ -181,7 +181,7 @@ function handleLogout() {
 }
 
 /** 订单入口：跳订单列表并带上状态筛选 */
-function goOrderList(status) {
+function goOrderList(status: any) {
   const url = status && status !== 'REFUND'
     ? `/pages/mall/order/list?status=${status}`
     : '/pages/mall/order/list'
@@ -199,7 +199,7 @@ function goSizeGuide() {
 }
 
 /** 功能宫格点击 */
-function onFunc(f) {
+function onFunc(f: any) {
   if (f.key === 'size') return goSizeGuide()
   if (f.key === 'service') {
     uni.showToast({ title: '客服将在 9:00-22:00 为你服务', icon: 'none' })

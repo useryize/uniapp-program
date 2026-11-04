@@ -77,10 +77,10 @@ import WeatherChart from '../components/weather-chart.vue'
 
 const header = getWeatherHeaderLayout()
 
-const hourly = ref([])
+const hourly = ref<any[]>([])
 const dayLabel = ref('今天')
 
-const round = (v) => (v == null ? '--' : Math.round(v))
+const round = (v: any) => (v == null ? '--' : Math.round(v))
 
 const tempPoints = computed(() =>
   hourly.value.map((h) => ({ label: h.time, value: h.temp ?? 0 }))
@@ -96,7 +96,7 @@ onLoad(async () => {
     hourly.value = data.hourly
     const d = data.daily[0]
     dayLabel.value = d ? `${d.date}` : '今天'
-  } catch (e) {
+  } catch (e: any) {
     uni.showToast({ title: e.msg || '加载失败', icon: 'none' })
   }
 })
