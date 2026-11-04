@@ -2,8 +2,7 @@
  * @file 商城真实请求封装（USE_MOCK = false 时启用）
  *
  * 说明：
- * - 独立于根目录 utils/request.ts（那是壁纸模块对接 Pexels 的专用封装，
- *   含固定 Authorization，商城不共用，避免互相污染）
+ * - 独立于壁纸模块的数据层（位于 pages/wallpaper/api/），商城不共用
  * - 统一响应约定：HTTP 200 且 body 为 { code: 0, data, msg } 视为成功，
  *   其余一律 reject { code, msg }——与 mock 引擎的响应结构完全一致
  * - token 由登录模块写入 Storage('mall_token')，此处自动附带

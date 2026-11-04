@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画间 · 壁纸项目交互原型 V2</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif; background: #e9edf0; color: #1c2425; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #497f88; outline-offset: 3px; }
+    .workspace { min-height: 100dvh; display: grid; grid-template-columns: minmax(260px, 360px) minmax(320px, 400px); gap: clamp(32px, 7vw, 110px); align-items: center; justify-content: center; padding: 32px 24px; }
+    .brief { max-width: 360px; }
+    .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .2em; color: #688186; }
+    .brief h1 { font-size: clamp(36px, 4.5vw, 58px); letter-spacing: -.07em; line-height: 1.08; margin: 20px 0; }
+    .brief p { font-size: 15px; line-height: 1.9; color: #647276; }
+    .brief ul { padding-left: 1.3em; color: #647276; line-height: 2; font-size: 14px; }
+    .brief .note { border-top: 1px solid #cdd8d9; padding-top: 20px; margin-top: 30px; font-size: 13px; }
+    .phone { width: min(100%, 400px); height: min(850px, calc(100dvh - 32px)); min-height: 620px; background: #fbfcfa; border: 8px solid #1d2526; border-radius: 44px; box-shadow: 0 35px 90px #1b33353d, 0 8px 22px #1b333524; overflow: hidden; position: relative; }
+    .phone::before { content: ""; width: 88px; height: 23px; border-radius: 0 0 15px 15px; background: #1d2526; position: absolute; top: 0; left: calc(50% - 44px); z-index: 8; }
+    .app { height: 100%; overflow-y: auto; scrollbar-width: none; padding-bottom: 86px; }
+    .app::-webkit-scrollbar { display: none; }
+    .app-header { position: relative; padding: 42px 24px 14px; display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+    .app-header small { font-size: 10px; font-weight: 800; letter-spacing: .19em; color: #7b9394; }
+    .app-header h2 { font-size: 25px; letter-spacing: -.05em; margin: 4px 0 0; }
+    .header-action { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #dfe7e4; border-radius: 50%; background: #fff; color: #37565b; font-size: 19px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .section { padding: 14px 24px 0; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .section-heading h3 { margin: 0; font-size: 19px; letter-spacing: -.045em; }
+    .section-heading p { margin: 5px 0 0; color: #93a09e; font-size: 11px; }
+    .text-button { border: 0; background: transparent; color: #587983; font-size: 12px; font-weight: 700; padding: 8px 0; }
+    .hero { height: 302px; width: 100%; position: relative; overflow: hidden; border: 0; border-radius: 22px; text-align: left; color: white; display: block; padding: 0; box-shadow: 0 15px 28px #50748324; }
+    .hero img, .tile img, .strip-card img, .preview-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, #10282a9e); pointer-events: none; }
+    .hero-copy { position: absolute; bottom: 20px; left: 20px; z-index: 1; }
+    .hero-copy b { display: block; font-size: 23px; letter-spacing: -.04em; }
+    .hero-copy span { display: block; font-size: 11px; opacity: .88; margin-bottom: 7px; letter-spacing: .12em; }
+    .hero-counter { position: absolute; right: 19px; bottom: 22px; z-index: 1; font-size: 12px; font-weight: 700; }
+    .category-list { display: flex; gap: 9px; overflow-x: auto; padding: 1px 0 8px; scrollbar-width: none; }
+    .category-list::-webkit-scrollbar { display: none; }
+    .chip { flex: none; border: 1px solid #e0e7e4; background: #fff; border-radius: 999px; padding: 9px 14px; color: #536364; font-size: 12px; }
+    .chip.active { background: #223b3e; color: white; border-color: #223b3e; }
+    .strip { display: flex; gap: 12px; overflow-x: auto; padding: 2px 24px 18px; scrollbar-width: none; }
+    .strip::-webkit-scrollbar { display: none; }
+    .strip-card { flex: 0 0 119px; border: 0; padding: 0; background: transparent; text-align: left; color: inherit; }
+    .strip-card img { height: 155px; border-radius: 15px; }
+    .strip-card b { display: block; margin-top: 8px; font-size: 12px; }
+    .strip-card small { display: block; margin-top: 3px; color: #98a4a2; font-size: 10px; }
+    .search-wrap { padding: 3px 24px 14px; }
+    .search-wrap label { display: block; font-size: 11px; font-weight: 700; color: #789093; margin-bottom: 8px; }
+    .search-wrap input { width: 100%; border: 1px solid #e3eae7; border-radius: 14px; background: #f1f5f2; padding: 12px 15px; color: #23393d; outline-offset: 2px; }
+    .search-wrap input::placeholder { color: #9baaaa; }
+    .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 15px 24px 24px; }
+    .tile { border: 0; padding: 0; background: transparent; text-align: left; color: inherit; min-width: 0; }
+    .tile-visual { position: relative; aspect-ratio: .72; border-radius: 17px; overflow: hidden; background: #e9efec; }
+    .tile:nth-child(3n + 2) .tile-visual { aspect-ratio: .78; }
+    .tile-visual .tag { position: absolute; left: 9px; top: 9px; background: #ffffffdf; border-radius: 100px; padding: 5px 8px; color: #36494a; font-size: 10px; font-weight: 700; }
+    .tile b { display: block; font-size: 12px; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tile small { display: block; color: #9aa8a7; font-size: 10px; margin-top: 3px; }
+    .empty { padding: 76px 35px; text-align: center; color: #91a09f; font-size: 13px; line-height: 1.8; }
+    .empty b { display: block; color: #3a5153; font-size: 17px; margin-bottom: 5px; }
+    .tabbar { position: absolute; bottom: 0; left: 0; right: 0; height: 78px; padding-bottom: 10px; background: #fffffff0; border-top: 1px solid #ebf0ec; display: grid; grid-template-columns: repeat(3, 1fr); z-index: 5; backdrop-filter: blur(18px); }
+    .tabbar button { border: 0; background: transparent; color: #9aa8a6; display: grid; align-content: center; justify-items: center; gap: 4px; font-size: 11px; }
+    .tabbar button.active { color: #29494c; font-weight: 800; }
+    .tabbar .icon { font-size: 22px; line-height: 1; }
+    .preview { border: 0; padding: 0; width: min(100vw - 24px, 400px); height: min(90dvh, 820px); max-height: none; border-radius: 30px; overflow: hidden; background: #142a2e; color: white; box-shadow: 0 35px 100px #0b222b77; }
+    .preview::backdrop { background: #0d1a1cbd; backdrop-filter: blur(7px); }
+    .preview-art { position: absolute; inset: 0; }
+    .preview-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#0a1f2538, transparent 33%, transparent 55%, #091e288c); pointer-events: none; }
+    .preview-top { position: absolute; top: 19px; left: 17px; right: 17px; display: flex; justify-content: space-between; z-index: 2; }
+    .round { border: 0; background: #ffffff42; color: white; border-radius: 50%; width: 38px; height: 38px; font-size: 18px; backdrop-filter: blur(12px); }
+    .preview-lock { position: absolute; z-index: 1; top: 18%; width: 100%; text-align: center; text-shadow: 0 2px 20px #0005; }
+    .preview-lock small { display: block; font-size: 14px; }
+    .preview-lock strong { display: block; font-size: 78px; font-weight: 300; letter-spacing: -.09em; line-height: 1.2; }
+    .preview-bottom { position: absolute; z-index: 2; bottom: 0; left: 0; right: 0; padding: 48px 22px 28px; background: linear-gradient(transparent, #10282baa 48%, #10282ae8); }
+    .preview-bottom h2 { margin: 0 0 4px; font-size: 22px; }
+    .preview-bottom p { margin: 0 0 14px; color: #e8f1eded; font-size: 12px; }
+    .preview-bottom .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .preview-bottom button { border: 1px solid #ffffff7d; border-radius: 12px; min-height: 43px; color: white; background: #ffffff20; font-weight: 700; font-size: 12px; }
+    .preview-bottom button.primary { background: white; color: #1c3a3d; border-color: white; }
+    .preview-bottom a { display: block; color: #e2f2ee; margin-top: 12px; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+    .toast { position: fixed; left: 50%; bottom: 35px; translate: -50% 0; background: #263f42; color: white; padding: 11px 16px; border-radius: 100px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+    /* V2：编辑精选 + 高效发现 + 沉浸预览 */
+    :root { background: #e8e7e2; color: #202b2c; }
+    .brief .eyebrow { color: #1e7775; }
+    .brief h1 { font-family: Georgia, "Noto Serif SC", serif; font-weight: 500; letter-spacing: -.055em; }
+    .brief .steps { display: grid; gap: 10px; margin-top: 28px; }
+    .brief .steps span { border-top: 1px solid #c9d4d0; padding-top: 10px; font-size: 13px; color: #425654; }
+    .brief .steps b { color: #20817a; margin-right: 10px; }
+    .phone { background: #f8f8f4; }
+    .app-header { align-items: center; padding-bottom: 18px; }
+    .app-header h2 { font-family: Georgia, "Noto Serif SC", serif; font-size: 27px; letter-spacing: -.08em; }
+    .header-action { background: #e9eeeb; border-color: #e9eeeb; }
+    .issue-line { margin: 0 24px 15px; display: flex; justify-content: space-between; border-top: 1px solid #d9e1dc; padding-top: 11px; font-size: 10px; letter-spacing: .11em; color: #83928d; font-weight: 700; }
+    .section-heading h3 { font-family: Georgia, "Noto Serif SC", serif; font-size: 21px; font-weight: 600; }
+    .hero { height: 345px; border-radius: 6px; box-shadow: none; }
+    .hero::after { inset: 34% 0 0; background: linear-gradient(transparent, #122f35b5); }
+    .hero-copy { left: 22px; bottom: 25px; }
+    .hero-copy b { font-family: Georgia, "Noto Serif SC", serif; font-size: 32px; font-weight: 500; }
+    .hero-counter { border: 1px solid #ffffff8a; border-radius: 100px; padding: 8px 11px; right: 18px; bottom: 24px; font-size: 10px; }
+    .edition { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: #81938d; font-size: 11px; }
+    .edition strong { color: #3c5653; }
+    .category-list { gap: 8px; padding-bottom: 5px; }
+    .chip { background: #f8f8f4; border-color: #d9e0db; padding: 9px 16px; }
+    .chip.active { background: #245e59; border-color: #245e59; }
+    .feature-pack { position: relative; height: 150px; border: 0; border-radius: 14px; overflow: hidden; display: flex; align-items: end; padding: 15px; color: white; text-align: left; background: #214746; margin: 0 24px 17px; width: calc(100% - 48px); }
+    .feature-pack img { position: absolute; width: 100%; height: 100%; object-fit: cover; inset: 0; opacity: .8; }
+    .feature-pack::after { content: ""; position: absolute; inset: 20% 0 0; background: linear-gradient(transparent, #122c33bd); }
+    .feature-pack span { z-index: 1; font-size: 21px; font-family: Georgia, "Noto Serif SC", serif; }
+    .feature-pack small { display: block; font: 700 10px -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: .12em; margin-bottom: 6px; }
+    .strip-card img { border-radius: 4px; height: 158px; }
+    .strip-card b { font-family: Georgia, "Noto Serif SC", serif; font-size: 13px; }
+    .explore-intro { padding: 0 24px 10px; color: #869893; font-size: 12px; line-height: 1.6; }
+    .search-wrap { padding-bottom: 9px; }
+    .search-wrap input { border-radius: 10px; background: #edf1ed; }
+    .explore-tools { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px 0; }
+    .sort-tabs { display: flex; gap: 18px; }
+    .sort-tabs button { border: 0; background: transparent; color: #8b9b95; padding: 7px 0; font-size: 12px; }
+    .sort-tabs button.active { color: #1d625c; font-weight: 800; border-bottom: 2px solid #1d625c; }
+    .filter-button { border: 1px solid #d8e3dc; background: #fff; border-radius: 100px; padding: 8px 12px; color: #355956; font-size: 11px; }
+    .gallery { gap: 15px 10px; padding-top: 13px; }
+    .tile-visual { border-radius: 5px; aspect-ratio: .7; }
+    .tile:nth-child(3n + 2) .tile-visual { aspect-ratio: .7; }
+    .tile-visual .tag { border-radius: 3px; background: #f6f7eddb; }
+    .tile b { font-family: Georgia, "Noto Serif SC", serif; font-size: 13px; }
+    .tabbar { background: #f8f8f4ee; height: 76px; }
+    .tabbar button.active { color: #1b716a; }
+    .preview { border-radius: 8px; }
+    .preview-top { top: 16px; }
+    .preview-middle { position: absolute; z-index: 2; inset: 47% 12px auto; display: flex; justify-content: space-between; pointer-events: none; }
+    .preview-middle button { pointer-events: auto; }
+    .preview-mode { display: flex; justify-content: center; gap: 5px; position: absolute; z-index: 3; top: 17px; left: 64px; right: 64px; }
+    .preview-mode button { background: #ffffff30; color: white; border: 0; border-radius: 100px; padding: 8px 12px; font-size: 11px; backdrop-filter: blur(12px); }
+    .preview-mode button.active { background: #fff; color: #23423e; font-weight: 800; }
+    .preview-home { position: absolute; z-index: 2; top: 17%; width: 100%; text-align: center; color: white; }
+    .preview-home strong { display: block; font-size: 27px; font-weight: 300; text-shadow: 0 2px 10px #0005; }
+    .preview-home .dock { display: flex; justify-content: center; gap: 18px; margin-top: 55%; }
+    .preview-home .dock i { width: 46px; height: 46px; border-radius: 13px; background: #ffffff85; display: block; backdrop-filter: blur(10px); }
+    .preview-bottom { padding-bottom: 25px; }
+    .preview-bottom h2 { font-family: Georgia, "Noto Serif SC", serif; font-weight: 500; }
+    .preview-bottom .actions { grid-template-columns: 1fr 1.3fr; }
+    .preview-bottom .info-row { display: flex; justify-content: space-between; align-items: center; }
+    .preview-bottom .info-row button { border: 0; background: transparent; min-height: 30px; padding: 0; font-size: 11px; text-decoration: underline; }
+    .filter-sheet { width: min(100vw - 20px, 380px); border: 0; border-radius: 20px; padding: 22px; color: #24403d; }
+    .filter-sheet::backdrop { background: #142b2d8c; }
+    .filter-sheet h2 { font-size: 20px; margin: 0 0 7px; }
+    .filter-sheet p { font-size: 12px; color: #84938d; margin: 0 0 20px; }
+    .filter-sheet h3 { font-size: 13px; margin: 20px 0 10px; }
+    .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+    .swatches button { min-width: 60px; border: 1px solid #dbe4de; background: #f7faf7; border-radius: 100px; padding: 8px 10px; font-size: 11px; color: #4e6862; }
+    .swatches button.active { background: #24645d; color: white; border-color: #24645d; }
+    .sheet-actions { display: flex; gap: 8px; margin-top: 25px; }
+    .sheet-actions button { flex: 1; min-height: 42px; border: 1px solid #d7e1db; border-radius: 9px; background: white; color: #325650; }
+    .sheet-actions .primary { background: #24645d; color: white; border-color: #24645d; }
+    @media (max-width: 740px) { .workspace { display: block; padding: 0; } .brief { display: none; } .phone { width: 100%; height: 100dvh; min-height: 0; border: 0; border-radius: 0; box-shadow: none; } .phone::before { display: none; } .app-header { padding-top: 27px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; } }
+  </style>
+</head>
+<body>
+  <div class="workspace">
+    <aside class="brief">
+      <div class="eyebrow">WALLPAPER JOURNAL / CONCEPT 02</div>
+      <h1>每天一张，<br>换个心情。</h1>
+      <p>「画间」把每日精选、主题合集和全屏刷图放在一条顺畅的路径里。首页有编辑感，探索页方便找图，预览页专心看图。</p>
+      <div class="steps"><span><b>01</b>看每日精选与主题合集</span><span><b>02</b>按分类、颜色和排序探索</span><span><b>03</b>左右切图，切换锁屏／桌面效果</span></div>
+      <p class="note">交互原型使用内置 SVG 示意图，不调用第三方 API。保存按钮下载示意图；正式小程序应下载审核过许可的图片。</p>
+    </aside>
+    <div class="phone">
+      <div class="app" id="app">
+        <header class="app-header"><div><small>WALLPAPER JOURNAL · VOL. 02</small><h2 id="screen-title">画间</h2></div><button class="header-action" id="header-search" type="button" aria-label="前往探索页搜索">⌕</button></header>
+        <main>
+          <section class="screen active" id="home-screen" aria-label="首页">
+            <div class="issue-line"><span>2026.11.04 · WEDNESDAY</span><span>今日一张 / DAILY DROP</span></div>
+            <div class="section"><button class="hero" id="hero" type="button" aria-label="预览今日精选壁纸"></button><div class="edition"><span>今日主题：在自然里慢下来</span><strong>01 / 08 ↗</strong></div></div>
+            <div class="section"><div class="section-heading"><div><h3>按氛围探索</h3><p>找到与你今天相配的色彩</p></div></div><div class="category-list" id="home-categories"></div></div>
+            <div class="section"><div class="section-heading"><div><h3>编辑合集</h3><p>精挑细选的屏幕风景</p></div></div></div><button class="feature-pack" id="feature-pack" type="button" aria-label="查看暮色与城市合集"><img id="pack-image" alt="" width="500" height="750"><span><small>COLLECTION · 04 WALLPAPERS</small>暮色与城市 →</span></button>
+            <div class="section"><div class="section-heading"><div><h3>正在流行</h3><p>本周大家喜欢的画面</p></div><button class="text-button" id="view-all" type="button">查看全部 →</button></div></div><div class="strip" id="featured-strip"></div>
+          </section>
+          <section class="screen" id="discover-screen" aria-label="探索"><p class="explore-intro">从颜色、心情或关键词开始，找一张真正适合手机屏幕的壁纸。</p><div class="search-wrap"><label for="wallpaper-search">搜索壁纸</label><input id="wallpaper-search" type="search" placeholder="海岸、山峦、花影…"></div><div class="section"><div class="category-list" id="discover-categories"></div></div><div class="explore-tools"><div class="sort-tabs"><button class="active" type="button" data-sort="featured">精选</button><button type="button" data-sort="new">最新</button><button type="button" data-sort="dark">深色</button></div><button class="filter-button" id="open-filter" type="button">色调筛选 ⌄</button></div><div class="gallery" id="discover-gallery"></div><div class="empty" id="no-results" hidden><b>暂时没有找到</b>换个关键词或分类看看</div></section>
+          <section class="screen" id="saved-screen" aria-label="收藏"><div class="section"><div class="section-heading"><div><h3>收藏的画面</h3><p>你喜欢的，都在这里</p></div></div></div><div class="gallery" id="saved-gallery"></div><div class="empty" id="no-saved"><b>还没有收藏</b>打开一张壁纸，点「收藏」试试</div></section>
+        </main>
+      </div>
+      <nav class="tabbar" aria-label="壁纸导航"><button class="active" type="button" data-screen="home" aria-current="page"><span class="icon">⌂</span>精选</button><button type="button" data-screen="discover"><span class="icon">▦</span>探索</button><button type="button" data-screen="saved"><span class="icon">♡</span>收藏</button></nav>
+    </div>
+  </div>
+  <dialog class="preview" id="preview" aria-labelledby="preview-title"><div class="preview-art"><img id="preview-image" alt=""></div><div class="preview-top"><button class="round" id="close-preview" type="button" aria-label="关闭预览">×</button></div><div class="preview-mode" aria-label="预览模式"><button class="active" type="button" data-mode="clean">原图</button><button type="button" data-mode="lock">锁屏</button><button type="button" data-mode="home">桌面</button></div><div class="preview-lock" id="lock-overlay" hidden><small>11月4日 星期三</small><strong>09:41</strong></div><div class="preview-home" id="home-overlay" hidden><strong>09:41</strong><div class="dock"><i></i><i></i><i></i><i></i></div></div><div class="preview-middle"><button class="round" id="previous-art" type="button" aria-label="上一张壁纸">‹</button><button class="round" id="next-art" type="button" aria-label="下一张壁纸">›</button></div><div class="preview-bottom"><div class="info-row"><span id="art-counter"></span><button id="source-link" type="button">作品信息 ↗</button></div><h2 id="preview-title"></h2><p id="preview-meta"></p><div class="actions"><button id="favorite" type="button">♡ 收藏</button><button class="primary" id="save-image" type="button">↓ 保存示意图</button></div></div></dialog>
+  <dialog class="filter-sheet" id="filter-sheet" aria-labelledby="filter-title"><h2 id="filter-title">筛选色调</h2><p>在探索页只看符合心情的颜色</p><h3>主色调</h3><div class="swatches" id="color-swatches"></div><div class="sheet-actions"><button id="reset-filter" type="button">重置</button><button id="apply-filter" class="primary" type="button">查看结果</button></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const artworks = [
+      { id: 'dawn', title: '雾起时', category: '自然', tone: '青绿', tag: '今日精选', kind: 'mountain', colors: ['#a2c4bc','#d8ddcf','#6c908a','#395a5a'] },
+      { id: 'coast', title: '浅蓝海岸', category: '自然', tone: '蓝色', tag: '清透', kind: 'sea', colors: ['#9acaca','#d5e4d5','#559da3','#e9ddbe'] },
+      { id: 'dune', title: '落日沙丘', category: '自然', tone: '暖橙', tag: '暖调', kind: 'dune', colors: ['#eac4a3','#f2ddc1','#c98369','#8a5d59'] },
+      { id: 'orbit', title: '无声轨道', category: '抽象', tone: '深蓝', tag: '极简', kind: 'orbit', colors: ['#0d293e','#33556c','#a7bfc0','#e8d8b9'] },
+      { id: 'bloom', title: '花影慢慢', category: '花植', tone: '粉色', tag: '柔和', kind: 'flower', colors: ['#efd7cb','#f6e9dd','#af9c89','#d48f8c'] },
+      { id: 'city', title: '雨后街角', category: '城市', tone: '蓝灰', tag: '城市', kind: 'city', colors: ['#687e8c','#b2c2c2','#344d5d','#e7cbb4'] },
+      { id: 'lines', title: '留白之间', category: '抽象', tone: '米白', tag: '留白', kind: 'lines', colors: ['#e1dcd0','#f4eee2','#b9b3a5','#827d72'] },
+      { id: 'night', title: '午夜微光', category: '城市', tone: '深色', tag: '夜色', kind: 'night', colors: ['#18273f','#344359','#728194','#e3c4a2'] }
+    ];
+    const categories = ['全部', '自然', '城市', '抽象', '花植'];
+    const savedIds = (() => { try { return JSON.parse(localStorage.getItem('wallpaper-v2-favorites') || '[]'); } catch { return []; } })();
+    const state = { screen: 'home', category: '全部', query: '', tone: '全部', sort: 'featured', selected: artworks[0], visible: artworks, mode: 'clean', favorites: new Set(savedIds) };
+    const $ = (selector) => document.querySelector(selector);
+    const escapeText = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    function artworkSvg(item) {
+      const [a,b,c,d] = item.colors;
+      const scenes = {
+        mountain: `<circle cx="300" cy="200" r="76" fill="#f1ead8" opacity=".72"/><path d="M0 500 Q125 380 250 440 T500 420 V750 H0Z" fill="${b}"/><path d="M0 560 Q170 390 280 500 T500 460 V750 H0Z" fill="${c}"/><path d="M0 620 Q170 520 300 570 T500 520 V750 H0Z" fill="${d}"/><path d="M0 625 Q250 575 500 625 V750 H0Z" fill="#e4e4d4" opacity=".3"/>`,
+        sea: `<circle cx="345" cy="255" r="80" fill="#f9edcf" opacity=".9"/><path d="M0 440 Q150 425 500 455 V750 H0Z" fill="${c}"/><path d="M0 538 Q140 500 270 560 T500 520 V750 H0Z" fill="#d1e5d9"/><path d="M0 600 Q130 570 260 625 T500 590 V750 H0Z" fill="${d}"/><path d="M0 455 Q140 445 280 465 T500 457" stroke="#e9f4e8" stroke-width="8" fill="none" opacity=".7"/>`,
+        dune: `<circle cx="340" cy="254" r="98" fill="#fff0d3" opacity=".78"/><path d="M0 505 Q165 375 500 510 V750 H0Z" fill="${c}"/><path d="M0 565 Q290 450 500 558 V750 H0Z" fill="${b}"/><path d="M0 660 Q180 505 500 610 V750 H0Z" fill="${d}"/><path d="M0 600 Q180 480 500 575" stroke="#fff1db" stroke-width="8" opacity=".55" fill="none"/>`,
+        orbit: `<circle cx="260" cy="330" r="150" fill="${b}"/><circle cx="260" cy="330" r="101" fill="${c}"/><circle cx="260" cy="330" r="57" fill="${d}"/><circle cx="260" cy="330" r="205" fill="none" stroke="#e1e9d9" stroke-width="2" opacity=".6"/><path d="M-80 580 Q220 470 560 600" stroke="#d4e1d9" stroke-width="2" fill="none" opacity=".5"/>`,
+        flower: `<path d="M250 750 Q250 450 280 265" stroke="${c}" stroke-width="7" fill="none"/><path d="M255 570 Q170 520 145 440 Q220 455 255 570M262 480 Q352 445 380 360 Q305 385 262 480" fill="${c}" opacity=".6"/><g fill="${d}" opacity=".85"><ellipse cx="280" cy="205" rx="60" ry="120"/><ellipse cx="280" cy="205" rx="60" ry="120" transform="rotate(72 280 265)"/><ellipse cx="280" cy="205" rx="60" ry="120" transform="rotate(-72 280 265)"/></g><circle cx="280" cy="265" r="43" fill="#e9c7a8"/>`,
+        city: `<circle cx="365" cy="205" r="75" fill="${d}" opacity=".7"/><path d="M0 570V260h100v310M95 570V340h110v230M205 570V220h115v350M315 570V300h105v270M420 570V375h80v195" fill="${c}" opacity=".8"/><path d="M0 570h500v180H0" fill="${d}" opacity=".25"/><g fill="#ebdbc0" opacity=".7"><rect x="48" y="320" width="9" height="24"/><rect x="150" y="390" width="9" height="24"/><rect x="245" y="285" width="9" height="24"/><rect x="365" y="365" width="9" height="24"/></g>`,
+        lines: `<circle cx="460" cy="80" r="280" fill="${b}"/><path d="M-80 280 Q270 130 600 365M-90 380 Q230 220 600 465M-100 480 Q220 310 600 565M-100 580 Q240 400 600 665" fill="none" stroke="${c}" stroke-width="28" opacity=".7"/><circle cx="145" cy="610" r="90" fill="${d}" opacity=".45"/>`,
+        night: `<circle cx="325" cy="180" r="68" fill="${d}" opacity=".76"/><path d="M0 580V340h80v240M75 580V260h120v320M195 580V380h100v200M290 580V290h140v290M420 580V360h80v220" fill="${b}"/><path d="M0 580h500v170H0" fill="${c}" opacity=".42"/><g fill="#e8c9a7"><rect x="110" y="310" width="8" height="18"/><rect x="145" y="350" width="8" height="18"/><rect x="340" y="345" width="8" height="18"/><rect x="380" y="410" width="8" height="18"/></g>`
+      };
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 750"><defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="500" height="750" fill="url(#g)"/>${scenes[item.kind]}</svg>`;
+    }
+    function src(item) { return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(artworkSvg(item)); }
+    function toast(message) { const el = $('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove('show'), 2600); }
+    function setScreen(screen) { state.screen = screen; document.querySelectorAll('.screen').forEach(el => el.classList.toggle('active', el.id === `${screen}-screen`)); document.querySelectorAll('.tabbar button').forEach(el => { const active = el.dataset.screen === screen; el.classList.toggle('active', active); if (active) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current'); }); $('#screen-title').textContent = ({home: '画间', discover: '探索壁纸', saved: '我的收藏'})[screen]; $('#app').scrollTo(0, 0); if (screen === 'saved') renderSaved(); }
+    function renderChips(id) { document.getElementById(id).innerHTML = categories.map(c => `<button class="chip ${state.category === c ? 'active' : ''}" type="button" data-category="${c}" aria-pressed="${state.category === c}">${c}</button>`).join(''); }
+    function card(item, compact = false) { return compact ? `<button class="strip-card" type="button" data-art="${item.id}"><img src="${src(item)}" alt="${escapeText(item.title)}" width="500" height="750" loading="lazy"><b>${escapeText(item.title)}</b><small>${escapeText(item.tone)} · 手机壁纸</small></button>` : `<button class="tile" type="button" data-art="${item.id}"><div class="tile-visual"><img src="${src(item)}" alt="${escapeText(item.title)}" width="500" height="750" loading="lazy"><span class="tag">${escapeText(item.tag)}</span></div><b>${escapeText(item.title)}</b><small>${escapeText(item.category)} · ${escapeText(item.tone)}</small></button>`; }
+    function filteredArtworks() { const query = state.query.trim().toLowerCase(); const toneGroups = { '蓝色': ['蓝色', '蓝灰', '深蓝'], '深色': ['深色', '蓝灰', '深蓝'] }; let list = artworks.filter(item => (state.category === '全部' || item.category === state.category) && (state.tone === '全部' || (toneGroups[state.tone] || [state.tone]).includes(item.tone)) && (!query || [item.title, item.category, item.tone, item.tag].some(s => s.toLowerCase().includes(query)))); if (state.sort === 'new') list.reverse(); if (state.sort === 'dark') list = list.filter(item => ['深色', '深蓝', '蓝灰'].includes(item.tone)); return list; }
+    function renderDiscover() { renderChips('discover-categories'); renderChips('home-categories'); const list = filteredArtworks(); $('#discover-gallery').innerHTML = list.map(item => card(item)).join(''); $('#no-results').hidden = list.length > 0; document.querySelectorAll('[data-sort]').forEach(button => button.classList.toggle('active', button.dataset.sort === state.sort)); }
+    function renderSwatches() { const tones = ['全部','青绿','蓝色','暖橙','深色','粉色','米白']; $('#color-swatches').innerHTML = tones.map(tone => `<button type="button" data-tone="${tone}" class="${tone === state.tone ? 'active' : ''}" aria-pressed="${tone === state.tone}">${tone}</button>`).join(''); }
+    function renderSaved() { const list = artworks.filter(item => state.favorites.has(item.id)); $('#saved-gallery').innerHTML = list.map(item => card(item)).join(''); $('#no-saved').hidden = list.length > 0; }
+    function updateFavorite() { $('#favorite').textContent = state.favorites.has(state.selected.id) ? '♥ 已收藏' : '♡ 收藏'; }
+    function setMode(mode) { state.mode = mode; $('#lock-overlay').hidden = mode !== 'lock'; $('#home-overlay').hidden = mode !== 'home'; document.querySelectorAll('[data-mode]').forEach(button => button.classList.toggle('active', button.dataset.mode === mode)); }
+    function updatePreview() { const item = state.selected; $('#preview-image').src = src(item); $('#preview-image').alt = item.title; $('#preview-title').textContent = item.title; $('#preview-meta').textContent = `${item.category} · ${item.tone} · 竖屏壁纸示意图`; $('#art-counter').textContent = `${state.visible.indexOf(item) + 1} / ${state.visible.length}`; updateFavorite(); }
+    function openPreview(item) { state.visible = state.screen === 'discover' ? filteredArtworks() : state.screen === 'saved' ? artworks.filter(art => state.favorites.has(art.id)) : artworks; state.selected = item; setMode('clean'); updatePreview(); $('#preview').showModal(); }
+    function stepPreview(direction) { const list = state.visible.length ? state.visible : artworks; const index = list.findIndex(item => item.id === state.selected.id); state.selected = list[(index + direction + list.length) % list.length]; updatePreview(); }
+    $('#hero').innerHTML = `<img src="${src(artworks[0])}" alt="山峦和晨雾的示意壁纸" width="500" height="750" fetchpriority="high"><span class="hero-copy"><span>WALL OF THE DAY · NO. 001</span><b>雾起时</b></span><span class="hero-counter">全屏预览 ↗</span>`;
+    $('#pack-image').src = src(artworks[7]);
+    $('#featured-strip').innerHTML = artworks.slice(1, 6).map(item => card(item, true)).join('');
+    renderDiscover();
+    renderSaved();
+    renderSwatches();
+    document.addEventListener('click', (event) => { const tab = event.target.closest('[data-screen]'); if (tab) setScreen(tab.dataset.screen); const chip = event.target.closest('[data-category]'); if (chip) { state.category = chip.dataset.category; renderDiscover(); if (state.screen === 'home') setScreen('discover'); } const art = event.target.closest('[data-art]'); if (art) openPreview(artworks.find(item => item.id === art.dataset.art)); const sort = event.target.closest('[data-sort]'); if (sort) { state.sort = sort.dataset.sort; renderDiscover(); } const mode = event.target.closest('[data-mode]'); if (mode) setMode(mode.dataset.mode); const tone = event.target.closest('[data-tone]'); if (tone) { state.tone = tone.dataset.tone; renderSwatches(); } });
+    $('#hero').addEventListener('click', () => openPreview(artworks[0]));
+    $('#feature-pack').addEventListener('click', () => { state.category = '城市'; state.query = ''; $('#wallpaper-search').value = ''; renderDiscover(); setScreen('discover'); });
+    $('#view-all').addEventListener('click', () => setScreen('discover'));
+    $('#header-search').addEventListener('click', () => { setScreen('discover'); $('#wallpaper-search').focus(); });
+    $('#wallpaper-search').addEventListener('input', (event) => { state.query = event.target.value; renderDiscover(); });
+    $('#close-preview').addEventListener('click', () => $('#preview').close());
+    $('#preview').addEventListener('click', event => { if (event.target === $('#preview')) $('#preview').close(); });
+    $('#previous-art').addEventListener('click', () => stepPreview(-1));
+    $('#next-art').addEventListener('click', () => stepPreview(1));
+    let touchStartX = 0;
+    $('#preview').addEventListener('touchstart', event => { touchStartX = event.changedTouches[0].clientX; }, { passive: true });
+    $('#preview').addEventListener('touchend', event => { const difference = event.changedTouches[0].clientX - touchStartX; if (Math.abs(difference) > 70) stepPreview(difference < 0 ? 1 : -1); }, { passive: true });
+    $('#open-filter').addEventListener('click', () => { renderSwatches(); $('#filter-sheet').showModal(); });
+    $('#reset-filter').addEventListener('click', () => { state.tone = '全部'; renderSwatches(); renderDiscover(); });
+    $('#apply-filter').addEventListener('click', () => { renderDiscover(); $('#filter-sheet').close(); });
+    $('#favorite').addEventListener('click', () => { const id = state.selected.id; if (state.favorites.has(id)) state.favorites.delete(id); else state.favorites.add(id); try { localStorage.setItem('wallpaper-v2-favorites', JSON.stringify([...state.favorites])); } catch {} updateFavorite(); renderSaved(); toast(state.favorites.has(id) ? '已加入收藏' : '已取消收藏'); });
+    $('#save-image').addEventListener('click', () => { const link = document.createElement('a'); link.href = src(state.selected); link.download = `wallpaper-demo-${state.selected.id}.svg`; document.body.append(link); link.click(); link.remove(); toast('已保存示意 SVG，正式版将保存授权图片'); });
+    $('#source-link').addEventListener('click', () => toast('原型素材由代码绘制；正式版需展示作者、来源和许可'));
+  </script>
+</body>
+</html>

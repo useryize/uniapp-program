@@ -108,9 +108,9 @@
     {
       "path": "pages/wallpaper/home/index",
       "style": {
-        "navigationBarTitleText": "壁纸首页",
+        "navigationStyle": "custom",
         "enablePullDownRefresh": true,
-        "navigationBarBackgroundColor": "#ffffff"
+        "backgroundColor": "#F8F8F4"
       }
     },
     {
@@ -125,8 +125,24 @@
     {
       "path": "pages/wallpaper/find/index",
       "style": {
-        "navigationBarTitleText": "壁纸精选",
-        "enablePullDownRefresh": false
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true,
+        "backgroundColor": "#F8F8F4"
+      }
+    },
+    {
+      "path": "pages/wallpaper/saved/index",
+      "style": {
+        "navigationStyle": "custom",
+        "backgroundColor": "#F8F8F4"
+      }
+    },
+    {
+      "path": "pages/wallpaper/detail/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#11272A"
       }
     },
     // 天气
